@@ -6,5 +6,6 @@ class EmailConfirmationAdmin(admin.ModelAdmin):
     list_display = ('account', 'verified',)
 
 @admin.register(models.AuthToken)
-class EmailConfirmationAdmin(admin.ModelAdmin):
-    list_display = ('key', 'user',)
+class AuthTokenAdmin(admin.ModelAdmin):
+    list_display = ('key', 'user', 'created',)
+    fields = ()
