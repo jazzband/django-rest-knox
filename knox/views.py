@@ -7,6 +7,9 @@ class Login(APIView):
     authentication_classes = (BasicAuthentication,)
     permission_classes = (AllowAny,)
 
+    def post(self):
+        pass
+
 class Logout(APIView)
     authentication_classes = (SessionAuthentication, TokenAuthentication)
     permission_classes = (IsAuthenticated,)
