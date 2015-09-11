@@ -8,4 +8,4 @@ class EmailConfirmationAdmin(admin.ModelAdmin):
 @admin.register(models.AuthToken)
 class AuthTokenAdmin(admin.ModelAdmin):
     list_display = ('key', 'user', 'created',)
-    fields = ()
+    fields = ('user',)

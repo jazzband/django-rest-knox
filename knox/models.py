@@ -29,8 +29,9 @@ class AuthToken(models.Model):
             return # Do not allow editing of generated keys
         return super().save(*args, **kwargs)
 
+    @staticmethod
     def generate_key():
-        return binascii.hexlify(OpenSSL.rand.bytes(KEY_LENGTH/2)).decode()
+        return binascii.hexlify(OpenSSL.rand.bytes(int(AuthToken.KEY_LENGTH / 2))).decode()
 
     def __str__(self):
         return "%s : %s" % (self.key, self.user)
