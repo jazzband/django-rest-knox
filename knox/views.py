@@ -1,17 +1,24 @@
+from rest_framework.authentication import TokenAuthentication, SessionAuthentication, BasicAuthentication
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
-# Create your views here.
+class Login(APIView):
+    authentication_classes = (BasicAuthentication,)
+    permission_classes = (AllowAny,)
 
-class Login():
-    pass
+class Logout(APIView)
+    authentication_classes = (SessionAuthentication, TokenAuthentication)
+    permission_classes = (IsAuthenticated,)
 
-class Logout()
-    pass
+class Register(APIView)
+    authentication_classes = (SessionAuthentication, TokenAuthentication)
+    permission_classes = (IsAuthenticated,)
 
-class Register()
-    pass
+class RegistrationConfirmation(APIView)
+    authentication_classes = (SessionAuthentication, TokenAuthentication)
+    permission_classes = (IsAuthenticated,)
 
-class RegistrationConfirmation()
-    pass
-
-class PasswordReset()
-    pass
+class PasswordReset(APIView)
+    authentication_classes = (SessionAuthentication, TokenAuthentication)
+    permission_classes = (IsAuthenticated,)
