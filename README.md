@@ -6,7 +6,7 @@ token based authentication (as rest_auth's tokens are limited to one per user)
 
 ## Installation
 
-# Requirments
+### Requirements
 
 Knox depends on `cryptography` to provide bindings to `OpenSSL` for token generation
 This requires the OpenSSL build libraries to be available

@@ -25,7 +25,12 @@ class AuthToken(models.Model):
     def save(self, *args, **kwargs):
         if not self.key:
             self.key = self.generate_key()
+        else:
+            return # Do not allow editing of generated keys
         return super().save(*args, **kwargs)
 
     def generate_key():
         return binascii.hexlify(OpenSSL.rand.bytes(KEY_LENGTH/2)).decode()
+
+    def __str__(self):
+        return "%s : %s" % (self.key, self.user)

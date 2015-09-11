@@ -1,6 +1,10 @@
 from django.contrib import admin
-from knox.models import EmailConfirmation
+from knox import models
 
-@admin.register(EmailConfirmation)
+@admin.register(models.EmailConfirmation)
 class EmailConfirmationAdmin(admin.ModelAdmin):
     list_display = ('account', 'verified',)
+
+@admin.register(models.AuthToken)
+class EmailConfirmationAdmin(admin.ModelAdmin):
+    list_display = ('key', 'user',)
