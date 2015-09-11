@@ -1,3 +1,4 @@
 from django.contrib import admin
+from knox.models import EmailConfirmation
 
-# Register your models here.
+admin.site.register(EmailConfirmation)
