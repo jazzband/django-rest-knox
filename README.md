@@ -1,4 +1,6 @@
 # django-rest-knox
+[![Build Status](https://travis-ci.org/James1345/django-rest-knox.svg?branch=develop)](https://travis-ci.org/James1345/django-rest-knox)
+
 Authentication Module for django rest auth
 
 **Does not** use rest framework's AuthTokens. This module defines its own
