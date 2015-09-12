@@ -39,15 +39,3 @@ class LogoutAllView(APIView):
     def post(self, request, format=None):
         request.user.auth_token_set.all().delete()
         return Response(None, status=status.HTTP_204_NO_CONTENT)
-
-class RegisterView(APIView):
-    authentication_classes = (TokenAuthentication,)
-    permission_classes = (IsAuthenticated,)
-
-class RegistrationConfirmationView(APIView):
-    authentication_classes = (TokenAuthentication,)
-    permission_classes = (IsAuthenticated,)
-
-class PasswordResetView(APIView):
-    authentication_classes = (TokenAuthentication,)
-    permission_classes = (IsAuthenticated,)
