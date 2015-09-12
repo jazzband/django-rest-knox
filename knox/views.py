@@ -13,8 +13,6 @@ class LoginView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def post(self, request, format=None):
-        u = UserSerializer(request.user)
-        import pdb; pdb.set_trace()
         token = AuthToken(user=request.user)
         token.save()
         return Response({
@@ -31,8 +29,16 @@ class LogoutView(APIView):
         return Response(None, status=status.HTTP_204_NO_CONTENT)
 
 class LogoutAllView(APIView):
+    '''
+    Log the user out of all sessions
+    I.E. deletes all auth tokens for the user
+    '''
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
+
+    def post(self, request, format=None):
+        request.user.auth_token_set.all().delete()
+        return Response(None, status=status.HTTP_204_NO_CONTENT)
 
 class RegisterView(APIView):
     authentication_classes = (TokenAuthentication,)
