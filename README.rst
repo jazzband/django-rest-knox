@@ -107,8 +107,8 @@ easily be included via your url config:
     ]
 
 **N.B.** it is important to use the string sintax and not try to import
-knox.urls, as the reference to the User model will cause the app to fail
-at import time.
+``knox.urls``, as the reference to the ``User`` model will cause the app
+to fail at import time.
 
 The views would then acessible as:
 
@@ -154,12 +154,12 @@ Authentication Classes
 ~~~~~~~~~~~~~~~~~~~~~~
 
 Knox provides one class for authentication - ``TokenAuthentication``
-This works in using the same way as `DRF's authentication
+This works in using `DRF's authentication
 system <http://www.django-rest-framework.org/api-guide/authentication/>`__.
 
 Knox tokens should be generated using the provided views. Any
 ``APIView`` or ``ViewSet`` can be accessed using these tokens by adding
-``TokenAuthentication`` to the classes ``authentication_classes``. To
+``TokenAuthentication`` to the View's ``authentication_classes``. To
 authenticate, the ``Authorization`` header should be set on the request,
 with a value of the word 'Token', then a space, then the authentication
 token provided by ``LoginView``.
@@ -175,7 +175,7 @@ Example:
     from knox.auth import TokenAuthentication
 
     class ExampleView(APIView):
-        authentication_classes = (TokenAuthentication)
+        authentication_classes = (TokenAuthentication,)
         permission_classes = (IsAuthenticated,)
 
         def get(self, request, format=None):
