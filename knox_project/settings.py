@@ -39,6 +39,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'rest_framework',
     'knox',
+    'django_nose',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -103,4 +104,4 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-USE_EMAIL_CONFIRMATION = False
+TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
