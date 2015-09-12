@@ -16,10 +16,8 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 
-import knox.urls
-
 urlpatterns = [
-    url(r'^api/', include(knox.urls.urlpatterns)),
+    url(r'^api/', include('knox.urls')),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^', include(admin.site.urls)),
 ]
