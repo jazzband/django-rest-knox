@@ -24,7 +24,7 @@ class AuthToken(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.key:
-            self.key = self.generate_key()
+            self.key = AuthToken.generate_key()
         else:
             return # Do not allow editing of generated keys
         return super().save(*args, **kwargs)

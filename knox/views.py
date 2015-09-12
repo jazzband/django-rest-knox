@@ -5,29 +5,32 @@ from rest_framework.views import APIView
 
 from knox.auth import TokenAuthentication
 
-class Login(APIView):
+class LoginView(APIView):
     authentication_classes = (BasicAuthentication,)
     permission_classes = (AllowAny,)
 
-    def post(self):
+    def post(self, request, format=None):
         pass
 
-class Logout(APIView)
+class LogoutView(APIView):
     authentication_classes = (SessionAuthentication, TokenAuthentication)
     permission_classes = (IsAuthenticated,)
 
-class LogoutAll(APIView)
+    def get(self, request, format=None):
+        return Response("{success: true}")
+
+class LogoutAllView(APIView):
     authentication_classes = (SessionAuthentication, TokenAuthentication)
     permission_classes = (IsAuthenticated,)
 
-class Register(APIView)
+class RegisterView(APIView):
     authentication_classes = (SessionAuthentication, TokenAuthentication)
     permission_classes = (IsAuthenticated,)
 
-class RegistrationConfirmation(APIView)
+class RegistrationConfirmationView(APIView):
     authentication_classes = (SessionAuthentication, TokenAuthentication)
     permission_classes = (IsAuthenticated,)
 
-class PasswordReset(APIView)
+class PasswordResetView(APIView):
     authentication_classes = (SessionAuthentication, TokenAuthentication)
     permission_classes = (IsAuthenticated,)
