@@ -2,7 +2,7 @@ django-rest-knox
 ================
 
 .. image:: https://travis-ci.org/James1345/django-rest-knox.svg?branch=develop
-    :target: https://travis-ci.org/James1345/django-rest-knox
+   :target: https://travis-ci.org/James1345/django-rest-knox
 
 Authentication Module for django rest auth
 
@@ -54,5 +54,6 @@ Usage
 -  Logout invalidates the provided token
 -  LogoutAll invalidates all tokens for that user
 
-.. |Build Status| image:: https://travis-ci.org/James1345/django-rest-knox.svg?branch=develop
+.. .. image:: https://travis-ci.org/James1345/django-rest-knox.svg?branch=develop
+   :target: https://travis-ci.org/James1345/django-rest-knox image:: https://travis-ci.org/James1345/django-rest-knox.svg?branch=develop
    :target: https://travis-ci.org/James1345/django-rest-knox
