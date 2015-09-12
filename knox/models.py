@@ -6,14 +6,6 @@ import OpenSSL
 
 User = settings.AUTH_USER_MODEL
 
-# Create your models here.
-class EmailConfirmation(models.Model):
-    account = models.OneToOneField(User, null=False, blank=False, related_name="email_confirmation")
-    verified = models.BooleanField(null=False, blank=True, default=False)
-
-    def __str__(self):
-        return "%s: %s" % (self.account, ("email verified" if self.verified else "email not verified"))
-
 class AuthToken(models.Model):
 
     KEY_LENGTH = 64;
