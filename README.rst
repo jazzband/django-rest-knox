@@ -16,15 +16,20 @@ Knox Authentication is token based, similar to the
 problems present in the default implementation:
 
 -  DRF Tokens are generated with ``os.urandom``, which is not
-   cryptographically secure. Knox uses OpenSSL to provide tokens.
--  DRF tokens are limitted to one per user. This does not facilitate
-   securely signing in from multiple devices, as the token is shared. It
-   also requires *all* devices to be logged out if a server-side logout
-   is required (i.e. the token is deleted). Knox provides one token per
-   call to the login view - allowing each client to have its own token
-   which is deleted on the server side when the client logs out. Knox
-   also provides an option for a logged in client to remove *all* tokens
-   that the server has - forcing all clients to re-authenticate.
+   cryptographically secure.
+
+Knox uses OpenSSL to provide tokens. - DRF tokens are limitted to one
+per user. This does not facilitate securely signing in from multiple
+devices, as the token is shared. It also requires *all* devices to be
+logged out if a server-side logout is required (i.e. the token is
+deleted).
+
+Knox provides one token per call to the login view - allowing each
+client to have its own token which is deleted on the server side when
+the client logs out.
+
+Knox also provides an option for a logged in client to remove *all*
+tokens that the server has - forcing all clients to re-authenticate.
 
 Installation
 ------------
@@ -106,7 +111,7 @@ easily be included via your url config:
       #...snip...
     ]
 
-**N.B.** it is important to use the string sintax and not try to import
+**N.B.** it is important to use the string syntax and not try to import
 ``knox.urls``, as the reference to the ``User`` model will cause the app
 to fail at import time.
 
@@ -127,11 +132,18 @@ they can also be looked up by name:
 LoginView
 ^^^^^^^^^
 
-This view accepts only a post request with an empty body. It responds
-only to HTTP Basic authentication. When it receives an authenticated
-request, it will return json - ``user`` an object representing the user
-that was authenticated - ``token`` the token that should be used for
-other requests
+This view accepts only a post request with an empty body.
+
+The LoginView accepts the same sort of authentication as your Rest
+Framework ``DEFAULT_AUTHENTICATION_CLASSES`` setting. If this is not
+set, it defaults to ``(SessionAuthentication, BasicAuthentication)``.
+
+LoginView was designed to work well with Basic authentication, or
+similar schemes.
+
+When it receives an authenticated request, it will return json -
+``user`` an object representing the user that was authenticated -
+``token`` the token that should be used for other requests
 
 LogoutView
 ^^^^^^^^^^
@@ -180,8 +192,7 @@ Example:
 
         def get(self, request, format=None):
             content = {
-                'user': unicode(request.user),  # `django.contrib.auth.User` instance.
-                'auth': unicode(request.auth),  # None
+                'foo': 'bar'
             }
             return Response(content)
 
