@@ -1,14 +1,21 @@
 language: python
 python:
-  - "3.4"
+- '3.4'
 services: sqlite3
-
 install:
-  - pip install -r requirements/common.pip
-  - pip install -r requirements/dev-test.pip
-
+- pip install -r requirements/common.pip
+- pip install -r requirements/dev-test.pip
 before_script:
-  - python manage.py migrate
-  
+- python manage.py migrate
 script:
-  - python manage.py test
+- python manage.py test
+deploy:
+  provider: pypi
+  user: james.mcmahon
+  password:
+    secure: jtlzc/0jbDKakkDP5oNPAWzs+DJD6yWMSKxVagzsyvzbFyyZdRJ368+JUJA72Ey3wg1yZixV+JXgbG4fbd9hMtgFsJHO7eQ+ZPX/jbY4NtULlmCNApfIKD30hGZOvQGOnS29YdTEzfrJY9/y50dZEp0VVdJUIV2YrNhhbEMZYFUmgd7b30x0ezt+7YWL7oaPssKDvPPFzyi3aNooStzanivKQsZU+1tZR2r4Lv4ECEiI3CMF4ixg+EIS2q4RW0NShabdLkihQOejpXAzMIUsmAxcXfii+lj1HP+Z+x/S3ZM1Rc0fstL8mmL9pmqiRYM5K5p7dVzsLorQlC3koK12oAP9A0KVBGVwUSwui5p/0GWJ33ywBwcwE1wpnsl3VMS6PEV10jZnwaOjaOQJ/jz7t7+m1g6JgH0WqQDApftzlSFBdsHvrcACBUvF6Jd9iXoQBjonveG1pabQ3CJSoWQGri02fHqVQXg4P1eLd18FALJ1TxjDSxA7Pnk+MLHF7At0r37ak9Q7w8G3CN/C6TrfEmjaTANK+it3yzWwv42tBkPM84vTJnhfwpb0CIwGv5QZWRx7fVVILe4HKdpyAumSJ2inJkJRk7zj+qSXS9YNbN/2YeycI8UPthpAd2mU0Ysgm0vxsW8Vqz3rS4vzVDbLrFQawpO9vyzxBM9feksWiLI=
+  on:
+    tags: true
+    repo: James1345/django-rest-knox
+  only:
+    - master
