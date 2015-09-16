@@ -1,17 +1,31 @@
-# Welcome to MkDocs
+# Django-Rest-Knox
+Knox provides easy to use authentication for [Django REST Framework](http://www.django-rest-framework.org/)
+The aim is to allow for common patterns in applications that are REST based,
+with little extra effort; and to ensure that connections remain secure.
 
-For full documentation visit [mkdocs.org](http://mkdocs.org).
+Knox authentication is token based, similar to the `TokenAuthentication` built
+in to DRF. However, it overcomes some problems present in the default implementation:
 
-## Commands
+-   DRF Tokens are generated with `os.urandom`, which is not cryptographically
+    secure.
 
-* `mkdocs new [dir-name]` - Create a new project.
-* `mkdocs serve` - Start the live-reloading docs server.
-* `mkdocs build` - Build the documentation site.
-* `mkdocs help` - Print this help message.
+    Knox uses OpenSSL to provide tokens.
 
-## Project layout
+-   DRF tokens are limited to one per user. This does not facilitate securely
+    signing in from multiple devices, as the token is shared. It also requires
+    *all* devices to be logged out if a server-side logout is required (i.e. the
+    token is deleted).
 
-    mkdocs.yml    # The configuration file.
-    docs/
-        index.md  # The documentation homepage.
-        ...       # Other markdown pages, images and other files.
+    Knox provides one token per call to the login view - allowing
+    each client to have its own token which is deleted on the server side when the client
+    logs out.
+
+    Knox also provides an option for a logged in client to remove *all* tokens
+    that the server has - forcing all clients to re-authenticate.
+
+-   DRF tokens are stored unencrypted in the database. This would allow an attacker
+    unrestricted access to an account with a token if the database were compromised.
+
+    Knox tokens are only stored in an encrypted form. Even if the database were
+    somehow stolen, an attacker would not be able to log in with the stolen
+    credentials.

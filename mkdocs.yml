@@ -1,1 +1,11 @@
-site_name: My Docs
+site_name: Django-Rest-Knox
+repo_url: https://github.com/James1345/django-rest-knox
+pages:
+  - Home: 'index.md'
+  - Installation: 'installation.md'
+  - API Guide:
+      - Views: 'views.md'
+      - URLs: 'urls.md'
+      - Authentcation: 'auth.md'
+      - Settings: 'settings.md'
+  - Changes: 'changes.md'
