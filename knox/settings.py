@@ -6,7 +6,7 @@ USER_SETTINGS = getattr(settings, 'REST_KNOX', None)
 
 DEFAULTS = {
     'SECURE_HASH_ALGORITHM': 'cryptography.hazmat.primitives.hashes.SHA512',
-    'AUTH_TOKEN_LENGTH': 64,
+    'AUTH_TOKEN_CHARACTER_LENGTH': 64,
 }
 
 IMPORT_STRINGS = {
@@ -22,3 +22,18 @@ def reload_api_settings(*args, **kwargs):
         knox_settings = APISettings(value, DEFAULTS, IMPORT_STRINGS)
 
 setting_changed.connect(reload_api_settings)
+
+class CONSTANTS:
+    '''
+    Constants cannot be changed at runtime
+    '''
+    DIGEST_LENGTH = 64
+    SALT_LENGTH = 16
+
+    def __setattr__ (self, *_, **__):
+        raise RuntimeException('''
+            Constant values must NEVER be changed at runtime, as they are
+            integral to the structure of database tables
+            '''
+        )
+CONSTANTS = CONSTANTS()
