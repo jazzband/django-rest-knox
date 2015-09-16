@@ -1,4 +1,4 @@
-# Authentication 'knox.auth'
+# Authentication `knox.auth`
 
 Knox provides one class to handle authentication.
 
