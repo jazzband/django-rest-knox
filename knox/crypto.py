@@ -27,15 +27,9 @@ def create_salt_string():
 def hash_token(token, salt):
     '''
     Calculates the hash of a token and salt.
-    strings will be converted by unhexlify
+    input is unhexlified
     '''
     digest = hashes.Hash(sha(), backend=default_backend())
-    try:
-        digest.update(token)
-    except TypeError:
-        digest.update(binascii.unhexlify(token))
-    try:
-        digest.update(salt)
-    except TypeError:
-        digest.update(binascii.unhexlify(salt))
+    digest.update(binascii.unhexlify(token))
+    digest.update(binascii.unhexlify(salt))
     return binascii.hexlify(digest.finalize()).decode()
