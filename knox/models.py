@@ -1,8 +1,7 @@
 from django.conf import settings
 from django.db import models
 
-import binascii
-import OpenSSL
+from knox.crypto import generate_key
 
 User = settings.AUTH_USER_MODEL
 
@@ -20,10 +19,6 @@ class AuthToken(models.Model):
         else:
             return # Do not allow editing of generated keys
         return super().save(*args, **kwargs)
-
-    @staticmethod
-    def generate_key():
-        return binascii.hexlify(OpenSSL.rand.bytes(int(AuthToken.KEY_LENGTH / 2))).decode()
 
     def __str__(self):
         return "%s : %s" % (self.key, self.user)

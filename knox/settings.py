@@ -5,12 +5,13 @@ from rest_framework.settings import APISettings
 USER_SETTINGS = getattr(settings, 'REST_KNOX', None)
 
 DEFAULTS = {
-    'SECURE_HASH_ALGORITHM': 'cryptography.hazmat.primitives.hashes.SHA512'
+    'SECURE_HASH_ALGORITHM': 'cryptography.hazmat.primitives.hashes.SHA512',
+    'AUTH_TOKEN_LENGTH': 64,
 }
 
-IMPORT_STRINGS = (
+IMPORT_STRINGS = {
     'SECURE_HASH_ALGORITHM',
-)
+}
 
 knox_settings = APISettings(USER_SETTINGS, DEFAULTS, IMPORT_STRINGS)
 
