@@ -14,11 +14,10 @@ class LoginView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def post(self, request, format=None):
-        token = AuthToken(user=request.user)
-        token.save()
+        token = AuthToken.objects.create(request.user)
         return Response({
             "user": UserSerializer(request.user).data,
-            "token": token.key,
+            "token": token,
         })
 
 class LogoutView(APIView):

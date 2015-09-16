@@ -33,7 +33,7 @@ class AuthTestCase(TestCase):
         self.assertEqual(AuthToken.objects.count(), 1)
 
         url = reverse('knox_logout')
-        self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % token.key))
+        self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % token))
         self.client.post(url, {}, format='json')
         self.assertEqual(AuthToken.objects.count(), 0)
 
@@ -46,6 +46,6 @@ class AuthTestCase(TestCase):
         self.assertEqual(AuthToken.objects.count(), 10)
 
         url = reverse('knox_logoutall')
-        self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % token.key))
+        self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % token))
         self.client.post(url, {}, format='json')
         self.assertEqual(AuthToken.objects.count(), 0)
