@@ -3,5 +3,5 @@ from knox import models
 
 @admin.register(models.AuthToken)
 class AuthTokenAdmin(admin.ModelAdmin):
-    list_display = ('key', 'user', 'created',)
-    fields = ('user',)
+    list_display = ('digest', 'user', 'created',)
+    fields = ()
