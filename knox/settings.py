@@ -27,7 +27,7 @@ class CONSTANTS:
     '''
     Constants cannot be changed at runtime
     '''
-    DIGEST_LENGTH = 64
+    DIGEST_LENGTH = 128
     SALT_LENGTH = 16
 
     def __setattr__ (self, *_, **__):
