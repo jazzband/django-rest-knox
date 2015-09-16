@@ -33,3 +33,7 @@ in to DRF. However, it overcomes some problems present in the default implementa
     Knox tokens are only stored in an encrypted form. Even if the database were
     somehow stolen, an attacker would not be able to log in with the stolen
     credentials.
+
+More information can be found in the [Documentation][docs]
+
+[docs]: http://james1345.github.io/django-rest-knox/
