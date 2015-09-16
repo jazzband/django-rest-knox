@@ -5,30 +5,20 @@ from rest_framework.response import Response
 from rest_framework.settings import api_settings
 from rest_framework.views import APIView
 
-from knox import crypto
 from knox.auth import TokenAuthentication
 from knox.models import AuthToken
 from knox.serializers import UserSerializer
-from knox.settings import knox_settings
 
 class LoginView(APIView):
     authentication_classes = api_settings.DEFAULT_AUTHENTICATION_CLASSES
     permission_classes = (IsAuthenticated,)
 
     def post(self, request, format=None):
-        token = self.create_and_save_token(request.user)
+        token = AuthToken.objects.create(request.user)
         return Response({
             "user": UserSerializer(request.user).data,
             "token": token,
         })
-
-    def create_and_save_token(self, user):
-        token = crypto.create_token_string()
-        salt = crypto.create_salt_string()
-        digest = crypto.hash_token(token, salt)
-        auth_token = AuthToken(digest=digest, salt=salt, user=user)
-        auth_token.save()
-        return token
 
 class LogoutView(APIView):
     authentication_classes = (TokenAuthentication,)
