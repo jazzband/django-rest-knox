@@ -14,6 +14,7 @@ in to DRF. However, it overcomes some problems present in the default implementa
   secure.
 
   Knox uses OpenSSL to provide tokens.
+  
 - DRF tokens are limitted to one per user. This does not facilitate securely
   signing in from multiple devices, as the token is shared. It also requires
   *all* devices to be logged out if a server-side logout is required (i.e. the
