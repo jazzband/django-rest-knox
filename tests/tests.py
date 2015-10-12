@@ -1,5 +1,6 @@
 import json
 import base64
+import datetime
 
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
@@ -55,7 +56,7 @@ class AuthTestCase(TestCase):
         username, password = 'root', 'toor'
         user = User.objects.create_user(username, 'root@localhost.com', password)
         for _ in range(10):
-            token = AuthToken.objects.create(user=user, expires=0) #0 TTL gives an expired token
+            token = AuthToken.objects.create(user=user, expires=datetime.timedelta(seconds=0)) #0 TTL gives an expired token
         self.assertEqual(AuthToken.objects.count(), 10)
 
         # Attempting a single logout should delete all tokens
