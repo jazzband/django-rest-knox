@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext_lazy as _
@@ -43,8 +45,13 @@ class TokenAuthentication(BaseAuthentication):
         '''
         Due to the random nature of hashing a salted value, this must inspect
         each auth_token individually to find the correct one.
+
+        Tokens that have expired will be deleted and skipped
         '''
         for auth_token in AuthToken.objects.all():
+            if auth_token.expires < datetime.now():
+                auth_token.delete()
+                continue
             digest = hash_token(token, auth_token.salt)
             if digest == auth_token.digest:
                 return self.validate_user(auth_token)
