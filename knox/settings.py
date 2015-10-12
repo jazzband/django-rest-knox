@@ -7,6 +7,7 @@ USER_SETTINGS = getattr(settings, 'REST_KNOX', None)
 DEFAULTS = {
     'SECURE_HASH_ALGORITHM': 'cryptography.hazmat.primitives.hashes.SHA512',
     'AUTH_TOKEN_CHARACTER_LENGTH': 64,
+    'TOKEN_TTL_HOURS': 10,
 }
 
 IMPORT_STRINGS = {
