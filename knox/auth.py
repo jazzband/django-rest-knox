@@ -1,8 +1,7 @@
-from datetime import datetime
-
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext_lazy as _
+from django.utils import timezone
 
 from rest_framework import exceptions
 from rest_framework.authentication import BaseAuthentication, get_authorization_header
@@ -49,7 +48,7 @@ class TokenAuthentication(BaseAuthentication):
         Tokens that have expired will be deleted and skipped
         '''
         for auth_token in AuthToken.objects.all():
-            if auth_token.expires < datetime.now():
+            if auth_token.expires < timezone.now():
                 auth_token.delete()
                 continue
             digest = hash_token(token, auth_token.salt)

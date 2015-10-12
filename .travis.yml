@@ -5,7 +5,7 @@ services: sqlite3
 
 install:
 - pip install -r requirements/common.pip
-- pip install -r requirements/dev-test.pip 
+- pip install -r requirements/dev-test.pip
 
 before_script:
 - python manage.py migrate
