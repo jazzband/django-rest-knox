@@ -38,6 +38,18 @@ MD5 is **not secure** and must *never* be used in production sites.
 This is the length of the token that will be sent to the client. By default it
 is set to 64 characters (this shouldn't need changing).
 
+## TOKEN_TTL
+This is how long a token can exist before it expires. Expired tokens are automatically
+removed from the system.
+
+The setting should be set to an instance of `datetime.timedelta`. The default is
+10 hours ()`timedelta(hours=10)`).
+
+Setting the TOKEN_TTL to `None` will create tokens that never expire.
+
+Warning: setting a 0 or negative timedelta will create tokens that instantly expire,
+the system will not prevent you setting this.
+
 # Constants `knox.settings`
 Knox also provides some constants for information. These must not be changed in
 external code; they are used in the model definitions in knox and an error will
