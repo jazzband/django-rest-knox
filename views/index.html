@@ -173,6 +173,11 @@ default, you can extend this class to provide your own value for
 <p>When it receives an authenticated request, it will return json
 - <code>user</code> an object representing the user that was authenticated
 - <code>token</code> the token that should be used for any token</p>
+<p>The returned <code>user</code> object is serialized using the <code>USER_SERIALIZER</code> setting.
+If this setting is not changed, the default serializer returns the user's
+<code>first_name</code>, <code>last_name</code> and <code>username</code>.</p>
+<p>Obviously, if your app uses a custom user model that does not have these fields,
+a custom serializer must be used.</p>
 <h2 id="logoutview">LogoutView</h2>
 <p>This view accepts only a post request with an empty body.
 It responds to Knox Token Authentication. On a successful request,

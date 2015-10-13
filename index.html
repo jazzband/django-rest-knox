@@ -179,6 +179,11 @@ that the server has - forcing all clients to re-authenticate.</p>
 somehow stolen, an attacker would not be able to log in with the stolen
 credentials.</p>
 </li>
+<li>
+<p>DRF tokens track their creation time, but have no inbuilt mechanism for tokens
+    expiring. Knox tokens can have an expiry configured in the app settings (default is
+    10 hours.)</p>
+</li>
 </ul>
               
             </div>
@@ -227,5 +232,5 @@ credentials.</p>
 
 <!--
 MkDocs version : 0.14.0
-Build Date UTC : 2015-09-16 19:06:15.271243
+Build Date UTC : 2015-10-13 20:02:29.267507
 -->
