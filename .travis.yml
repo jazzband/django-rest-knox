@@ -6,8 +6,6 @@ python:
 
 env:
 - DJANGO_VERSION=1.8
-- DJANGO_VERSION=1.7
-- DJANGO_VERSION=1.6
 
 install:
 - pip install -q -r requirements/common.pip
