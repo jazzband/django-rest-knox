@@ -7,7 +7,9 @@ from rest_framework.views import APIView
 
 from knox.auth import TokenAuthentication
 from knox.models import AuthToken
-from knox.serializers import UserSerializer
+from knox.settings import knox_settings
+
+UserSerializer = knox_settings.USER_SERIALIZER
 
 class LoginView(APIView):
     authentication_classes = api_settings.DEFAULT_AUTHENTICATION_CLASSES
