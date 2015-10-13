@@ -1,16 +1,24 @@
 language: python
 python:
+- '3.3'
 - '3.4'
+- '3.5'
 services: sqlite3
 
 install:
 - pip install -r requirements/common.pip
-- pip install -r requirements/dev-test.pip 
+- pip install -r requirements/dev-test.pip
+- pip install -r requirements/dev-build.pip
+- pip install -r requirements/dev-docs.pip
 
 before_script:
 - python manage.py migrate
 script:
 - python manage.py test
+
+before_deploy:
+- mkdocs gh-deploy --clean
+- python setup.py sdist bdist_wheel
 deploy:
   provider: pypi
   user: james.mcmahon

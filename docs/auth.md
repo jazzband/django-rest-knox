@@ -37,3 +37,5 @@ Example auth header:
 ```javascript
 Authorization: Token 9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b9836F45E23A345
 ```
+
+Tokens expire after a preset time. See settings.

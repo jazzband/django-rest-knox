@@ -29,3 +29,7 @@ in to DRF. However, it overcomes some problems present in the default implementa
     Knox tokens are only stored in an encrypted form. Even if the database were
     somehow stolen, an attacker would not be able to log in with the stolen
     credentials.
+
+-   DRF tokens track their creation time, but have no inbuilt mechanism for tokens
+    expiring. Knox tokens can have an expiry configured in the app settings (default is
+    10 hours.)
