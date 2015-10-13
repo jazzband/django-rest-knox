@@ -9,10 +9,12 @@ DEFAULTS = {
     'SECURE_HASH_ALGORITHM': 'cryptography.hazmat.primitives.hashes.SHA512',
     'AUTH_TOKEN_CHARACTER_LENGTH': 64,
     'TOKEN_TTL': timedelta(hours=10),
+    'USER_SERIALIZER': 'knox.serializers.UserSerializer',
 }
 
 IMPORT_STRINGS = {
     'SECURE_HASH_ALGORITHM',
+    'USER_SERIALIZER',
 }
 
 knox_settings = APISettings(USER_SETTINGS, DEFAULTS, IMPORT_STRINGS)

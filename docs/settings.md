@@ -11,6 +11,8 @@ Example `settings.py`
 'REST_KNOX' = {
   'SECURE_HASH_ALGORITHM': 'cryptography.hazmat.primitives.hashes.SHA512',
   'AUTH_TOKEN_CHARACTER_LENGTH': 64,
+  'TOKEN_TTL': 10,
+  'USER_SERIALIZER': 'knox.serializers.UserSerializer',
 }
 #...snip...
 ```
@@ -49,6 +51,10 @@ Setting the TOKEN_TTL to `None` will create tokens that never expire.
 
 Warning: setting a 0 or negative timedelta will create tokens that instantly expire,
 the system will not prevent you setting this.
+
+## USER_SERIALIZER
+This is the reference to the class used to serialize the `User` objects when
+succesfully returning from `LoginView`. The default is `knox.serializers.UserSerializer`
 
 # Constants `knox.settings`
 Knox also provides some constants for information. These must not be changed in
