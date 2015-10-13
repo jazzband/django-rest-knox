@@ -16,9 +16,6 @@ before_script:
 script:
 - python manage.py test
 
-before_deploy:
-- mkdocs gh-deploy --clean
-- python setup.py sdist bdist_wheel
 deploy:
   provider: pypi
   user: james.mcmahon
@@ -29,3 +26,4 @@ deploy:
     repo: James1345/django-rest-knox
   only:
     - master
+  distributions: "sdist bdist_wheel"
