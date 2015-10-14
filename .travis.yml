@@ -3,13 +3,16 @@ python:
 - '3.3'
 - '3.4'
 - '3.5'
-services: sqlite3
+
+env:
+- DJANGO_VERSION=1.8
 
 install:
-- pip install -r requirements/common.pip
-- pip install -r requirements/dev-test.pip
-- pip install -r requirements/dev-build.pip
-- pip install -r requirements/dev-docs.pip
+- pip install -q -r requirements/common.pip
+- pip install -q -r requirements/dev-test.pip
+- pip install -q -r requirements/dev-build.pip
+- pip install -q -r requirements/dev-docs.pip
+- pip install -q --upgrade --force-reinstall django==$DJANGO_VERSION
 
 before_script:
 - python manage.py migrate

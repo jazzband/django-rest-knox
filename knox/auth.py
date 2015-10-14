@@ -48,9 +48,10 @@ class TokenAuthentication(BaseAuthentication):
         Tokens that have expired will be deleted and skipped
         '''
         for auth_token in AuthToken.objects.all():
-            if auth_token.expires < timezone.now():
-                auth_token.delete()
-                continue
+            if auth_token.expires is not None:
+                if auth_token.expires < timezone.now():
+                    auth_token.delete()
+                    continue
             digest = hash_token(token, auth_token.salt)
             if digest == auth_token.digest:
                 return self.validate_user(auth_token)
