@@ -19,6 +19,17 @@ class AuthTokenManager(models.Manager):
         auth_token = super(AuthTokenManager, self).create(digest=digest, salt=salt, user=user, expires=expires)
         return token # Note only the token - not the AuthToken object - is returned
 
+    def create_unsafe(self, user, expires=knox_settings.TOKEN_TTL):
+        token = crypto.create_token_string()
+        salt = crypto.create_salt_string()
+        digest = crypto.hash_token(token, salt)
+
+        if expires is not None:
+             expires = timezone.now() + expires
+
+        auth_token = super(AuthTokenManager, self).create(digest=digest, salt=salt, user=user, expires=expires)
+        return auth_token, token # Note only the token - not the AuthToken object - is returned
+
 class AuthToken(models.Model):
 
     objects = AuthTokenManager()
