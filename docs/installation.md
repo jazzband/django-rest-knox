@@ -36,8 +36,8 @@ Add `rest_framework` and `knox` to your `INSTALLED_APPS`
 ```python
 INSTALLED_APPS = (
   ...
-  rest_framework,
-  knox,
+  'rest_framework',
+  'knox',
   ...
 )
 ```
