@@ -1,11 +1,12 @@
 from datetime import timedelta
 from django.conf import settings
 from django.test.signals import setting_changed
-from rest_framework.settings import APISettings
+from rest_framework.settings import api_settings, APISettings
 
 USER_SETTINGS = getattr(settings, 'REST_KNOX', None)
 
 DEFAULTS = {
+    'LOGIN_AUTHENTICATION_CLASSES': api_settings.DEFAULT_AUTHENTICATION_CLASSES,
     'SECURE_HASH_ALGORITHM': 'cryptography.hazmat.primitives.hashes.SHA512',
     'AUTH_TOKEN_CHARACTER_LENGTH': 64,
     'TOKEN_TTL': timedelta(hours=10),
