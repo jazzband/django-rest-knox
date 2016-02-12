@@ -12,7 +12,7 @@ from knox.settings import knox_settings
 UserSerializer = knox_settings.USER_SERIALIZER
 
 class LoginView(APIView):
-    authentication_classes = api_settings.DEFAULT_AUTHENTICATION_CLASSES
+    authentication_classes = knox_settings.LOGIN_AUTHENTICATION_CLASSES
     permission_classes = (IsAuthenticated,)
 
     def post(self, request, format=None):
