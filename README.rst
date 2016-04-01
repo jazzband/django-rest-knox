@@ -42,7 +42,8 @@ problems present in the default implementation:
 
 -  DRF tokens track their creation time, but have no inbuilt mechanism for tokens
    expiring. Knox tokens can have an expiry configured in the app settings (default is
-   10 hours.)
+   10 hours), or provided as a query parameter whose max is also in the app settings
+   (and defaults to 10 hours too).
 
 More information can be found in the
 `Documentation <http://james1345.github.io/django-rest-knox/>`__
