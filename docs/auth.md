@@ -38,4 +38,4 @@ Example auth header:
 Authorization: Token 9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b9836F45E23A345
 ```
 
-Tokens expire after a preset time. See settings.
+Tokens expire after a preset time or preset number of use. See settings.

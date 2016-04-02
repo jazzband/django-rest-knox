@@ -48,8 +48,12 @@ class TokenAuthentication(BaseAuthentication):
         Tokens that have expired will be deleted and skipped
         '''
         for auth_token in AuthToken.objects.all():
-            if auth_token.expires is not None:
-                if auth_token.expires < timezone.now():
+            if auth_token.time is not None:
+                if auth_token.created + auth_token.time < timezone.now():
+                    auth_token.delete()
+                    continue
+            if auth_token.use is not None:
+                if auth_token.use <= 0:
                     auth_token.delete()
                     continue
             digest = hash_token(token, auth_token.salt)
@@ -61,7 +65,11 @@ class TokenAuthentication(BaseAuthentication):
     def validate_user(self, auth_token):
         if not auth_token.user.is_active:
             raise exceptions.AuthenticationFailed(_('User inactive or deleted.'))
+        return self.on_user_validated(auth_token)
 
+    def on_user_validated(self, auth_token):
+        if auth_token.use is not None:
+            auth_token.decrement()
         return (auth_token.user, auth_token)
 
     def authenticate_header(self, request):

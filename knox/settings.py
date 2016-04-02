@@ -10,6 +10,8 @@ DEFAULTS = {
     'AUTH_TOKEN_CHARACTER_LENGTH': 64,
     'DEFAULT_TOKEN_TTL': timedelta(hours=10),
     'MAX_TOKEN_TTL': timedelta(hours=10),
+    'DEFAULT_TOKEN_USE': None,
+    'MAX_TOKEN_USE': None,
     'USER_SERIALIZER': 'knox.serializers.UserSerializer',
 }
 

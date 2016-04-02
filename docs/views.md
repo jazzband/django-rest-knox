@@ -22,6 +22,10 @@ The duration of validity for the generated token can be selected with a
 query parameter like this: `?time=HH:MM:SS` (see DRF's DurationField).
 It will fail if the time is invalid or greater than `MAX_TOKEN_TTL`.
 
+The number of use for the generated token can be selected with a
+query parameter like this: `?use=n`.
+It will fail if the use number is invalid or greater than `MAX_TOKEN_USE`.
+
 The returned `user` object is serialized using the `USER_SERIALIZER` setting.
 If this setting is not changed, the default serializer returns the user's
 `first_name`, `last_name` and `username`.
