@@ -44,5 +44,11 @@ problems present in the default implementation:
    expiring. Knox tokens can have an expiry configured in the app settings (default is
    10 hours.)
 
+-  Knox can store the token encrypted in the database if a password is passed
+   in when created.  It also provides a user password change view, serializer,
+   and form that will re-encrypt all the user's tokens with the new password
+   and a user password reset view, serializer, and form that will expire
+   all the user's encrypted tokens.
+
 More information can be found in the
 `Documentation <http://james1345.github.io/django-rest-knox/>`__

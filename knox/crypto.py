@@ -1,8 +1,12 @@
 import binascii
+import base64
 
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.kdf import pbkdf2
 from OpenSSL.rand import bytes as generate_bytes
+
+from django.utils import encoding
 
 from knox.settings import knox_settings, CONSTANTS
 
@@ -33,3 +37,16 @@ def hash_token(token, salt):
     digest.update(binascii.unhexlify(token))
     digest.update(binascii.unhexlify(salt))
     return binascii.hexlify(digest.finalize()).decode()
+
+
+def derive_fernet_key(password, salt):
+    """Derive a secure Fernet key from arbitrary input password."""
+    kdf = pbkdf2.PBKDF2HMAC(
+        algorithm=hashes.SHA256(),
+        length=32,
+        salt=encoding.force_bytes(salt),
+        iterations=100000,
+        backend=default_backend()
+    )
+    return base64.urlsafe_b64encode(kdf.derive(
+        encoding.force_bytes(password)))
