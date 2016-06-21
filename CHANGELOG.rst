@@ -2,7 +2,7 @@
 2.3.0
 ######
 
-- Add support for storing the token encrypted in the DB
+- Add support for storing the token encrypted in the DB along with an endpoint
 
 
 ######

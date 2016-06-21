@@ -13,7 +13,9 @@ from knox.settings import CONSTANTS, knox_settings
 User = settings.AUTH_USER_MODEL
 
 class AuthTokenManager(models.Manager):
-    def create(self, user, password=None, expires=knox_settings.TOKEN_TTL):
+    def create(
+            self, user, password=None, expires=knox_settings.TOKEN_TTL,
+            return_instance=False):
         token = crypto.create_token_string()
         salt = crypto.create_salt_string()
         digest = crypto.hash_token(token, salt)
@@ -29,6 +31,8 @@ class AuthTokenManager(models.Manager):
         auth_token = super(AuthTokenManager, self).create(
             digest=digest, salt=salt, encrypted=encrypted,
             user=user, expires=expires)
+        if return_instance:
+            return auth_token
         return token # Note only the token - not the AuthToken object - is returned
 
     def change_passwords(self, user, old_password, new_password):

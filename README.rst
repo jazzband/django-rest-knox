@@ -48,7 +48,8 @@ problems present in the default implementation:
    in when created.  It also provides a user password change view, serializer,
    and form that will re-encrypt all the user's tokens with the new password
    and a user password reset view, serializer, and form that will expire
-   all the user's encrypted tokens.
+   all the user's encrypted tokens.  It also provides an endpoint for managing
+   a user's encrypted tokens that requires login credentials for each request.
 
 More information can be found in the
 `Documentation <http://james1345.github.io/django-rest-knox/>`__
