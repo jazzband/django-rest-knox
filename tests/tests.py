@@ -172,7 +172,7 @@ class AuthTestCase(test.APITestCase):
         tokens = AuthToken.objects.filter(user=user).order_by('created')
         token_obj = tokens.get()
         token_json = dict(
-            token=token,
+            pk=token_obj.pk, token=token,
             created=token_obj.created.replace(tzinfo=None).isoformat() + 'Z',
             expires=token_obj.expires.replace(tzinfo=None).isoformat() + 'Z')
 
@@ -311,6 +311,7 @@ class AuthTestCase(test.APITestCase):
         self.assertEqual(tokens.count(), 2, 'Wrong number of tokens')
         self.assertEqual(
             create_response.json(), dict(
+                pk=tokens[1].pk,
                 token=tokens[1].decrypt(creds['login']['password']),
                 created=tokens[1].created.replace(
                     tzinfo=None).isoformat() + 'Z',

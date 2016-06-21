@@ -74,11 +74,14 @@ class AuthTokenModelSerializer(drf_serializers.ModelSerializer):
     """
 
     login = NonEmptyLoginSerializer(required=True, write_only=True)
+    pk = drf_serializers.ModelField(
+        model_field=models.AuthToken._meta.get_field('digest'),
+        read_only=True)
     token = drf_serializers.SerializerMethodField()
 
     class Meta:
         model = models.AuthToken
-        fields = ('login', 'token', 'created', 'expires')
+        fields = ('login', 'pk', 'token', 'created', 'expires')
 
     def get_token(self, instance):
         """
