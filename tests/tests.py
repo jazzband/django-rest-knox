@@ -98,7 +98,8 @@ class AuthTestCase(test.APITestCase):
         foo_codec = fernet.Fernet(crypto.derive_fernet_key(
             'foo-secret', token_obj.salt))
         self.assertEqual(
-            foo_codec.decrypt(encoding.force_bytes(data[0])), token,
+            encoding.force_str(
+                foo_codec.decrypt(encoding.force_bytes(data[0]))), token,
             'Wrong decrypted DB token value')
 
         self.client.credentials(HTTP_AUTHORIZATION=get_basic_auth_header(
@@ -141,12 +142,14 @@ class AuthTestCase(test.APITestCase):
                 foo_codec.decrypt(encoding.force_bytes(data[0])), token,
                 'DB token encrypted with the old password')
         self.assertEqual(
-            bar_codec.decrypt(encoding.force_bytes(data[0])), token,
+            encoding.force_str(
+                bar_codec.decrypt(encoding.force_bytes(data[0]))), token,
             'DB token not encrypted with the new password')
 
         reset_response = self.client.post(
             '/api/auth/password/reset/confirm/', dict(
-                uid=http.urlsafe_base64_encode(str(user.id)),
+                uid=encoding.force_str(http.urlsafe_base64_encode(
+                    encoding.force_bytes(user.id))),
                 token=tokens.default_token_generator.make_token(user),
                 new_password1='qux-secret', new_password2='qux-secret'),
             format='json')

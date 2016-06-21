@@ -73,7 +73,8 @@ class AuthToken(models.Model):
         Return the plain text token after decrypting it using the password.
         """
         fernet = Fernet(crypto.derive_fernet_key(password, self.salt))
-        return fernet.decrypt(encoding.force_bytes(self.encrypted))
+        return encoding.force_str(
+            fernet.decrypt(encoding.force_bytes(self.encrypted)))
 
     def change_password(self, old_password, new_password):
         """
