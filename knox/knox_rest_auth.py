@@ -115,6 +115,7 @@ class AuthTokenModelViewset(viewsets.ModelViewSet):
     Abuse HTTP methods/verbs to support accepting creds as a request body.
     """
     permission_classes = (permissions.IsAuthenticated, )
+    filter_backends = ()
     serializer_class = AuthTokenModelSerializer
     queryset = models.AuthToken.objects.all()
 
