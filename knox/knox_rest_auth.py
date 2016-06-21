@@ -182,5 +182,6 @@ urlpatterns = [
     url(r'^password/change/$', PasswordChangeView.as_view(),
         name='rest_password_change'),
 
+    url(r'^tokens/', include('knox.urls')),
     url(r'^', include(body_router.urls)),
 ]
