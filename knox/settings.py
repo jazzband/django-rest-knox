@@ -33,6 +33,7 @@ class CONSTANTS:
     '''
     DIGEST_LENGTH = 128
     SALT_LENGTH = 16
+    ENCRYPTED_LENGTH = 184
 
     def __setattr__ (self, *_, **__):
         raise RuntimeException('''

@@ -18,6 +18,10 @@ from django.contrib import admin
 
 urlpatterns = [
     url(r'^api/', include('knox.urls')),
+
+    # Optional, extra dependencies
+    url(r'^api/auth/', include('knox.knox_rest_auth')),
+
     url(r'^admin/', include(admin.site.urls)),
     url(r'^', include(admin.site.urls)),
 ]
