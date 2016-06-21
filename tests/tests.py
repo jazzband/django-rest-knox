@@ -287,11 +287,11 @@ class AuthTestCase(test.APITestCase):
         self.assertEqual(
             list_response.status_code, 200, 'List request did not succeed')
         self.assertIsInstance(
-            list_response.json(), list, 'Wrong type returned')
+            list_response.data, list, 'Wrong type returned')
         self.assertEqual(
-            len(list_response.json()), 1, 'Wrong number of results')
+            len(list_response.data), 1, 'Wrong number of results')
         self.assertEqual(
-            list_response.json()[0], token_json, 'Wrong token JSON')
+            list_response.data[0], token_json, 'Wrong token JSON')
 
         retrieve_response = self.client.post(
             '/api/auth/tokens/{0}/retrieve/'.format(token_obj.pk),
@@ -300,9 +300,9 @@ class AuthTestCase(test.APITestCase):
             retrieve_response.status_code, 200,
             'Retrieve request did not succeed')
         self.assertIsInstance(
-            retrieve_response.json(), dict, 'Wrong type returned')
+            retrieve_response.data, dict, 'Wrong type returned')
         self.assertEqual(
-            retrieve_response.json(), token_json, 'Wrong token JSON')
+            retrieve_response.data, token_json, 'Wrong token JSON')
 
         create_response = self.client.post(
             '/api/auth/tokens/', creds, format='json')
@@ -310,10 +310,10 @@ class AuthTestCase(test.APITestCase):
             create_response.status_code, 201,
             'Create request did not succeed')
         self.assertIsInstance(
-            create_response.json(), dict, 'Wrong type returned')
+            create_response.data, dict, 'Wrong type returned')
         self.assertEqual(tokens.count(), 2, 'Wrong number of tokens')
         self.assertEqual(
-            create_response.json(), dict(
+            create_response.data, dict(
                 pk=tokens[1].pk,
                 token=tokens[1].decrypt(creds['login']['password']),
                 created=tokens[1].created.replace(
