@@ -58,7 +58,8 @@ class AuthToken(models.Model):
     objects = AuthTokenManager()
 
     digest = models.CharField(max_length=CONSTANTS.DIGEST_LENGTH, primary_key=True)
-    encrypted = models.CharField(max_length=CONSTANTS.DIGEST_LENGTH, null=True)
+    encrypted = models.CharField(
+        max_length=CONSTANTS.ENCRYPTED_LENGTH, null=True)
     salt = models.CharField(max_length=CONSTANTS.SALT_LENGTH, unique=True)
     user = models.ForeignKey(User, null=False, blank=False, related_name="auth_token_set")
     created = models.DateTimeField(auto_now_add=True)
