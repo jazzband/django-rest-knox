@@ -100,6 +100,15 @@ class AuthTokenModelSerializer(drf_serializers.ModelSerializer):
         token = super(AuthTokenModelSerializer, self).create(validated_data)
         return token
 
+    def update(self, instance, validated_data):
+        """
+        Remove login credentials and pass in the user.
+        """
+        del validated_data['login']
+        validated_data['user'] = self.context['request'].user
+        return super(AuthTokenModelSerializer, self).update(
+            instance, validated_data)
+
 
 class AuthTokenModelViewset(viewsets.ModelViewSet):
     """
