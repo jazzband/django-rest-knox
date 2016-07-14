@@ -16,13 +16,15 @@ class AuthTokenManager(models.Manager):
         if expires is not None:
              expires = timezone.now() + expires
 
-        auth_token = super(AuthTokenManager, self).create(digest=digest, salt=salt, user=user, expires=expires)
+        super(AuthTokenManager, self).create(digest=digest, salt=salt, user=user, expires=expires)
         return token # Note only the token - not the AuthToken object - is returned
+
 
 class AuthToken(models.Model):
 
     objects = AuthTokenManager()
 
+    name = models.CharField(max_length=200, default='')
     digest = models.CharField(max_length=CONSTANTS.DIGEST_LENGTH, primary_key=True)
     salt = models.CharField(max_length=CONSTANTS.SALT_LENGTH, unique=True)
     user = models.ForeignKey(User, null=False, blank=False, related_name="auth_token_set")

@@ -8,6 +8,7 @@ from rest_framework.authentication import BaseAuthentication, get_authorization_
 
 from knox.crypto import hash_token
 from knox.models import AuthToken
+from knox.settings import knox_settings
 
 User = settings.AUTH_USER_MODEL
 
@@ -28,7 +29,7 @@ class TokenAuthentication(BaseAuthentication):
     def authenticate(self, request):
         auth = get_authorization_header(request).split()
 
-        if not auth or auth[0].lower() != b'token':
+        if not auth or auth[0].lower() != knox_settings.AUTH_HEADER_PREFIX.lower():
             return None
 
         if len(auth) == 1:
@@ -65,4 +66,4 @@ class TokenAuthentication(BaseAuthentication):
         return (auth_token.user, auth_token)
 
     def authenticate_header(self, request):
-        return 'Token'
+        return knox_settings.AUTH_HEADER_PREFIX
