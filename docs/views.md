@@ -2,7 +2,8 @@
 Knox provides three views that handle token management for you.
 
 ## LoginView
-This view accepts only a post request with an empty body.
+This view accepts only a post request with an empty body, and optional query
+parameters.
 
 The LoginView accepts the same sort of authentication as your Rest Framework
 `DEFAULT_AUTHENTICATION_CLASSES` setting. If this is not set, it defaults to
@@ -16,6 +17,14 @@ default, you can extend this class to provide your own value for
 When it receives an authenticated request, it will return json
 - `user` an object representing the user that was authenticated
 - `token` the token that should be used for any token
+
+The duration of validity for the generated token can be selected with a
+query parameter like this: `?time=HH:MM:SS` (see DRF's DurationField).
+It will fail if the time is invalid or greater than `MAX_TOKEN_TTL`.
+
+The number of use for the generated token can be selected with a
+query parameter like this: `?use=n`.
+It will fail if the use number is invalid or greater than `MAX_TOKEN_USE`.
 
 The returned `user` object is serialized using the `USER_SERIALIZER` setting.
 If this setting is not changed, the default serializer returns the user's

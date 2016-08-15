@@ -11,7 +11,10 @@ Example `settings.py`
 'REST_KNOX' = {
   'SECURE_HASH_ALGORITHM': 'cryptography.hazmat.primitives.hashes.SHA512',
   'AUTH_TOKEN_CHARACTER_LENGTH': 64,
-  'TOKEN_TTL': 10,
+  'DEFAULT_TOKEN_TTL': timedelta(hours=10),
+  'MAX_TOKEN_TTL': timedelta(hours=10),
+  'DEFAULT_TOKEN_USE': None,
+  'MAX_TOKEN_USE': None,
   'USER_SERIALIZER': 'knox.serializers.UserSerializer',
 }
 #...snip...
@@ -40,17 +43,35 @@ MD5 is **not secure** and must *never* be used in production sites.
 This is the length of the token that will be sent to the client. By default it
 is set to 64 characters (this shouldn't need changing).
 
-## TOKEN_TTL
-This is how long a token can exist before it expires. Expired tokens are automatically
-removed from the system.
+## DEFAULT_TOKEN_TTL
+This is the default value for how long a token can exist before it expires. Expired tokens are automatically removed from the system.
 
 The setting should be set to an instance of `datetime.timedelta`. The default is
 10 hours ()`timedelta(hours=10)`).
 
-Setting the TOKEN_TTL to `None` will create tokens that never expire.
+Setting the DEFAULT_TOKEN_TTL to `None` will create tokens that never run out of time.
 
-Warning: setting a 0 or negative timedelta will create tokens that instantly expire,
-the system will not prevent you setting this.
+Warning: setting a 0 or negative timedelta will create tokens that instantly expire, the system will not prevent you setting this.
+
+## MAX_TOKEN_TTL
+This is the maximum duration that can be provided for a token as a query parameter. The default is 10 hours ()`timedelta(hours=10)`).
+
+Setting the MAX_TOKEN_TTL to `None` will allow URL-provided tokens that never
+expire.
+
+Setting the MAX_TOKEN_TTL to 0 will disable URL-provided token duration.
+
+## DEFAULT_TOKEN_USE
+This is the default value for how much a token can be used before it expires. Expired tokens are automatically removed from the system.
+
+The setting should be set to an `int`. The default is `None`, which is unlimited.
+
+Warning: setting a 0 or will create tokens that instantly expire, the system will not prevent you setting this.
+
+## MAX_TOKEN_USE
+This is the maximum number of use that can be provided for a token as a query parameter. The default is `None`, which is no maximum.
+
+Setting the MAX_TOKEN_USE to 0 will disable URL-provided token use.
 
 ## USER_SERIALIZER
 This is the reference to the class used to serialize the `User` objects when

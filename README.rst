@@ -40,9 +40,13 @@ problems present in the default implementation:
    database were somehow stolen, an attacker would not be able to log in
    with the stolen credentials.
 
--  DRF tokens track their creation time, but have no inbuilt mechanism for tokens
-   expiring. Knox tokens can have an expiry configured in the app settings (default is
-   10 hours.)
+-  DRF tokens track their creation time, but have no inbuilt mechanism
+   for tokens expiring.
+   Knox tokens can have an expiry based on the time of validity and/or
+   on the number of use. This can be configured in the app settings
+   (default is 10 hours and unlimited use), or provided as a query
+   parameter with maximum values specified in the app settings (same
+   default values).
 
 More information can be found in the
 `Documentation <http://james1345.github.io/django-rest-knox/>`__

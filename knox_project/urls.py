@@ -16,8 +16,11 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 
+from .views import DummyTestView
+
 urlpatterns = [
     url(r'^api/', include('knox.urls')),
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^test/dummy/', DummyTestView.as_view(), name='test_dummy'),
     url(r'^', include(admin.site.urls)),
 ]
