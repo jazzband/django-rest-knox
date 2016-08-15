@@ -3,7 +3,6 @@ from rest_framework import status
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
-from rest_framework.settings import api_settings
 from rest_framework.views import APIView
 
 from knox.auth import TokenAuthentication
@@ -13,7 +12,7 @@ from knox.settings import knox_settings
 UserSerializer = knox_settings.USER_SERIALIZER
 
 class LoginView(APIView):
-    authentication_classes = api_settings.DEFAULT_AUTHENTICATION_CLASSES
+    authentication_classes = knox_settings.LOGIN_AUTHENTICATION_CLASSES
     permission_classes = (IsAuthenticated,)
 
     def post(self, request, format=None):
