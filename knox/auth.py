@@ -1,15 +1,19 @@
 from django.conf import settings
-from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
 
 from rest_framework import exceptions
-from rest_framework.authentication import BaseAuthentication, get_authorization_header
+from rest_framework.authentication import (
+    BaseAuthentication,
+    get_authorization_header
+)
 
 from knox.crypto import hash_token
 from knox.models import AuthToken
+from knox.settings import CONSTANTS
 
 User = settings.AUTH_USER_MODEL
+
 
 class TokenAuthentication(BaseAuthentication):
     '''
@@ -30,15 +34,20 @@ class TokenAuthentication(BaseAuthentication):
 
         if not auth or auth[0].lower() != b'token':
             return None
-
         if len(auth) == 1:
             msg = _('Invalid token header. No credentials provided.')
             raise exceptions.AuthenticationFailed(msg)
         elif len(auth) > 2:
-            msg = _('Invalid token header. Token string should not contain spaces.')
+            msg = _('Invalid token header. '
+                    'Token string should not contain spaces.')
             raise exceptions.AuthenticationFailed(msg)
 
-        return self.authenticate_credentials(auth[1])
+        user, auth_token = self.authenticate_credentials(auth[1])
+        # For a smooth migration to enforce the token_key
+        if not auth_token.token_key:
+            auth_token.token_key = auth[1][:CONSTANTS.TOKEN_KEY_LENGTH]
+            auth_token.save()
+        return (user, auth_token)
 
     def authenticate_credentials(self, token):
         '''
@@ -60,8 +69,8 @@ class TokenAuthentication(BaseAuthentication):
 
     def validate_user(self, auth_token):
         if not auth_token.user.is_active:
-            raise exceptions.AuthenticationFailed(_('User inactive or deleted.'))
-
+            raise exceptions.AuthenticationFailed(
+                _('User inactive or deleted.'))
         return (auth_token.user, auth_token)
 
     def authenticate_header(self, request):
