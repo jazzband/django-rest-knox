@@ -43,10 +43,6 @@ class TokenAuthentication(BaseAuthentication):
             raise exceptions.AuthenticationFailed(msg)
 
         user, auth_token = self.authenticate_credentials(auth[1])
-        # For a smooth migration to enforce the token_key
-        if not auth_token.token_key:
-            auth_token.token_key = auth[1][:CONSTANTS.TOKEN_KEY_LENGTH]
-            auth_token.save()
         return (user, auth_token)
 
     def authenticate_credentials(self, token):
@@ -56,7 +52,8 @@ class TokenAuthentication(BaseAuthentication):
 
         Tokens that have expired will be deleted and skipped
         '''
-        for auth_token in AuthToken.objects.all():
+        for auth_token in AuthToken.objects.filter(
+                token_key=token[:CONSTANTS.TOKEN_KEY_LENGTH]):
             if auth_token.expires is not None:
                 if auth_token.expires < timezone.now():
                     auth_token.delete()
