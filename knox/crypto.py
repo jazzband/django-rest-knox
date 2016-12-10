@@ -8,21 +8,17 @@ from knox.settings import knox_settings, CONSTANTS
 
 sha = knox_settings.SECURE_HASH_ALGORITHM
 
+
 def create_token_string():
-    return (
-        binascii.hexlify(
-            generate_bytes(
-                int(knox_settings.AUTH_TOKEN_CHARACTER_LENGTH/2)
-            )
-        ).decode())
+    return binascii.hexlify(
+        generate_bytes(int(knox_settings.AUTH_TOKEN_CHARACTER_LENGTH / 2))
+    ).decode()
+
 
 def create_salt_string():
-    return (
-        binascii.hexlify(
-            generate_bytes(
-                int(CONSTANTS.SALT_LENGTH/2)
-            )
-        ).decode())
+    return binascii.hexlify(
+        generate_bytes(int(CONSTANTS.SALT_LENGTH / 2))).decode()
+
 
 def hash_token(token, salt):
     '''

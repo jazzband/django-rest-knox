@@ -9,6 +9,7 @@ from knox.models import AuthToken
 from knox.settings import knox_settings
 
 
+
 class LoginView(APIView):
     authentication_classes = knox_settings.LOGIN_AUTHENTICATION_CLASSES
     permission_classes = (IsAuthenticated,)
@@ -18,8 +19,8 @@ class LoginView(APIView):
         user_logged_in.send(sender=request.user.__class__, request=request, user=request.user)
         UserSerializer = knox_settings.USER_SERIALIZER
         return Response({
-            "user": UserSerializer(request.user).data,
-            "token": token,
+            'user': UserSerializer(request.user).data,
+            'token': token,
         })
 
 
