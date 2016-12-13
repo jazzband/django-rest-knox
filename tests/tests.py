@@ -1,9 +1,9 @@
 import base64
 import datetime
+import json
 
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
-
 from rest_framework.test import APIRequestFactory, APITestCase as TestCase
 
 from knox.auth import TokenAuthentication
@@ -95,3 +95,11 @@ class AuthTestCase(TestCase):
         self.assertEqual(
             token[:CONSTANTS.TOKEN_KEY_LENGTH],
             auth_token.token_key)
+
+    def test_invalid_token_length_returns_401_code(self):
+        invalid_token = "1" * (CONSTANTS.TOKEN_KEY_LENGTH - 1)
+        url = reverse('api-root')
+        self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % invalid_token))
+        response = self.client.post(url, {}, format='json')
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(json.loads(response), {"detail": "Invalid token."})
