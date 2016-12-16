@@ -1,6 +1,8 @@
 ######
 2.2.1
 ######
+**Please be aware: updating to his version requires applying a database migration**
+
 - Introducing token_key to avoid loop over all tokens on login-requests
 - Signals are sent on login/logout
 - Test for invalid token length
