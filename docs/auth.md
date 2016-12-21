@@ -39,3 +39,32 @@ Authorization: Token 9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b9836F45E23A345
 ```
 
 Tokens expire after a preset time. See settings.
+
+
+### Global usage on all views
+
+You can activate TokenAuthentication on all your views by adding it to
+`REST_FRAMEWORK["DEFAULT_AUTHENTICATION_CLASSES"]`. If it is your only
+authentication class remember to overwrite the login view and url as at least
+the token-obtaining view may not require a token:
+
+```python
+
+views.py:
+
+from knox.views import LoginView as KnoxLoginView
+
+class LoginView(KnoxLoginView):
+    authentication_classes = [BasicAuthentication]
+
+urls.py:
+
+from knox import views as knox_views
+from yourapp.api.views import LoginView
+
+urlpatterns = [
+     url(r'login/', LoginView.as_view(), name='knox_login'),
+     url(r'logout/', knox_views.LogoutView.as_view(), name='knox_logout'),
+     url(r'logoutall/', knox_views.LogoutAllView.as_view(),
+]
+```
