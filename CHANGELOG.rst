@@ -1,4 +1,10 @@
 ######
+2.2.2
+######
+- Bugfix: invalid token length does no longer trigger a server error
+- Extending documentation
+
+######
 2.2.1
 ######
 **Please be aware: updating to his version requires applying a database migration**
