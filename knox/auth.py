@@ -56,16 +56,20 @@ class TokenAuthentication(BaseAuthentication):
 
         Tokens that have expired will be deleted and skipped
         '''
+        msg = _('Invalid token.')
         for auth_token in AuthToken.objects.all():
             if auth_token.expires is not None:
                 if auth_token.expires < timezone.now():
                     auth_token.delete()
                     continue
-            digest = hash_token(token, auth_token.salt)
+            try:
+                digest = hash_token(token, auth_token.salt)
+            except TypeError:
+                raise exceptions.AuthenticationFailed(msg)
             if digest == auth_token.digest:
                 return self.validate_user(auth_token)
         # Authentication with this token has failed
-        raise exceptions.AuthenticationFailed(_('Invalid token.'))
+        raise exceptions.AuthenticationFailed(msg)
 
     def validate_user(self, auth_token):
         if not auth_token.user.is_active:
