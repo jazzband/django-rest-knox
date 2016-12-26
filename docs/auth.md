@@ -53,6 +53,7 @@ the token-obtaining view may not require a token:
 views.py:
 
 from knox.views import LoginView as KnoxLoginView
+from rest_framework.authentication import BasicAuthentication
 
 class LoginView(KnoxLoginView):
     authentication_classes = [BasicAuthentication]
