@@ -94,11 +94,3 @@ class AuthTestCase(TestCase):
         self.assertEqual(
             token[:CONSTANTS.TOKEN_KEY_LENGTH],
             auth_token.token_key)
-
-    def test_invalid_token_length_returns_401_code(self):
-        invalid_token = "1" * (CONSTANTS.TOKEN_KEY_LENGTH - 1)
-        url = reverse('api-root')
-        self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % invalid_token))
-        response = self.client.post(url, {}, format='json')
-        self.assertEqual(response.status_code, 401)
-        self.assertEqual(response.data, {"detail": "Invalid token."})
