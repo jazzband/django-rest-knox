@@ -60,6 +60,23 @@ class AuthTestCase(TestCase):
         self.client.post(url, {}, format='json')
         self.assertEqual(AuthToken.objects.count(), 0)
 
+    def test_logout_all_deletes_only_targets_keys(self):
+        self.assertEqual(AuthToken.objects.count(), 0)
+        username, password = 'root', 'toor'
+        user = User.objects.create_user(
+            username, 'root@localhost.com', password)
+        user2 = User.objects.create_user(
+            'user2', 'user2@localhost.com', password)
+        for _ in range(10):
+            token = AuthToken.objects.create(user=user)
+            token2 = AuthToken.objects.create(user=user2)
+        self.assertEqual(AuthToken.objects.count(), 20)
+
+        url = reverse('knox_logoutall')
+        self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % token))
+        self.client.post(url, {}, format='json')
+        self.assertEqual(AuthToken.objects.count(), 10, 'tokens from other users should not be affected by logout all') 
+
     def test_expired_tokens_login_fails(self):
         self.assertEqual(AuthToken.objects.count(), 0)
         username, password = 'root', 'toor'
