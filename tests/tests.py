@@ -37,14 +37,14 @@ class AuthTestCase(TestCase):
         username, password = 'root', 'toor'
         user = User.objects.create_user(
             username, 'root@localhost.com', password)
-        for _ in range(10):
+        for _ in range(2):
             token = AuthToken.objects.create(user=user)
-        self.assertEqual(AuthToken.objects.count(), 10)
+        self.assertEqual(AuthToken.objects.count(), 2)
 
         url = reverse('knox_logout')
         self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % token))
         self.client.post(url, {}, format='json')
-        self.assertEqual(AuthToken.objects.count(), 0)
+        self.assertEqual(AuthToken.objects.count(), 1, 'other tokens should remain after logout')
 
     def test_logout_all_deletes_keys(self):
         self.assertEqual(AuthToken.objects.count(), 0)
