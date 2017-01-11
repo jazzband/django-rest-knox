@@ -83,14 +83,10 @@ class AuthTestCase(TestCase):
         user = User.objects.create_user(
             username, 'root@localhost.com', password)
         token = AuthToken.objects.create(user)
-        auth_token = AuthToken.objects.first()
-        auth_token.token_key = None
-        auth_token.save()
         rf = APIRequestFactory()
         request = rf.get('/')
         request.META = {'HTTP_AUTHORIZATION': 'Token {}'.format(token)}
-        TokenAuthentication().authenticate(request)
-        auth_token = AuthToken.objects.get(digest=auth_token.digest)
+        (user, auth_token) = TokenAuthentication().authenticate(request)
         self.assertEqual(
             token[:CONSTANTS.TOKEN_KEY_LENGTH],
             auth_token.token_key)
