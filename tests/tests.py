@@ -60,6 +60,19 @@ class AuthTestCase(TestCase):
         self.client.post(url, {}, format='json')
         self.assertEqual(AuthToken.objects.count(), 0)
 
+    def test_expired_tokens_login_fails(self):
+        self.assertEqual(AuthToken.objects.count(), 0)
+        username, password = 'root', 'toor'
+        user = User.objects.create_user(
+            username, 'root@localhost.com', password)
+        token = AuthToken.objects.create(
+            user=user, expires=datetime.timedelta(seconds=0))
+        url = reverse('api-root')
+        self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % token))
+        response = self.client.post(url, {}, format='json')
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.data, {"detail": "Invalid token."})
+
     def test_expired_tokens_deleted(self):
         self.assertEqual(AuthToken.objects.count(), 0)
         username, password = 'root', 'toor'
