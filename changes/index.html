@@ -3,31 +3,28 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Changes - Django-Rest-Knox</title>
   
-
   <link rel="shortcut icon" href="../img/favicon.ico">
-
-  
+  <title>Changes - Django-Rest-Knox</title>
   <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
 
   <link rel="stylesheet" href="../css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
   <link rel="stylesheet" href="../css/highlight.css">
-
   
   <script>
     // Current page data
     var mkdocs_page_name = "Changes";
+    var mkdocs_page_input_path = "changes.md";
+    var mkdocs_page_url = "/changes/";
   </script>
   
   <script src="../js/jquery-2.1.1.min.js"></script>
   <script src="../js/modernizr-2.8.3.min.js"></script>
-  <script type="text/javascript" src="../js/highlight.pack.js"></script>
-  <script src="../js/theme.js"></script> 
-
+  <script type="text/javascript" src="../js/highlight.pack.js"></script> 
   
 </head>
 
@@ -47,7 +44,7 @@
       </div>
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-        <ul class="current">
+	<ul class="current">
           
             <li>
     <li class="toctree-l1 ">
@@ -84,7 +81,7 @@
         
             
     <li class="toctree-l1 ">
-        <a class="" href="../auth/">Authentcation</a>
+        <a class="" href="../auth/">Authentication</a>
         
     </li>
 
@@ -106,6 +103,10 @@
             <ul>
             
                 <li class="toctree-l3"><a href="#changelog">Changelog</a></li>
+                
+                    <li><a class="toctree-l4" href="#222">2.2.2</a></li>
+                
+                    <li><a class="toctree-l4" href="#221">2.2.1</a></li>
                 
                     <li><a class="toctree-l4" href="#200">2.0.0</a></li>
                 
@@ -144,9 +145,8 @@
     <li>Changes</li>
     <li class="wy-breadcrumbs-aside">
       
-        
-          <a href="https://github.com/James1345/django-rest-knox" class="icon icon-github"> Edit on GitHub</a>
-        
+        <a href="https://github.com/James1345/django-rest-knox/edit/master/docs/changes.md"
+          class="icon icon-github"> Edit on GitHub</a>
       
     </li>
   </ul>
@@ -156,6 +156,19 @@
             <div class="section">
               
                 <h1 id="changelog">Changelog</h1>
+<h2 id="222">2.2.2</h2>
+<ul>
+<li>Bugfix: invalid token length does no longer trigger a server error</li>
+<li>Extending documentation</li>
+</ul>
+<h2 id="221">2.2.1</h2>
+<p><strong>Please be aware: updating to his version requires applying a database migration</strong></p>
+<ul>
+<li>Introducing token_key to avoid loop over all tokens on login-requests</li>
+<li>Signals are sent on login/logout</li>
+<li>Test for invalid token length</li>
+<li>Cleanup in code and documentation</li>
+</ul>
 <h2 id="200">2.0.0</h2>
 <ul>
 <li>Hashing of tokens on the server introduced.</li>
@@ -197,13 +210,13 @@
       </div>
 
     </section>
-
+    
   </div>
 
-<div class="rst-versions" role="note" style="cursor: pointer">
+  <div class="rst-versions" role="note" style="cursor: pointer">
     <span class="rst-current-version" data-toggle="rst-current-version">
       
-          <a class="icon icon-github" style="float: left; color: #fcfcfc"> GitHub</a>
+          <a href="https://github.com/James1345/django-rest-knox" class="icon icon-github" style="float: left; color: #fcfcfc"> GitHub</a>
       
       
         <span><a href="../settings/" style="color: #fcfcfc;">&laquo; Previous</a></span>
@@ -211,6 +224,7 @@
       
     </span>
 </div>
+    <script src="../js/theme.js"></script>
 
 </body>
 </html>
