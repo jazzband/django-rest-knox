@@ -31,7 +31,10 @@ Knox should be installed with pip
 pip install django-rest-knox
 ```
 
-Add `rest_framework` and `knox` to your `INSTALLED_APPS`
+## Setup knox
+
+1. Add `rest_framework` and `knox` to your `INSTALLED_APPS`, remove
+`rest_framework.authtoken` if you were using it.
 
 ```python
 INSTALLED_APPS = (
@@ -42,7 +45,18 @@ INSTALLED_APPS = (
 )
 ```
 
-Remember to apply the migrations for the models
+2. Make knox's TokenAuthentication your default authentification class
+for django-rest-framework:
+
+```python
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': ('knox.auth.TokenAuthentication',),
+    ...
+}
+```
+3. Add the [knox url patterns](#urls-knoxurls) to your project.
+
+4. Apply the migrations for the models
 
 ```bash
 python manage.py migrate
