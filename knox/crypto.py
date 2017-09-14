@@ -2,7 +2,7 @@ import binascii
 
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
-from OpenSSL.rand import bytes as generate_bytes
+from os import urandom as generate_bytes
 
 from knox.settings import knox_settings, CONSTANTS
 
