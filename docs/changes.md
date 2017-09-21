@@ -1,5 +1,16 @@
 #Changelog
 
+## 3.0.3
+- drop using OpenSSL in favor of urandom
+
+## 3.0.2
+- Add context to UserSerializer
+- improve docs
+
+## 3.0.1
+- improved docs and readme
+- login response better supporting hyperlinked fields
+
 ## 3.0.0
 **Please be aware: updating to this version requires applying a database migration. All clients will need to reauthenticate.**
 
