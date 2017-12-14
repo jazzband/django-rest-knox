@@ -6,9 +6,9 @@ matrix:
     - python: "2.7"
       env: TOX_ENVS=py27-django111
     - python: "3.4"
-      env: TOX_ENVS=py34-django111,py36-django20
+      env: TOX_ENVS=py34-django111,py34-django20
     - python: "3.5"
-      env: TOX_ENVS=py35-django111,py36-django20
+      env: TOX_ENVS=py35-django111,py35-django20
     - python: "3.6"
       env: TOX_ENVS=py36-django111,py36-django20
 script:
