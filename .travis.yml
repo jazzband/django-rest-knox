@@ -1,24 +1,18 @@
 language: python
-python:
-- '2.7'
-- '3.3'
-- '3.4'
-- '3.5'
-
-env:
-- DJANGO_VERSION=1.8
-
 install:
-- pip install -q -r requirements/common.pip
-- pip install -q -r requirements/dev-test.pip
-- pip install -q -r requirements/dev-build.pip
-- pip install -q -r requirements/dev-docs.pip
-- pip install -q --upgrade --force-reinstall django==$DJANGO_VERSION
-
-before_script:
-- python manage.py migrate
+  - pip install tox
+matrix:
+  include:
+    - python: "2.7"
+      env: TOX_ENVS=py27-django111
+    - python: "3.4"
+      env: TOX_ENVS=py34-django111,py34-django20
+    - python: "3.5"
+      env: TOX_ENVS=py35-django111,py35-django20
+    - python: "3.6"
+      env: TOX_ENVS=py36-django111,py36-django20
 script:
-- python manage.py test
+  - tox -e $TOX_ENVS
 
 deploy:
   provider: pypi
