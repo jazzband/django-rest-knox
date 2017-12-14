@@ -19,6 +19,6 @@ class Migration(migrations.Migration):
             ('digest', models.CharField(max_length=64, serialize=False, primary_key=True)),
             ('salt', models.CharField(max_length=16, serialize=False, unique=True)),
             ('created', models.DateTimeField(auto_now_add=True)),
-            ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL, related_name='auth_token_set')),
+            ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL, related_name='auth_token_set', on_delete=models.CASCADE)),
         ],)
     ]
