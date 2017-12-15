@@ -35,7 +35,7 @@ class AuthToken(models.Model):
     salt = models.CharField(
         max_length=CONSTANTS.SALT_LENGTH, unique=True)
     user = models.ForeignKey(
-        User, null=False, blank=False, related_name='auth_token_set')
+        User, null=False, blank=False, related_name='auth_token_set', on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
     expires = models. DateTimeField(null=True, blank=True)
 
