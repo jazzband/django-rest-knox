@@ -2,7 +2,14 @@ import base64
 import datetime
 
 from django.contrib.auth import get_user_model
-from django.urls import reverse
+
+try:
+    # For django >= 2.0
+    from django.urls import reverse
+except ImportError:
+    # For django < 2.0
+    from django.conf.urls import reverse
+
 from rest_framework.test import APIRequestFactory, APITestCase as TestCase
 
 from knox.auth import TokenAuthentication

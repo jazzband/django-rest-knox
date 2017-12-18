@@ -1,4 +1,11 @@
-from django.urls import include, path
+try:
+    # For django >= 2.0
+    from django.urls import include, path
+except ImportError:
+    # For django < 2.0
+    from django.conf.urls import include, url
+    path = url
+
 from .views import RootView
 
 urlpatterns = [
