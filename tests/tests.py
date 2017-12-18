@@ -129,4 +129,3 @@ class AuthTestCase(TestCase):
         response = self.client.post(url, {}, format='json')
         self.assertEqual(response.status_code, 401)
         self.assertEqual(response.data, {"detail": "Invalid token."})
-
