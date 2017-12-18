@@ -1,8 +1,14 @@
-from django.conf.urls import include, url
+try:
+    # For django >= 2.0
+    from django.urls import include, path
+except ImportError:
+    # For django < 2.0
+    from django.conf.urls import include, url
+    path = url
 
 from .views import RootView
 
 urlpatterns = [
-    url(r'^api/', include('knox.urls')),
-    url(r'^api/$', RootView.as_view(), name="api-root"),
+    path(r'^api/', include('knox.urls')),
+    path(r'^api/$', RootView.as_view(), name="api-root"),
 ]
