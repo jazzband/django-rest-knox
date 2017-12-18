@@ -53,6 +53,7 @@ class TokenAuthentication(BaseAuthentication):
         Tokens that have expired will be deleted and skipped
         '''
         msg = _('Invalid token.')
+        token = token.decode("utf-8")
         for auth_token in AuthToken.objects.filter(
                 token_key=token[:CONSTANTS.TOKEN_KEY_LENGTH]):
             for other_token in auth_token.user.auth_token_set.all():

@@ -2,7 +2,14 @@ import base64
 import datetime
 
 from django.contrib.auth import get_user_model
-from django.core.urlresolvers import reverse
+
+try:
+    # For django >= 2.0
+    from django.urls import reverse
+except ImportError:
+    # For django < 2.0
+    from django.conf.urls import reverse
+
 from rest_framework.test import APIRequestFactory, APITestCase as TestCase
 
 from knox.auth import TokenAuthentication
@@ -75,7 +82,7 @@ class AuthTestCase(TestCase):
         url = reverse('knox_logoutall')
         self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % token))
         self.client.post(url, {}, format='json')
-        self.assertEqual(AuthToken.objects.count(), 10, 'tokens from other users should not be affected by logout all') 
+        self.assertEqual(AuthToken.objects.count(), 10, 'tokens from other users should not be affected by logout all')
 
     def test_expired_tokens_login_fails(self):
         self.assertEqual(AuthToken.objects.count(), 0)
@@ -129,4 +136,3 @@ class AuthTestCase(TestCase):
         response = self.client.post(url, {}, format='json')
         self.assertEqual(response.status_code, 401)
         self.assertEqual(response.data, {"detail": "Invalid token."})
-

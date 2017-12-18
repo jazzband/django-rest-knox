@@ -1,4 +1,27 @@
 ######
+3.1.0
+######
+- drop Django 1.8 support as djangorestframework did so too in v.3.7.0
+- build rest-knox on Django 1.11 and 2.0
+
+######
+3.0.3
+######
+- drop using OpenSSL in favor of urandom
+
+######
+3.0.2
+######
+- Add context to UserSerializer
+- improve docs
+
+######
+3.0.1
+######
+- improved docs and readme
+- login response better supporting hyperlinked fields
+
+######
 3.0.3
 ######
 - drop using OpenSSL in favor of urandom
