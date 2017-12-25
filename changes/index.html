@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Changes - Django-Rest-Knox</title>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="../css/highlight.css">
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Changes";
+    var mkdocs_page_input_path = "changes.md";
+    var mkdocs_page_url = "/changes/";
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js"></script>
+  <script src="../js/modernizr-2.8.3.min.js"></script>
+  <script type="text/javascript" src="../js/highlight.pack.js"></script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> Django-Rest-Knox</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+	<ul class="current">
+	  
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="..">Home</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../installation/">Installation</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <span class="caption-text">API Guide</span>
+    <ul class="subnav">
+                <li class="">
+                    
+    <a class="" href="../views/">Views</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../urls/">URLs</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../auth/">Authentication</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../settings/">Settings</a>
+                </li>
+    </ul>
+	    </li>
+          
+            <li class="toctree-l1 current">
+		
+    <a class="current" href="./">Changes</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l2"><a href="#changelog">Changelog</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l3" href="#310">3.1.0</a></li>
+        
+            <li><a class="toctree-l3" href="#303">3.0.3</a></li>
+        
+            <li><a class="toctree-l3" href="#302">3.0.2</a></li>
+        
+            <li><a class="toctree-l3" href="#301">3.0.1</a></li>
+        
+            <li><a class="toctree-l3" href="#300">3.0.0</a></li>
+        
+            <li><a class="toctree-l3" href="#222">2.2.2</a></li>
+        
+            <li><a class="toctree-l3" href="#221">2.2.1</a></li>
+        
+            <li><a class="toctree-l3" href="#200">2.0.0</a></li>
+        
+            <li><a class="toctree-l3" href="#110">1.1.0</a></li>
+        
+            <li><a class="toctree-l3" href="#100">1.0.0</a></li>
+        
+        </ul>
+    
+
+    </ul>
+	    </li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">Django-Rest-Knox</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Changes</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/James1345/django-rest-knox/edit/master/docs/changes.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="changelog">Changelog</h1>
+<h2 id="310">3.1.0</h2>
+<ul>
+<li>drop Django 1.8 support as djangorestframework did so too in v.3.7.0</li>
+<li>build rest-knox on Django 1.11 and 2.0</li>
+</ul>
+<h2 id="303">3.0.3</h2>
+<ul>
+<li>drop using OpenSSL in favor of urandom</li>
+</ul>
+<h2 id="302">3.0.2</h2>
+<ul>
+<li>Add context to UserSerializer</li>
+<li>improve docs</li>
+</ul>
+<h2 id="301">3.0.1</h2>
+<ul>
+<li>improved docs and readme</li>
+<li>login response better supporting hyperlinked fields</li>
+</ul>
+<h2 id="300">3.0.0</h2>
+<p><strong>Please be aware: updating to this version requires applying a database migration. All clients will need to reauthenticate.</strong></p>
+<ul>
+<li>Big performance fix: Introduction of token_key field to avoid having to compare a login request's token against each and every token in the database (issue #21)</li>
+<li>increased test coverage</li>
+</ul>
+<h2 id="222">2.2.2</h2>
+<ul>
+<li>Bugfix: invalid token length does no longer trigger a server error</li>
+<li>Extending documentation</li>
+</ul>
+<h2 id="221">2.2.1</h2>
+<p><strong>Please be aware: updating to his version requires applying a database migration</strong></p>
+<ul>
+<li>Introducing token_key to avoid loop over all tokens on login-requests</li>
+<li>Signals are sent on login/logout</li>
+<li>Test for invalid token length</li>
+<li>Cleanup in code and documentation</li>
+</ul>
+<h2 id="200">2.0.0</h2>
+<ul>
+<li>Hashing of tokens on the server introduced.</li>
+<li>Updating to this version will clean the AuthToken table. In real terms, this
+    means all users will be forced to log in again.</li>
+</ul>
+<h2 id="110">1.1.0</h2>
+<ul>
+<li><code>LoginView</code> changed to respect <code>DEFAULT_AUTHENTICATION_CLASSES</code></li>
+</ul>
+<h2 id="100">1.0.0</h2>
+<ul>
+<li>Initial release</li>
+</ul>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="../settings/" class="btn btn-neutral" title="Settings"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+          <a href="https://github.com/James1345/django-rest-knox/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
+      
+      
+        <span><a href="../settings/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+    </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/require.js"></script>
+      <script src="../search/search.js"></script>
+
+</body>
+</html>

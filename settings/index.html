@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Settings - Django-Rest-Knox</title>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="../css/highlight.css">
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Settings";
+    var mkdocs_page_input_path = "settings.md";
+    var mkdocs_page_url = "/settings/";
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js"></script>
+  <script src="../js/modernizr-2.8.3.min.js"></script>
+  <script type="text/javascript" src="../js/highlight.pack.js"></script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> Django-Rest-Knox</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+	<ul class="current">
+	  
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="..">Home</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../installation/">Installation</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <span class="caption-text">API Guide</span>
+    <ul class="subnav">
+                <li class="">
+                    
+    <a class="" href="../views/">Views</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../urls/">URLs</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../auth/">Authentication</a>
+                </li>
+                <li class=" current">
+                    
+    <a class="current" href="./">Settings</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l3"><a href="#settings-knoxsettings">Settings knox.settings</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l4" href="#secure_hash_algorithm">SECURE_HASH_ALGORITHM</a></li>
+        
+            <li><a class="toctree-l4" href="#auth_token_character_length">AUTH_TOKEN_CHARACTER_LENGTH</a></li>
+        
+            <li><a class="toctree-l4" href="#token_ttl">TOKEN_TTL</a></li>
+        
+            <li><a class="toctree-l4" href="#user_serializer">USER_SERIALIZER</a></li>
+        
+        </ul>
+    
+
+    <li class="toctree-l3"><a href="#constants-knoxsettings">Constants knox.settings</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l4" href="#digest_length">DIGEST_LENGTH</a></li>
+        
+            <li><a class="toctree-l4" href="#salt_length">SALT_LENGTH</a></li>
+        
+        </ul>
+    
+
+    </ul>
+                </li>
+    </ul>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../changes/">Changes</a>
+	    </li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">Django-Rest-Knox</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+        
+          <li>API Guide &raquo;</li>
+        
+      
+    
+    <li>Settings</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/James1345/django-rest-knox/edit/master/docs/settings.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="settings-knoxsettings">Settings <code>knox.settings</code></h1>
+<p>Settings in Knox are handled in a similar way to the rest framework settings.
+All settings are namespaced in the <code>'REST_KNOX'</code> setting.</p>
+<p>Example <code>settings.py</code></p>
+<pre><code class="python">#...snip...
+# These are the default values if none are set
+from datetime import timedelta
+REST_KNOX = {
+  'SECURE_HASH_ALGORITHM': 'cryptography.hazmat.primitives.hashes.SHA512',
+  'AUTH_TOKEN_CHARACTER_LENGTH': 64,
+  'TOKEN_TTL': timedelta(hours=10),
+  'USER_SERIALIZER': 'knox.serializers.UserSerializer',
+}
+#...snip...
+</code></pre>
+
+<h2 id="secure_hash_algorithm">SECURE_HASH_ALGORITHM</h2>
+<p>This is a reference to the class used to provide the hashing algorithm for
+token storage.</p>
+<p><em>Do not change this unless you know what you are doing</em></p>
+<p>By default, Knox uses SHA-512 to hash tokens in the database.</p>
+<p><code>cryptography.hazmat.primitives.hashes.Whirlpool</code> is an acceptable alternative setting
+for production use.</p>
+<h3 id="tests">Tests</h3>
+<p>SHA-512 and Whirlpool are secure, however, they are slow. This should not be a
+problem for your users, but when testing it may be noticable (as test cases tend
+to use many more requests much more quickly than real users). In testing scenarios
+it is acceptable to use <code>MD5</code> hashing.(<code>cryptography.hazmat.primitives.hashes.MD5</code>)</p>
+<p>MD5 is <strong>not secure</strong> and must <em>never</em> be used in production sites.</p>
+<h2 id="auth_token_character_length">AUTH_TOKEN_CHARACTER_LENGTH</h2>
+<p>This is the length of the token that will be sent to the client. By default it
+is set to 64 characters (this shouldn't need changing).</p>
+<h2 id="token_ttl">TOKEN_TTL</h2>
+<p>This is how long a token can exist before it expires. Expired tokens are automatically
+removed from the system.</p>
+<p>The setting should be set to an instance of <code>datetime.timedelta</code>. The default is
+10 hours ()<code>timedelta(hours=10)</code>).</p>
+<p>Setting the TOKEN_TTL to <code>None</code> will create tokens that never expire.</p>
+<p>Warning: setting a 0 or negative timedelta will create tokens that instantly expire,
+the system will not prevent you setting this.</p>
+<h2 id="user_serializer">USER_SERIALIZER</h2>
+<p>This is the reference to the class used to serialize the <code>User</code> objects when
+succesfully returning from <code>LoginView</code>. The default is <code>knox.serializers.UserSerializer</code></p>
+<h1 id="constants-knoxsettings">Constants <code>knox.settings</code></h1>
+<p>Knox also provides some constants for information. These must not be changed in
+external code; they are used in the model definitions in knox and an error will
+be raised if there is an attempt to change them.</p>
+<pre><code class="python">from knox.settings import CONSTANTS
+
+print(CONSTANTS.DIGEST_LENGTH) #=&gt; 128
+print(CONSTANTS.SALT_LENGTH) #=&gt; 16
+</code></pre>
+
+<h2 id="digest_length">DIGEST_LENGTH</h2>
+<p>This is the length of the digest that will be stored in the database for each token.</p>
+<h2 id="salt_length">SALT_LENGTH</h2>
+<p>This is the length of the <a href="https://en.wikipedia.org/wiki/Salt_(cryptography)">salt</a> that will be stored in the database for each token.</p>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../changes/" class="btn btn-neutral float-right" title="Changes">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../auth/" class="btn btn-neutral" title="Authentication"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+          <a href="https://github.com/James1345/django-rest-knox/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
+      
+      
+        <span><a href="../auth/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../changes/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/require.js"></script>
+      <script src="../search/search.js"></script>
+
+</body>
+</html>
