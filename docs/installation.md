@@ -57,6 +57,8 @@ REST_FRAMEWORK = {
 
 - Add the [knox url patterns](urls.md#urls-knoxurls) to your project.
 
+- If you set TokenAuthentication as the only default authentication class on the second step, [override knox's LoginView](auth.md#global-usage-on-all-views) to accept another authentication method and use it instead of knox's default login view.
+
 - Apply the migrations for the models
 
 ```bash
