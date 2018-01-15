@@ -43,10 +43,11 @@ Tokens expire after a preset time. See settings.
 
 ### Global usage on all views
 
-You can activate TokenAuthentication on all your views by adding it to
-`REST_FRAMEWORK["DEFAULT_AUTHENTICATION_CLASSES"]`. If it is your only
-authentication class remember to overwrite the login view and url as at least
-the token-obtaining view may not require a token:
+You can activate TokenAuthentication on all your views by adding it to `REST_FRAMEWORK["DEFAULT_AUTHENTICATION_CLASSES"]`. 
+
+If it is your only default authentication class, remember to overwrite knox's LoginView, otherwise it'll not work, since the login view will require a authentication token to generate a new token, rendering it unusable.
+
+For instance, you can authenticate users using Basic Authentication by simply overwriting knox's LoginView and setting BasicAuthentication as one of the acceptable authentication classes, as follows: 
 
 ```python
 
@@ -69,3 +70,5 @@ urlpatterns = [
      url(r'logoutall/', knox_views.LogoutAllView.as_view(), name='knox_logoutall'),
 ]
 ```
+
+You can use any number of authentication classes if you want to be able to authenticate using different methods (eg.: Basic and JSON) in the same view. Just be sure not to set TokenAuthentication as your only authentication class on the login view.
