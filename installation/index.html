@@ -7,13 +7,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   
-  <link rel="shortcut icon" href="../img/favicon.ico">
+  
   <title>Installation - Django-Rest-Knox</title>
+  
+
+  <link rel="shortcut icon" href="../img/favicon.ico">
+
+  
   <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
 
   <link rel="stylesheet" href="../css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
   <link rel="stylesheet" href="../css/highlight.css">
+
   
   <script>
     // Current page data
@@ -24,7 +30,9 @@
   
   <script src="../js/jquery-2.1.1.min.js"></script>
   <script src="../js/modernizr-2.8.3.min.js"></script>
-  <script type="text/javascript" src="../js/highlight.pack.js"></script> 
+  <script type="text/javascript" src="../js/highlight.pack.js"></script>
+  <script src="../js/theme.js"></script> 
+
   
 </head>
 
@@ -44,62 +52,77 @@
       </div>
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-	<ul class="current">
-	  
+        <ul class="current">
           
-            <li class="toctree-l1">
-		
-    <a class="" href="..">Home</a>
-	    </li>
+            <li>
+    <li class="toctree-l1 ">
+        <a class="" href="..">Home</a>
+        
+    </li>
+<li>
           
-            <li class="toctree-l1 current">
-		
-    <a class="current" href="./">Installation</a>
-    <ul class="subnav">
+            <li>
+    <li class="toctree-l1 current">
+        <a class="current" href="./">Installation</a>
+        
+            <ul>
             
-    <li class="toctree-l2"><a href="#installation">Installation</a></li>
-    
-        <ul>
+                <li class="toctree-l3"><a href="#installation">Installation</a></li>
+                
+                    <li><a class="toctree-l4" href="#requirements">Requirements</a></li>
+                
+                    <li><a class="toctree-l4" href="#installing-knox">Installing Knox</a></li>
+                
+                    <li><a class="toctree-l4" href="#setup-knox">Setup knox</a></li>
+                
+            
+            </ul>
         
-            <li><a class="toctree-l3" href="#requirements">Requirements</a></li>
-        
-            <li><a class="toctree-l3" href="#installing-knox">Installing Knox</a></li>
-        
-            <li><a class="toctree-l3" href="#setup-knox">Setup knox</a></li>
-        
-        </ul>
-    
-
-    </ul>
-	    </li>
+    </li>
+<li>
           
-            <li class="toctree-l1">
-		
-    <span class="caption-text">API Guide</span>
+            <li>
     <ul class="subnav">
-                <li class="">
-                    
-    <a class="" href="../views/">Views</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../urls/">URLs</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../auth/">Authentication</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../settings/">Settings</a>
-                </li>
+    <li><span>API Guide</span></li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../views/">Views</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../urls/">URLs</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../auth/">Authentication</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../settings/">Settings</a>
+        
+    </li>
+
+        
     </ul>
-	    </li>
+<li>
           
-            <li class="toctree-l1">
-		
-    <a class="" href="../changes/">Changes</a>
-	    </li>
+            <li>
+    <li class="toctree-l1 ">
+        <a class="" href="../changes/">Changes</a>
+        
+    </li>
+<li>
           
         </ul>
       </div>
@@ -126,8 +149,9 @@
     <li>Installation</li>
     <li class="wy-breadcrumbs-aside">
       
-        <a href="https://github.com/James1345/django-rest-knox/edit/master/docs/installation.md"
-          class="icon icon-github"> Edit on GitHub</a>
+        
+          <a href="https://github.com/James1345/django-rest-knox" class="icon icon-github"> Edit on GitHub</a>
+        
       
     </li>
   </ul>
@@ -188,6 +212,9 @@ for django-rest-framework:</li>
 <p>Add the <a href="../urls/#urls-knoxurls">knox url patterns</a> to your project.</p>
 </li>
 <li>
+<p>If you set TokenAuthentication as the only default authentication class on the second step, <a href="../auth/#global-usage-on-all-views">override knox's LoginView</a> to accept another authentication method and use it instead of knox's default login view.</p>
+</li>
+<li>
 <p>Apply the migrations for the models</p>
 </li>
 </ul>
@@ -217,7 +244,7 @@ for django-rest-framework:</li>
 
   Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
 </footer>
-      
+	  
         </div>
       </div>
 
@@ -225,10 +252,10 @@ for django-rest-framework:</li>
 
   </div>
 
-  <div class="rst-versions" role="note" style="cursor: pointer">
+<div class="rst-versions" role="note" style="cursor: pointer">
     <span class="rst-current-version" data-toggle="rst-current-version">
       
-          <a href="https://github.com/James1345/django-rest-knox/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
+          <a href="https://github.com/James1345/django-rest-knox" class="icon icon-github" style="float: left; color: #fcfcfc"> GitHub</a>
       
       
         <span><a href=".." style="color: #fcfcfc;">&laquo; Previous</a></span>
@@ -238,10 +265,6 @@ for django-rest-framework:</li>
       
     </span>
 </div>
-    <script>var base_url = '..';</script>
-    <script src="../js/theme.js"></script>
-      <script src="../search/require.js"></script>
-      <script src="../search/search.js"></script>
 
 </body>
 </html>

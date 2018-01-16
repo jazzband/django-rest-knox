@@ -1,0 +1,214 @@
+{
+    "docs": [
+        {
+            "location": "/",
+            "text": "Django-Rest-Knox\n\n\nKnox provides easy to use authentication for \nDjango REST Framework\n\nThe aim is to allow for common patterns in applications that are REST based,\nwith little extra effort; and to ensure that connections remain secure.\n\n\nKnox authentication is token based, similar to the \nTokenAuthentication\n built\nin to DRF. However, it overcomes some problems present in the default implementation:\n\n\n\n\n\n\nDRF tokens are limited to one per user. This does not facilitate securely\n    signing in from multiple devices, as the token is shared. It also requires\n    \nall\n devices to be logged out if a server-side logout is required (i.e. the\n    token is deleted).\n\n\nKnox provides one token per call to the login view - allowing\neach client to have its own token which is deleted on the server side when the client\nlogs out.\n\n\nKnox also provides an option for a logged in client to remove \nall\n tokens\nthat the server has - forcing all clients to re-authenticate.\n\n\n\n\n\n\nDRF tokens are stored unencrypted in the database. This would allow an attacker\n    unrestricted access to an account with a token if the database were compromised.\n\n\nKnox tokens are only stored in an encrypted form. Even if the database were\nsomehow stolen, an attacker would not be able to log in with the stolen\ncredentials.\n\n\n\n\n\n\nDRF tokens track their creation time, but have no inbuilt mechanism for tokens\n    expiring. Knox tokens can have an expiry configured in the app settings (default is\n    10 hours.)",
+            "title": "Home"
+        },
+        {
+            "location": "/#django-rest-knox",
+            "text": "Knox provides easy to use authentication for  Django REST Framework \nThe aim is to allow for common patterns in applications that are REST based,\nwith little extra effort; and to ensure that connections remain secure.  Knox authentication is token based, similar to the  TokenAuthentication  built\nin to DRF. However, it overcomes some problems present in the default implementation:    DRF tokens are limited to one per user. This does not facilitate securely\n    signing in from multiple devices, as the token is shared. It also requires\n     all  devices to be logged out if a server-side logout is required (i.e. the\n    token is deleted).  Knox provides one token per call to the login view - allowing\neach client to have its own token which is deleted on the server side when the client\nlogs out.  Knox also provides an option for a logged in client to remove  all  tokens\nthat the server has - forcing all clients to re-authenticate.    DRF tokens are stored unencrypted in the database. This would allow an attacker\n    unrestricted access to an account with a token if the database were compromised.  Knox tokens are only stored in an encrypted form. Even if the database were\nsomehow stolen, an attacker would not be able to log in with the stolen\ncredentials.    DRF tokens track their creation time, but have no inbuilt mechanism for tokens\n    expiring. Knox tokens can have an expiry configured in the app settings (default is\n    10 hours.)",
+            "title": "Django-Rest-Knox"
+        },
+        {
+            "location": "/installation/",
+            "text": "Installation\n\n\nRequirements\n\n\nKnox depends on \ncryptography\n to provide bindings to \nOpenSSL\n for token generation\nThis requires the OpenSSL build libraries to be available.\n\n\nWindows\n\n\nCryptography is a statically linked build, no extra steps are needed\n\n\nLinux\n\n\ncryptography\n should build very easily on Linux provided you have a C compiler,\nheaders for Python (if you\u2019re not using \npypy\n), and headers for the OpenSSL and\n\nlibffi\n libraries available on your system.\n\n\nDebian and Ubuntu:\n\n\nsudo apt-get install build-essential libssl-dev libffi-dev python3-dev python-dev\n\n\n\n\nFedora and RHEL-derivatives:\n\n\nsudo yum install gcc libffi-devel python-devel openssl-devel\n\n\n\n\nFor other systems or problems, see the \ncryptography installation docs\n\n\nInstalling Knox\n\n\nKnox should be installed with pip\n\n\npip install django-rest-knox\n\n\n\n\nSetup knox\n\n\n\n\nAdd \nrest_framework\n and \nknox\n to your \nINSTALLED_APPS\n, remove\n\nrest_framework.authtoken\n if you were using it.\n\n\n\n\nINSTALLED_APPS = (\n  ...\n  'rest_framework',\n  'knox',\n  ...\n)\n\n\n\n\n\n\nMake knox's TokenAuthentication your default authentification class\nfor django-rest-framework:\n\n\n\n\nREST_FRAMEWORK = {\n    'DEFAULT_AUTHENTICATION_CLASSES': ('knox.auth.TokenAuthentication',),\n    ...\n}\n\n\n\n\n\n\n\n\nAdd the \nknox url patterns\n to your project.\n\n\n\n\n\n\nIf you set TokenAuthentication as the only default authentication class on the second step, \noverride knox's LoginView\n to accept another authentication method and use it instead of knox's default login view.\n\n\n\n\n\n\nApply the migrations for the models\n\n\n\n\n\n\npython manage.py migrate",
+            "title": "Installation"
+        },
+        {
+            "location": "/installation/#installation",
+            "text": "",
+            "title": "Installation"
+        },
+        {
+            "location": "/installation/#requirements",
+            "text": "Knox depends on  cryptography  to provide bindings to  OpenSSL  for token generation\nThis requires the OpenSSL build libraries to be available.",
+            "title": "Requirements"
+        },
+        {
+            "location": "/installation/#windows",
+            "text": "Cryptography is a statically linked build, no extra steps are needed",
+            "title": "Windows"
+        },
+        {
+            "location": "/installation/#linux",
+            "text": "cryptography  should build very easily on Linux provided you have a C compiler,\nheaders for Python (if you\u2019re not using  pypy ), and headers for the OpenSSL and libffi  libraries available on your system.  Debian and Ubuntu:  sudo apt-get install build-essential libssl-dev libffi-dev python3-dev python-dev  Fedora and RHEL-derivatives:  sudo yum install gcc libffi-devel python-devel openssl-devel  For other systems or problems, see the  cryptography installation docs",
+            "title": "Linux"
+        },
+        {
+            "location": "/installation/#installing-knox",
+            "text": "Knox should be installed with pip  pip install django-rest-knox",
+            "title": "Installing Knox"
+        },
+        {
+            "location": "/installation/#setup-knox",
+            "text": "Add  rest_framework  and  knox  to your  INSTALLED_APPS , remove rest_framework.authtoken  if you were using it.   INSTALLED_APPS = (\n  ...\n  'rest_framework',\n  'knox',\n  ...\n)   Make knox's TokenAuthentication your default authentification class\nfor django-rest-framework:   REST_FRAMEWORK = {\n    'DEFAULT_AUTHENTICATION_CLASSES': ('knox.auth.TokenAuthentication',),\n    ...\n}    Add the  knox url patterns  to your project.    If you set TokenAuthentication as the only default authentication class on the second step,  override knox's LoginView  to accept another authentication method and use it instead of knox's default login view.    Apply the migrations for the models    python manage.py migrate",
+            "title": "Setup knox"
+        },
+        {
+            "location": "/views/",
+            "text": "Views \nknox.views\n\n\nKnox provides three views that handle token management for you.\n\n\nLoginView\n\n\nThis view accepts only a post request with an empty body.\n\n\nThe LoginView accepts the same sort of authentication as your Rest Framework\n\nDEFAULT_AUTHENTICATION_CLASSES\n setting. If this is not set, it defaults to\n\n(SessionAuthentication, BasicAuthentication)\n.\n\n\nLoginView was designed to work well with Basic authentication, or similar\nschemes. If you would like to use a different authentication scheme to the\ndefault, you can extend this class to provide your own value for\n\nauthentication_classes\n\n\nWhen it receives an authenticated request, it will return json\n- \nuser\n an object representing the user that was authenticated\n- \ntoken\n the token that should be used for any token\n\n\nThe returned \nuser\n object is serialized using the \nUSER_SERIALIZER\n setting.\nIf this setting is not changed, the default serializer returns the user's\n\nfirst_name\n, \nlast_name\n and \nusername\n.\n\n\nObviously, if your app uses a custom user model that does not have these fields,\na custom serializer must be used.\n\n\nLogoutView\n\n\nThis view accepts only a post request with an empty body.\nIt responds to Knox Token Authentication. On a successful request,\nthe token used to authenticate is deleted from the\nsystem and can no longer be used to authenticate.\n\n\nLogoutAllView\n\n\nThis view accepts only a post request with an empty body. It responds to Knox Token\nAuthentication.\nOn a successful request, the token used to authenticate, and \nall other tokens\n\nregistered to the same \nUser\n account, are deleted from the\nsystem and can no longer be used to authenticate.\n\n\nNote\n It is not recommended to alter the Logout views. They are designed\nspecifically for token management, and to respond to Knox authentication.\nModified forms of the class may cause unpredictable results.",
+            "title": "Views"
+        },
+        {
+            "location": "/views/#views-knoxviews",
+            "text": "Knox provides three views that handle token management for you.",
+            "title": "Views knox.views"
+        },
+        {
+            "location": "/views/#loginview",
+            "text": "This view accepts only a post request with an empty body.  The LoginView accepts the same sort of authentication as your Rest Framework DEFAULT_AUTHENTICATION_CLASSES  setting. If this is not set, it defaults to (SessionAuthentication, BasicAuthentication) .  LoginView was designed to work well with Basic authentication, or similar\nschemes. If you would like to use a different authentication scheme to the\ndefault, you can extend this class to provide your own value for authentication_classes  When it receives an authenticated request, it will return json\n-  user  an object representing the user that was authenticated\n-  token  the token that should be used for any token  The returned  user  object is serialized using the  USER_SERIALIZER  setting.\nIf this setting is not changed, the default serializer returns the user's first_name ,  last_name  and  username .  Obviously, if your app uses a custom user model that does not have these fields,\na custom serializer must be used.",
+            "title": "LoginView"
+        },
+        {
+            "location": "/views/#logoutview",
+            "text": "This view accepts only a post request with an empty body.\nIt responds to Knox Token Authentication. On a successful request,\nthe token used to authenticate is deleted from the\nsystem and can no longer be used to authenticate.",
+            "title": "LogoutView"
+        },
+        {
+            "location": "/views/#logoutallview",
+            "text": "This view accepts only a post request with an empty body. It responds to Knox Token\nAuthentication.\nOn a successful request, the token used to authenticate, and  all other tokens \nregistered to the same  User  account, are deleted from the\nsystem and can no longer be used to authenticate.  Note  It is not recommended to alter the Logout views. They are designed\nspecifically for token management, and to respond to Knox authentication.\nModified forms of the class may cause unpredictable results.",
+            "title": "LogoutAllView"
+        },
+        {
+            "location": "/urls/",
+            "text": "URLS \nknox.urls\n\n\nKnox provides a url config ready with its three default views routed.\n\n\nThis can easily be included in your url config:\n\n\nurlpatterns = [\n  #...snip...\n  url(r'api/auth/', include('knox.urls'))\n  #...snip...\n]\n\n\n\n\nNote\n It is important to use the string syntax and not try to import \nknox.urls\n,\nas the reference to the \nUser\n model will cause the app to fail at import time.\n\n\nThe views would then acessible as:\n\n\n\n\n/api/auth/login\n -> \nLoginView\n\n\n/api/auth/logout\n -> \nLogoutView\n\n\n/api/auth/logoutall\n -> \nLogoutAllView\n\n\n\n\nthey can also be looked up by name:\n\n\nreverse('knox_login')\nreverse('knox_logout')\nreverse('knox_logoutall')",
+            "title": "URLs"
+        },
+        {
+            "location": "/urls/#urls-knoxurls",
+            "text": "Knox provides a url config ready with its three default views routed.  This can easily be included in your url config:  urlpatterns = [\n  #...snip...\n  url(r'api/auth/', include('knox.urls'))\n  #...snip...\n]  Note  It is important to use the string syntax and not try to import  knox.urls ,\nas the reference to the  User  model will cause the app to fail at import time.  The views would then acessible as:   /api/auth/login  ->  LoginView  /api/auth/logout  ->  LogoutView  /api/auth/logoutall  ->  LogoutAllView   they can also be looked up by name:  reverse('knox_login')\nreverse('knox_logout')\nreverse('knox_logoutall')",
+            "title": "URLS knox.urls"
+        },
+        {
+            "location": "/auth/",
+            "text": "Authentication \nknox.auth\n\n\nKnox provides one class to handle authentication.\n\n\nTokenAuthentication\n\n\nThis works using \nDRF's authentication system\n.\n\n\nKnox tokens should be generated using the provided views.\nAny \nAPIView\n or \nViewSet\n can be accessed using these tokens by adding \nTokenAuthentication\n\nto the View's \nauthentication_classes\n.\nTo authenticate, the \nAuthorization\n header should be set on the request, with a\nvalue of the word \n\"Token\"\n, then a space, then the authentication token provided by\n\nLoginView\n.\n\n\nExample:\n\n\nfrom rest_framework.permissions import IsAuthenticated\nfrom rest_framework.response import Response\nfrom rest_framework.views import APIView\n\nfrom knox.auth import TokenAuthentication\n\nclass ExampleView(APIView):\n    authentication_classes = (TokenAuthentication,)\n    permission_classes = (IsAuthenticated,)\n\n    def get(self, request, format=None):\n        content = {\n            'foo': 'bar'\n        }\n        return Response(content)\n\n\n\n\nExample auth header:\n\n\nAuthorization: Token 9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b9836F45E23A345\n\n\n\n\nTokens expire after a preset time. See settings.\n\n\nGlobal usage on all views\n\n\nYou can activate TokenAuthentication on all your views by adding it to \nREST_FRAMEWORK[\"DEFAULT_AUTHENTICATION_CLASSES\"]\n. \n\n\nIf it is your only default authentication class, remember to overwrite knox's LoginView, otherwise it'll not work, since the login view will require a authentication token to generate a new token, rendering it unusable.\n\n\nFor instance, you can authenticate users using Basic Authentication by simply overwriting knox's LoginView and setting BasicAuthentication as one of the acceptable authentication classes, as follows: \n\n\n\nviews.py:\n\nfrom knox.views import LoginView as KnoxLoginView\nfrom rest_framework.authentication import BasicAuthentication\n\nclass LoginView(KnoxLoginView):\n    authentication_classes = [BasicAuthentication]\n\nurls.py:\n\nfrom knox import views as knox_views\nfrom yourapp.api.views import LoginView\n\nurlpatterns = [\n     url(r'login/', LoginView.as_view(), name='knox_login'),\n     url(r'logout/', knox_views.LogoutView.as_view(), name='knox_logout'),\n     url(r'logoutall/', knox_views.LogoutAllView.as_view(), name='knox_logoutall'),\n]\n\n\n\n\nYou can use any number of authentication classes if you want to be able to authenticate using different methods (eg.: Basic and JSON) in the same view. Just be sure not to set TokenAuthentication as your only authentication class on the login view.",
+            "title": "Authentication"
+        },
+        {
+            "location": "/auth/#authentication-knoxauth",
+            "text": "Knox provides one class to handle authentication.",
+            "title": "Authentication knox.auth"
+        },
+        {
+            "location": "/auth/#tokenauthentication",
+            "text": "This works using  DRF's authentication system .  Knox tokens should be generated using the provided views.\nAny  APIView  or  ViewSet  can be accessed using these tokens by adding  TokenAuthentication \nto the View's  authentication_classes .\nTo authenticate, the  Authorization  header should be set on the request, with a\nvalue of the word  \"Token\" , then a space, then the authentication token provided by LoginView .  Example:  from rest_framework.permissions import IsAuthenticated\nfrom rest_framework.response import Response\nfrom rest_framework.views import APIView\n\nfrom knox.auth import TokenAuthentication\n\nclass ExampleView(APIView):\n    authentication_classes = (TokenAuthentication,)\n    permission_classes = (IsAuthenticated,)\n\n    def get(self, request, format=None):\n        content = {\n            'foo': 'bar'\n        }\n        return Response(content)  Example auth header:  Authorization: Token 9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b9836F45E23A345  Tokens expire after a preset time. See settings.",
+            "title": "TokenAuthentication"
+        },
+        {
+            "location": "/auth/#global-usage-on-all-views",
+            "text": "You can activate TokenAuthentication on all your views by adding it to  REST_FRAMEWORK[\"DEFAULT_AUTHENTICATION_CLASSES\"] .   If it is your only default authentication class, remember to overwrite knox's LoginView, otherwise it'll not work, since the login view will require a authentication token to generate a new token, rendering it unusable.  For instance, you can authenticate users using Basic Authentication by simply overwriting knox's LoginView and setting BasicAuthentication as one of the acceptable authentication classes, as follows:   \nviews.py:\n\nfrom knox.views import LoginView as KnoxLoginView\nfrom rest_framework.authentication import BasicAuthentication\n\nclass LoginView(KnoxLoginView):\n    authentication_classes = [BasicAuthentication]\n\nurls.py:\n\nfrom knox import views as knox_views\nfrom yourapp.api.views import LoginView\n\nurlpatterns = [\n     url(r'login/', LoginView.as_view(), name='knox_login'),\n     url(r'logout/', knox_views.LogoutView.as_view(), name='knox_logout'),\n     url(r'logoutall/', knox_views.LogoutAllView.as_view(), name='knox_logoutall'),\n]  You can use any number of authentication classes if you want to be able to authenticate using different methods (eg.: Basic and JSON) in the same view. Just be sure not to set TokenAuthentication as your only authentication class on the login view.",
+            "title": "Global usage on all views"
+        },
+        {
+            "location": "/settings/",
+            "text": "Settings \nknox.settings\n\n\nSettings in Knox are handled in a similar way to the rest framework settings.\nAll settings are namespaced in the \n'REST_KNOX'\n setting.\n\n\nExample \nsettings.py\n\n\n#...snip...\n# These are the default values if none are set\nfrom datetime import timedelta\nREST_KNOX = {\n  'SECURE_HASH_ALGORITHM': 'cryptography.hazmat.primitives.hashes.SHA512',\n  'AUTH_TOKEN_CHARACTER_LENGTH': 64,\n  'TOKEN_TTL': timedelta(hours=10),\n  'USER_SERIALIZER': 'knox.serializers.UserSerializer',\n}\n#...snip...\n\n\n\n\nSECURE_HASH_ALGORITHM\n\n\nThis is a reference to the class used to provide the hashing algorithm for\ntoken storage.\n\n\nDo not change this unless you know what you are doing\n\n\nBy default, Knox uses SHA-512 to hash tokens in the database.\n\n\ncryptography.hazmat.primitives.hashes.Whirlpool\n is an acceptable alternative setting\nfor production use.\n\n\nTests\n\n\nSHA-512 and Whirlpool are secure, however, they are slow. This should not be a\nproblem for your users, but when testing it may be noticable (as test cases tend\nto use many more requests much more quickly than real users). In testing scenarios\nit is acceptable to use \nMD5\n hashing.(\ncryptography.hazmat.primitives.hashes.MD5\n)\n\n\nMD5 is \nnot secure\n and must \nnever\n be used in production sites.\n\n\nAUTH_TOKEN_CHARACTER_LENGTH\n\n\nThis is the length of the token that will be sent to the client. By default it\nis set to 64 characters (this shouldn't need changing).\n\n\nTOKEN_TTL\n\n\nThis is how long a token can exist before it expires. Expired tokens are automatically\nremoved from the system.\n\n\nThe setting should be set to an instance of \ndatetime.timedelta\n. The default is\n10 hours ()\ntimedelta(hours=10)\n).\n\n\nSetting the TOKEN_TTL to \nNone\n will create tokens that never expire.\n\n\nWarning: setting a 0 or negative timedelta will create tokens that instantly expire,\nthe system will not prevent you setting this.\n\n\nUSER_SERIALIZER\n\n\nThis is the reference to the class used to serialize the \nUser\n objects when\nsuccesfully returning from \nLoginView\n. The default is \nknox.serializers.UserSerializer\n\n\nConstants \nknox.settings\n\n\nKnox also provides some constants for information. These must not be changed in\nexternal code; they are used in the model definitions in knox and an error will\nbe raised if there is an attempt to change them.\n\n\nfrom knox.settings import CONSTANTS\n\nprint(CONSTANTS.DIGEST_LENGTH) #=> 128\nprint(CONSTANTS.SALT_LENGTH) #=> 16\n\n\n\n\nDIGEST_LENGTH\n\n\nThis is the length of the digest that will be stored in the database for each token.\n\n\nSALT_LENGTH\n\n\nThis is the length of the \nsalt\n that will be stored in the database for each token.",
+            "title": "Settings"
+        },
+        {
+            "location": "/settings/#settings-knoxsettings",
+            "text": "Settings in Knox are handled in a similar way to the rest framework settings.\nAll settings are namespaced in the  'REST_KNOX'  setting.  Example  settings.py  #...snip...\n# These are the default values if none are set\nfrom datetime import timedelta\nREST_KNOX = {\n  'SECURE_HASH_ALGORITHM': 'cryptography.hazmat.primitives.hashes.SHA512',\n  'AUTH_TOKEN_CHARACTER_LENGTH': 64,\n  'TOKEN_TTL': timedelta(hours=10),\n  'USER_SERIALIZER': 'knox.serializers.UserSerializer',\n}\n#...snip...",
+            "title": "Settings knox.settings"
+        },
+        {
+            "location": "/settings/#secure_hash_algorithm",
+            "text": "This is a reference to the class used to provide the hashing algorithm for\ntoken storage.  Do not change this unless you know what you are doing  By default, Knox uses SHA-512 to hash tokens in the database.  cryptography.hazmat.primitives.hashes.Whirlpool  is an acceptable alternative setting\nfor production use.",
+            "title": "SECURE_HASH_ALGORITHM"
+        },
+        {
+            "location": "/settings/#tests",
+            "text": "SHA-512 and Whirlpool are secure, however, they are slow. This should not be a\nproblem for your users, but when testing it may be noticable (as test cases tend\nto use many more requests much more quickly than real users). In testing scenarios\nit is acceptable to use  MD5  hashing.( cryptography.hazmat.primitives.hashes.MD5 )  MD5 is  not secure  and must  never  be used in production sites.",
+            "title": "Tests"
+        },
+        {
+            "location": "/settings/#auth_token_character_length",
+            "text": "This is the length of the token that will be sent to the client. By default it\nis set to 64 characters (this shouldn't need changing).",
+            "title": "AUTH_TOKEN_CHARACTER_LENGTH"
+        },
+        {
+            "location": "/settings/#token_ttl",
+            "text": "This is how long a token can exist before it expires. Expired tokens are automatically\nremoved from the system.  The setting should be set to an instance of  datetime.timedelta . The default is\n10 hours () timedelta(hours=10) ).  Setting the TOKEN_TTL to  None  will create tokens that never expire.  Warning: setting a 0 or negative timedelta will create tokens that instantly expire,\nthe system will not prevent you setting this.",
+            "title": "TOKEN_TTL"
+        },
+        {
+            "location": "/settings/#user_serializer",
+            "text": "This is the reference to the class used to serialize the  User  objects when\nsuccesfully returning from  LoginView . The default is  knox.serializers.UserSerializer",
+            "title": "USER_SERIALIZER"
+        },
+        {
+            "location": "/settings/#constants-knoxsettings",
+            "text": "Knox also provides some constants for information. These must not be changed in\nexternal code; they are used in the model definitions in knox and an error will\nbe raised if there is an attempt to change them.  from knox.settings import CONSTANTS\n\nprint(CONSTANTS.DIGEST_LENGTH) #=> 128\nprint(CONSTANTS.SALT_LENGTH) #=> 16",
+            "title": "Constants knox.settings"
+        },
+        {
+            "location": "/settings/#digest_length",
+            "text": "This is the length of the digest that will be stored in the database for each token.",
+            "title": "DIGEST_LENGTH"
+        },
+        {
+            "location": "/settings/#salt_length",
+            "text": "This is the length of the  salt  that will be stored in the database for each token.",
+            "title": "SALT_LENGTH"
+        },
+        {
+            "location": "/changes/",
+            "text": "Changelog\n\n\n3.1.0\n\n\n\n\ndrop Django 1.8 support as djangorestframework did so too in v.3.7.0\n\n\nbuild rest-knox on Django 1.11 and 2.0\n\n\n\n\n3.0.3\n\n\n\n\ndrop using OpenSSL in favor of urandom\n\n\n\n\n3.0.2\n\n\n\n\nAdd context to UserSerializer\n\n\nimprove docs\n\n\n\n\n3.0.1\n\n\n\n\nimproved docs and readme\n\n\nlogin response better supporting hyperlinked fields\n\n\n\n\n3.0.0\n\n\nPlease be aware: updating to this version requires applying a database migration. All clients will need to reauthenticate.\n\n\n\n\nBig performance fix: Introduction of token_key field to avoid having to compare a login request's token against each and every token in the database (issue #21)\n\n\nincreased test coverage\n\n\n\n\n2.2.2\n\n\n\n\nBugfix: invalid token length does no longer trigger a server error\n\n\nExtending documentation\n\n\n\n\n2.2.1\n\n\nPlease be aware: updating to his version requires applying a database migration\n\n\n\n\nIntroducing token_key to avoid loop over all tokens on login-requests\n\n\nSignals are sent on login/logout\n\n\nTest for invalid token length\n\n\nCleanup in code and documentation\n\n\n\n\n2.0.0\n\n\n\n\nHashing of tokens on the server introduced.\n\n\nUpdating to this version will clean the AuthToken table. In real terms, this\n    means all users will be forced to log in again.\n\n\n\n\n1.1.0\n\n\n\n\nLoginView\n changed to respect \nDEFAULT_AUTHENTICATION_CLASSES\n\n\n\n\n1.0.0\n\n\n\n\nInitial release",
+            "title": "Changes"
+        },
+        {
+            "location": "/changes/#changelog",
+            "text": "",
+            "title": "Changelog"
+        },
+        {
+            "location": "/changes/#310",
+            "text": "drop Django 1.8 support as djangorestframework did so too in v.3.7.0  build rest-knox on Django 1.11 and 2.0",
+            "title": "3.1.0"
+        },
+        {
+            "location": "/changes/#303",
+            "text": "drop using OpenSSL in favor of urandom",
+            "title": "3.0.3"
+        },
+        {
+            "location": "/changes/#302",
+            "text": "Add context to UserSerializer  improve docs",
+            "title": "3.0.2"
+        },
+        {
+            "location": "/changes/#301",
+            "text": "improved docs and readme  login response better supporting hyperlinked fields",
+            "title": "3.0.1"
+        },
+        {
+            "location": "/changes/#300",
+            "text": "Please be aware: updating to this version requires applying a database migration. All clients will need to reauthenticate.   Big performance fix: Introduction of token_key field to avoid having to compare a login request's token against each and every token in the database (issue #21)  increased test coverage",
+            "title": "3.0.0"
+        },
+        {
+            "location": "/changes/#222",
+            "text": "Bugfix: invalid token length does no longer trigger a server error  Extending documentation",
+            "title": "2.2.2"
+        },
+        {
+            "location": "/changes/#221",
+            "text": "Please be aware: updating to his version requires applying a database migration   Introducing token_key to avoid loop over all tokens on login-requests  Signals are sent on login/logout  Test for invalid token length  Cleanup in code and documentation",
+            "title": "2.2.1"
+        },
+        {
+            "location": "/changes/#200",
+            "text": "Hashing of tokens on the server introduced.  Updating to this version will clean the AuthToken table. In real terms, this\n    means all users will be forced to log in again.",
+            "title": "2.0.0"
+        },
+        {
+            "location": "/changes/#110",
+            "text": "LoginView  changed to respect  DEFAULT_AUTHENTICATION_CLASSES",
+            "title": "1.1.0"
+        },
+        {
+            "location": "/changes/#100",
+            "text": "Initial release",
+            "title": "1.0.0"
+        }
+    ]
+}

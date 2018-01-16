@@ -7,13 +7,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   
-  <link rel="shortcut icon" href="../img/favicon.ico">
+  
   <title>Authentication - Django-Rest-Knox</title>
+  
+
+  <link rel="shortcut icon" href="../img/favicon.ico">
+
+  
   <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
 
   <link rel="stylesheet" href="../css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
   <link rel="stylesheet" href="../css/highlight.css">
+
   
   <script>
     // Current page data
@@ -24,7 +30,9 @@
   
   <script src="../js/jquery-2.1.1.min.js"></script>
   <script src="../js/modernizr-2.8.3.min.js"></script>
-  <script type="text/javascript" src="../js/highlight.pack.js"></script> 
+  <script type="text/javascript" src="../js/highlight.pack.js"></script>
+  <script src="../js/theme.js"></script> 
+
   
 </head>
 
@@ -44,58 +52,73 @@
       </div>
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-	<ul class="current">
-	  
+        <ul class="current">
           
-            <li class="toctree-l1">
-		
-    <a class="" href="..">Home</a>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <a class="" href="../installation/">Installation</a>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <span class="caption-text">API Guide</span>
-    <ul class="subnav">
-                <li class="">
-                    
-    <a class="" href="../views/">Views</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../urls/">URLs</a>
-                </li>
-                <li class=" current">
-                    
-    <a class="current" href="./">Authentication</a>
-    <ul class="subnav">
-            
-    <li class="toctree-l3"><a href="#authentication-knoxauth">Authentication knox.auth</a></li>
-    
-        <ul>
+            <li>
+    <li class="toctree-l1 ">
+        <a class="" href="..">Home</a>
         
-            <li><a class="toctree-l4" href="#tokenauthentication">TokenAuthentication</a></li>
+    </li>
+<li>
+          
+            <li>
+    <li class="toctree-l1 ">
+        <a class="" href="../installation/">Installation</a>
         
-        </ul>
-    
+    </li>
+<li>
+          
+            <li>
+    <ul class="subnav">
+    <li><span>API Guide</span></li>
 
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../views/">Views</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../urls/">URLs</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 current">
+        <a class="current" href="./">Authentication</a>
+        
+            <ul>
+            
+                <li class="toctree-l3"><a href="#authentication-knoxauth">Authentication knox.auth</a></li>
+                
+                    <li><a class="toctree-l4" href="#tokenauthentication">TokenAuthentication</a></li>
+                
+            
+            </ul>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../settings/">Settings</a>
+        
+    </li>
+
+        
     </ul>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../settings/">Settings</a>
-                </li>
-    </ul>
-	    </li>
+<li>
           
-            <li class="toctree-l1">
-		
-    <a class="" href="../changes/">Changes</a>
-	    </li>
+            <li>
+    <li class="toctree-l1 ">
+        <a class="" href="../changes/">Changes</a>
+        
+    </li>
+<li>
           
         </ul>
       </div>
@@ -126,8 +149,9 @@
     <li>Authentication</li>
     <li class="wy-breadcrumbs-aside">
       
-        <a href="https://github.com/James1345/django-rest-knox/edit/master/docs/auth.md"
-          class="icon icon-github"> Edit on GitHub</a>
+        
+          <a href="https://github.com/James1345/django-rest-knox" class="icon icon-github"> Edit on GitHub</a>
+        
       
     </li>
   </ul>
@@ -170,10 +194,9 @@ class ExampleView(APIView):
 
 <p>Tokens expire after a preset time. See settings.</p>
 <h3 id="global-usage-on-all-views">Global usage on all views</h3>
-<p>You can activate TokenAuthentication on all your views by adding it to
-<code>REST_FRAMEWORK["DEFAULT_AUTHENTICATION_CLASSES"]</code>. If it is your only
-authentication class remember to overwrite the login view and url as at least
-the token-obtaining view may not require a token:</p>
+<p>You can activate TokenAuthentication on all your views by adding it to <code>REST_FRAMEWORK["DEFAULT_AUTHENTICATION_CLASSES"]</code>. </p>
+<p>If it is your only default authentication class, remember to overwrite knox's LoginView, otherwise it'll not work, since the login view will require a authentication token to generate a new token, rendering it unusable.</p>
+<p>For instance, you can authenticate users using Basic Authentication by simply overwriting knox's LoginView and setting BasicAuthentication as one of the acceptable authentication classes, as follows: </p>
 <pre><code class="python">
 views.py:
 
@@ -194,6 +217,8 @@ urlpatterns = [
      url(r'logoutall/', knox_views.LogoutAllView.as_view(), name='knox_logoutall'),
 ]
 </code></pre>
+
+<p>You can use any number of authentication classes if you want to be able to authenticate using different methods (eg.: Basic and JSON) in the same view. Just be sure not to set TokenAuthentication as your only authentication class on the login view.</p>
               
             </div>
           </div>
@@ -218,7 +243,7 @@ urlpatterns = [
 
   Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
 </footer>
-      
+	  
         </div>
       </div>
 
@@ -226,10 +251,10 @@ urlpatterns = [
 
   </div>
 
-  <div class="rst-versions" role="note" style="cursor: pointer">
+<div class="rst-versions" role="note" style="cursor: pointer">
     <span class="rst-current-version" data-toggle="rst-current-version">
       
-          <a href="https://github.com/James1345/django-rest-knox/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
+          <a href="https://github.com/James1345/django-rest-knox" class="icon icon-github" style="float: left; color: #fcfcfc"> GitHub</a>
       
       
         <span><a href="../urls/" style="color: #fcfcfc;">&laquo; Previous</a></span>
@@ -239,10 +264,6 @@ urlpatterns = [
       
     </span>
 </div>
-    <script>var base_url = '..';</script>
-    <script src="../js/theme.js"></script>
-      <script src="../search/require.js"></script>
-      <script src="../search/search.js"></script>
 
 </body>
 </html>
