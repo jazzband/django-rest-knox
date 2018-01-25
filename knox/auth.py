@@ -1,3 +1,5 @@
+from hmac import compare_digest
+
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
@@ -68,7 +70,7 @@ class TokenAuthentication(BaseAuthentication):
                 digest = hash_token(token, auth_token.salt)
             except TypeError:
                 raise exceptions.AuthenticationFailed(msg)
-            if digest == auth_token.digest:
+            if compare_digest(digest, auth_token.digest):
                 return self.validate_user(auth_token)
         # Authentication with this token has failed
         raise exceptions.AuthenticationFailed(msg)
