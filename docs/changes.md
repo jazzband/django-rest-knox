@@ -1,5 +1,8 @@
 #Changelog
 
+## 3.1.1
+- use hmac.compare_digest instead of == for comparing hashes for more security
+
 ## 3.1.0
 - drop Django 1.8 support as djangorestframework did so too in v.3.7.0
 - build rest-knox on Django 1.11 and 2.0
