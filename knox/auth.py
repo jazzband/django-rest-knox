@@ -1,4 +1,8 @@
-from hmac import compare_digest
+try:
+    from hmac import compare_digest
+except ImportError:
+    def compare_digest(a, b):
+        return a == b
 
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
