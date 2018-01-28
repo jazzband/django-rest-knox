@@ -1,4 +1,9 @@
 ######
+3.1.2
+######
+- restore compability with Python <2.7.7
+
+######
 3.1.1
 ######
 - use hmac.compare_digest instead of == for comparing hashes for more security
