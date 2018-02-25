@@ -24,6 +24,9 @@ def hash_token(token, salt):
     '''
     Calculates the hash of a token and salt.
     input is unhexlified
+
+    token and salt must contain an even number of hex digits or
+    a binascii.Error exception will be raised
     '''
     digest = hashes.Hash(sha(), backend=default_backend())
     digest.update(binascii.unhexlify(token))
