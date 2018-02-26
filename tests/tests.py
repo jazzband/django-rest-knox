@@ -26,13 +26,18 @@ def get_basic_auth_header(username, password):
 
 class AuthTestCase(TestCase):
 
+    def setUp(self):
+        self.username, self.email, self.password = 'john.doe', 'john.doe@example.com', 'hunter2'
+        self.user = User.objects.create_user(self.username, self.email, self.password)
+
+        self.username2, self.email2, self.password2 = 'jane.doe', 'jane.doe@example.com', 'hunter2'
+        self.user2 = User.objects.create_user(self.username2, self.email2, self.password2)
+
     def test_login_creates_keys(self):
         self.assertEqual(AuthToken.objects.count(), 0)
-        username, password = 'root', 'toor'
-        User.objects.create_user(username, 'root@localhost.com', password)
         url = reverse('knox_login')
         self.client.credentials(
-            HTTP_AUTHORIZATION=get_basic_auth_header(username, password))
+            HTTP_AUTHORIZATION=get_basic_auth_header(self.username, self.password))
 
         for _ in range(5):
             self.client.post(url, {}, format='json')
@@ -41,11 +46,8 @@ class AuthTestCase(TestCase):
 
     def test_logout_deletes_keys(self):
         self.assertEqual(AuthToken.objects.count(), 0)
-        username, password = 'root', 'toor'
-        user = User.objects.create_user(
-            username, 'root@localhost.com', password)
         for _ in range(2):
-            token = AuthToken.objects.create(user=user)
+            token = AuthToken.objects.create(user=self.user)
         self.assertEqual(AuthToken.objects.count(), 2)
 
         url = reverse('knox_logout')
@@ -55,11 +57,8 @@ class AuthTestCase(TestCase):
 
     def test_logout_all_deletes_keys(self):
         self.assertEqual(AuthToken.objects.count(), 0)
-        username, password = 'root', 'toor'
-        user = User.objects.create_user(
-            username, 'root@localhost.com', password)
         for _ in range(10):
-            token = AuthToken.objects.create(user=user)
+            token = AuthToken.objects.create(user=self.user)
         self.assertEqual(AuthToken.objects.count(), 10)
 
         url = reverse('knox_logoutall')
@@ -69,14 +68,9 @@ class AuthTestCase(TestCase):
 
     def test_logout_all_deletes_only_targets_keys(self):
         self.assertEqual(AuthToken.objects.count(), 0)
-        username, password = 'root', 'toor'
-        user = User.objects.create_user(
-            username, 'root@localhost.com', password)
-        user2 = User.objects.create_user(
-            'user2', 'user2@localhost.com', password)
         for _ in range(10):
-            token = AuthToken.objects.create(user=user)
-            token2 = AuthToken.objects.create(user=user2)
+            token = AuthToken.objects.create(user=self.user)
+            token2 = AuthToken.objects.create(user=self.user2)
         self.assertEqual(AuthToken.objects.count(), 20)
 
         url = reverse('knox_logoutall')
@@ -86,11 +80,8 @@ class AuthTestCase(TestCase):
 
     def test_expired_tokens_login_fails(self):
         self.assertEqual(AuthToken.objects.count(), 0)
-        username, password = 'root', 'toor'
-        user = User.objects.create_user(
-            username, 'root@localhost.com', password)
         token = AuthToken.objects.create(
-            user=user, expires=datetime.timedelta(seconds=0))
+            user=self.user, expires=datetime.timedelta(seconds=0))
         url = reverse('api-root')
         self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % token))
         response = self.client.post(url, {}, format='json')
@@ -99,13 +90,10 @@ class AuthTestCase(TestCase):
 
     def test_expired_tokens_deleted(self):
         self.assertEqual(AuthToken.objects.count(), 0)
-        username, password = 'root', 'toor'
-        user = User.objects.create_user(
-            username, 'root@localhost.com', password)
         for _ in range(10):
             # 0 TTL gives an expired token
             token = AuthToken.objects.create(
-                user=user, expires=datetime.timedelta(seconds=0))
+                user=self.user, expires=datetime.timedelta(seconds=0))
         self.assertEqual(AuthToken.objects.count(), 10)
 
         # Attempting a single logout should delete all tokens
@@ -117,14 +105,11 @@ class AuthTestCase(TestCase):
 
     def test_update_token_key(self):
         self.assertEqual(AuthToken.objects.count(), 0)
-        username, password = 'root', 'toor'
-        user = User.objects.create_user(
-            username, 'root@localhost.com', password)
-        token = AuthToken.objects.create(user)
+        token = AuthToken.objects.create(self.user)
         rf = APIRequestFactory()
         request = rf.get('/')
         request.META = {'HTTP_AUTHORIZATION': 'Token {}'.format(token)}
-        (user, auth_token) = TokenAuthentication().authenticate(request)
+        (self.user, auth_token) = TokenAuthentication().authenticate(request)
         self.assertEqual(
             token[:CONSTANTS.TOKEN_KEY_LENGTH],
             auth_token.token_key)
