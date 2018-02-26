@@ -1,4 +1,9 @@
 ######
+3.1.3
+######
+- Avoid 500 error response for invalid-length token requests
+
+######
 3.1.2
 ######
 - restore compability with Python <2.7.7
@@ -65,7 +70,7 @@
 ######
 2.2.1
 ######
-**Please be aware: updating to his version requires applying a database migration**
+**Please be aware: updating to this version requires applying a database migration**
 
 - Introducing token_key to avoid loop over all tokens on login-requests
 - Signals are sent on login/logout

@@ -4,6 +4,8 @@ except ImportError:
     def compare_digest(a, b):
         return a == b
 
+import binascii
+
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
@@ -72,7 +74,7 @@ class TokenAuthentication(BaseAuthentication):
                     continue
             try:
                 digest = hash_token(token, auth_token.salt)
-            except TypeError:
+            except (TypeError, binascii.Error):
                 raise exceptions.AuthenticationFailed(msg)
             if compare_digest(digest, auth_token.digest):
                 return self.validate_user(auth_token)
