@@ -1,5 +1,8 @@
 #Changelog
 
+## 3.1.3
+- Avoid 500 error response for invalid-length token requests
+
 ## 3.1.2
 - restore compability with Python <2.7.7
 
