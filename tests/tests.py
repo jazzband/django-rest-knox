@@ -123,8 +123,7 @@ class AuthTestCase(TestCase):
         self.assertEqual(response.data, {"detail": "Invalid token."})
 
     def test_invalid_odd_length_token_returns_401_code(self):
-        user = User.objects.create_user('john.doe', 'root@localhost.com', 'test_pwd')
-        token = AuthToken.objects.create(user)
+        token = AuthToken.objects.create(self.user)
         odd_length_token = token + '1'
         url = reverse('api-root')
         self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % odd_length_token))
