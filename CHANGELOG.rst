@@ -1,4 +1,9 @@
 ######
+3.1.4
+######
+- Fix compability with django-rest-swagger (bad inheritance)
+
+######
 3.1.3
 ######
 - Avoid 500 error response for invalid-length token requests
