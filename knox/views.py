@@ -3,14 +3,14 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
-from rest_framework.generics import GenericAPIView
+from rest_framework.views import APIView
 
 from knox.auth import TokenAuthentication
 from knox.models import AuthToken
 from knox.settings import knox_settings
 
 
-class LoginView(GenericAPIView):
+class LoginView(APIView):
     authentication_classes = api_settings.DEFAULT_AUTHENTICATION_CLASSES
     permission_classes = (IsAuthenticated,)
 
@@ -18,13 +18,14 @@ class LoginView(GenericAPIView):
         token = AuthToken.objects.create(request.user)
         user_logged_in.send(sender=request.user.__class__, request=request, user=request.user)
         UserSerializer = knox_settings.USER_SERIALIZER
+        context = {'request': self.request, 'format': self.format_kwarg, 'view': self}
         return Response({
-            'user': UserSerializer(request.user, context=self.get_serializer_context()).data,
+            'user': UserSerializer(request.user, context=context).data,
             'token': token,
         })
 
 
-class LogoutView(GenericAPIView):
+class LogoutView(APIView):
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
 
@@ -34,7 +35,7 @@ class LogoutView(GenericAPIView):
         return Response(None, status=status.HTTP_204_NO_CONTENT)
 
 
-class LogoutAllView(GenericAPIView):
+class LogoutAllView(APIView):
     '''
     Log the user out of all sessions
     I.E. deletes all auth tokens for the user
