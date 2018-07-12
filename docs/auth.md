@@ -72,3 +72,37 @@ urlpatterns = [
 ```
 
 You can use any number of authentication classes if you want to be able to authenticate using different methods (eg.: Basic and JSON) in the same view. Just be sure not to set TokenAuthentication as your only authentication class on the login view.
+
+If you decide to use Token Authentication as your only authentication class, you can overwrite knox's login view as such:
+
+```python
+
+views.py:
+
+from django.contrib.auth import login
+
+from rest_framework import permissions
+from rest_framework.authtoken.serializers import AuthTokenSerializer
+from knox.views import LoginView as KnoxLoginView
+
+class LoginView(KnoxLoginView):
+    permission_classes = (permissions.AllowAny,)
+
+    def post(self, request, format=None):
+        serializer = AuthTokenSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        login(request, user)
+        return super(LoginView, self).post(request, format=None)
+
+urls.py:
+
+from knox import views as knox_views
+from yourapp.api.views import LoginView
+
+urlpatterns = [
+     url(r'login/', LoginView.as_view(), name='knox_login'),
+     url(r'logout/', knox_views.LogoutView.as_view(), name='knox_logout'),
+     url(r'logoutall/', knox_views.LogoutAllView.as_view(), name='knox_logoutall'),
+]
+```
