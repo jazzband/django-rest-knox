@@ -1,5 +1,9 @@
 #Changelog
 
+## 3.1.5
+- Make AuthTokenAdmin more compatible with big user tables
+- Extend docs regarding usage of Token Authentication as single authentication method.
+
 ## 3.1.4
 - Fix compability with django-rest-swagger (bad inheritance)
 
