@@ -10,6 +10,7 @@ DEFAULTS = {
     'AUTH_TOKEN_CHARACTER_LENGTH': 64,
     'TOKEN_TTL': timedelta(hours=10),
     'USER_SERIALIZER': 'knox.serializers.UserSerializer',
+    'AUTO_REFRESH': False,
 }
 
 IMPORT_STRINGS = {
