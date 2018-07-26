@@ -80,4 +80,7 @@ This is the length of the digest that will be stored in the database for each to
 ## SALT_LENGTH
 This is the length of the [salt][salt] that will be stored in the database for each token.
 
+## MIN_REFRESH_INTERVAL
+This is the minimun time in seconds before the token expiricy is updated.
+
 [salt]: https://en.wikipedia.org/wiki/Salt_(cryptography)

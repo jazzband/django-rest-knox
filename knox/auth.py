@@ -87,8 +87,8 @@ class TokenAuthentication(BaseAuthentication):
         current_expiry = auth_token.expires
         new_expiry = timezone.now() + knox_settings.TOKEN_TTL
         auth_token.expires = new_expiry
-        # Update once per second max
-        if (new_expiry - current_expiry).total_seconds() > 1:
+        # Throttle refreshing of token to avoid db writes
+        if (new_expiry - current_expiry).total_seconds() > CONSTANTS.MIN_REFRESH_INTERVAL:
             auth_token.save(update_fields=('expires',))
 
     def validate_user(self, auth_token):
