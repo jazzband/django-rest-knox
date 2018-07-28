@@ -1,6 +1,7 @@
 import base64
 from datetime import datetime, timedelta
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
 
 try:
@@ -134,28 +135,34 @@ class AuthTestCase(TestCase):
         self.assertEqual(response.status_code, 401)
         self.assertEqual(response.data, {"detail": "Invalid token."})
 
-    def test_refresh_token(self):
-        url = reverse('api-root')
-        original_date = datetime.datetime(2018, 7, 25, 0, 0, 0, 0)
-        ttl = knox_settings.TOKEN_TTL # 10 hours
-        self.assertEqual(AuthToken.objects.count(), 0)
-        # Create token with 10 hours expiracy
-        with freeze_time(original_date):
-            token = AuthToken.objects.create(user=self.user)
+    def test_token_expiry_is_extended_with_auto_refresh_activated(self):
+        self.assertEqual(settings.REST_KNOX["AUTO_REFRESH"], True)
+        self.assertEqual(knox_settings.TOKEN_TTL, timedelta(hours=10))
+        ttl = knox_settings.TOKEN_TTL
+        original_time = datetime(2018, 7, 25, 0, 0, 0, 0)
 
-        # token is refreshed 5 hours later
-        self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % token))
-        with freeze_time(original_date + ttl / 2):
-            response = self.client.get(url, {}, format='json')
+        with freeze_time(original_time):
+            token_key = AuthToken.objects.create(user=self.user)
+
+        self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % token_key))
+        five_hours_later = original_time + timedelta(hours=5)
+        with freeze_time(five_hours_later):
+            response = self.client.get(root_url, {}, format='json')
         self.assertEqual(response.status_code, 200)
 
-        # 15 Hours after original token creation token
-        # should not be expired
-        with freeze_time(original_date + 3 / 2 * ttl):
-            response = self.client.get(url, {}, format='json')
+        # original expiry date was extended:
+        new_expiry = AuthToken.objects.get().expires
+        self.assertEqual(new_expiry.replace(tzinfo=None),
+                         original_time + ttl + timedelta(hours=5))
+
+        # token works after orignal expiry:
+        after_original_expiry = original_time + ttl + timedelta(hours=1)
+        with freeze_time(after_original_expiry):
+            response = self.client.get(root_url, {}, format='json')
             self.assertEqual(response.status_code, 200)
 
-        # 15 hours without refresh the token is expired
-        with freeze_time(original_date + 3 * ttl):
-            response = self.client.get(url, {}, format='json')
+        # token does not work after new expiry:
+        new_expiry = AuthToken.objects.get().expires
+        with freeze_time(new_expiry + timedelta(seconds=1)):
+            response = self.client.get(root_url, {}, format='json')
             self.assertEqual(response.status_code, 401)
