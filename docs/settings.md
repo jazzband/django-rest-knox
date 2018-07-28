@@ -14,6 +14,7 @@ REST_KNOX = {
   'AUTH_TOKEN_CHARACTER_LENGTH': 64,
   'TOKEN_TTL': timedelta(hours=10),
   'USER_SERIALIZER': 'knox.serializers.UserSerializer',
+  'AUTO_REFRESH': FALSE,
 }
 #...snip...
 ```
@@ -57,6 +58,10 @@ the system will not prevent you setting this.
 This is the reference to the class used to serialize the `User` objects when
 succesfully returning from `LoginView`. The default is `knox.serializers.UserSerializer`
 
+## AUTO_REFRESH
+This define if the time the token expires is extended by TOKEN_TTL each time the
+token is used.
+
 # Constants `knox.settings`
 Knox also provides some constants for information. These must not be changed in
 external code; they are used in the model definitions in knox and an error will
@@ -74,5 +79,8 @@ This is the length of the digest that will be stored in the database for each to
 
 ## SALT_LENGTH
 This is the length of the [salt][salt] that will be stored in the database for each token.
+
+## MIN_REFRESH_INTERVAL
+This is the minimun time in seconds before the token expiricy is updated.
 
 [salt]: https://en.wikipedia.org/wiki/Salt_(cryptography)

@@ -10,11 +10,17 @@ except ImportError:
     # For django < 2.0
     from django.conf.urls import reverse
 
-from rest_framework.test import APIRequestFactory, APITestCase as TestCase
+from freezegun import freeze_time
+
+from rest_framework.test import (
+    APIRequestFactory,
+    APITestCase as TestCase,
+    override_settings
+)
 
 from knox.auth import TokenAuthentication
 from knox.models import AuthToken
-from knox.settings import CONSTANTS
+from knox.settings import CONSTANTS, knox_settings
 
 User = get_user_model()
 
@@ -130,3 +136,29 @@ class AuthTestCase(TestCase):
         response = self.client.post(url, {}, format='json')
         self.assertEqual(response.status_code, 401)
         self.assertEqual(response.data, {"detail": "Invalid token."})
+
+    def test_refresh_token(self):
+        url = reverse('api-root')
+        original_date = datetime.datetime(2018, 7, 25, 0, 0, 0, 0)
+        ttl = knox_settings.TOKEN_TTL # 10 hours
+        self.assertEqual(AuthToken.objects.count(), 0)
+        # Create token with 10 hours expiracy
+        with freeze_time(original_date):
+            token = AuthToken.objects.create(user=self.user)
+
+        # token is refreshed 5 hours later
+        self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % token))
+        with freeze_time(original_date + ttl / 2):
+            response = self.client.get(url, {}, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        # 15 Hours after original token creation token
+        # should not be expired
+        with freeze_time(original_date + 3 / 2 * ttl):
+            response = self.client.get(url, {}, format='json')
+            self.assertEqual(response.status_code, 200)
+
+        # 15 hours without refresh the token is expired
+        with freeze_time(original_date + 3 * ttl):
+            response = self.client.get(url, {}, format='json')
+            self.assertEqual(response.status_code, 401)
