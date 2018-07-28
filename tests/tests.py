@@ -81,7 +81,7 @@ class AuthTestCase(TestCase):
         self.assertEqual(AuthToken.objects.count(), 0)
         for _ in range(10):
             token = AuthToken.objects.create(user=self.user)
-            token2 = AuthToken.objects.create(user=self.user2)
+            AuthToken.objects.create(user=self.user2)
         self.assertEqual(AuthToken.objects.count(), 20)
 
         url = reverse('knox_logoutall')
@@ -183,6 +183,23 @@ class AuthTestCase(TestCase):
 
         self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % token_key))
         with freeze_time(now + timedelta(hours=1)):
+            response = self.client.get(root_url, {}, format='json')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(original_expiry, AuthToken.objects.get().expires)
+
+    def test_token_expiry_is_not_extended_within_MIN_REFRESH_INTERVAL(self):
+        self.assertEqual(settings.REST_KNOX["AUTO_REFRESH"], True)
+
+        now = datetime.now()
+        with freeze_time(now):
+            token_key = AuthToken.objects.create(user=self.user)
+
+        original_expiry = AuthToken.objects.get().expires
+
+        self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % token_key))
+        in_min_interval = now + timedelta(seconds=CONSTANTS.MIN_REFRESH_INTERVAL - 10)
+        with freeze_time(in_min_interval):
             response = self.client.get(root_url, {}, format='json')
 
         self.assertEqual(response.status_code, 200)
