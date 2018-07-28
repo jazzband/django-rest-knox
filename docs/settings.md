@@ -59,8 +59,8 @@ This is the reference to the class used to serialize the `User` objects when
 succesfully returning from `LoginView`. The default is `knox.serializers.UserSerializer`
 
 ## AUTO_REFRESH
-This define if the time the token expires is extended by TOKEN_TTL each time the
-token is used.
+This defines if the token expiry time is extended by TOKEN_TTL each time the token
+is used.
 
 # Constants `knox.settings`
 Knox also provides some constants for information. These must not be changed in
@@ -81,6 +81,7 @@ This is the length of the digest that will be stored in the database for each to
 This is the length of the [salt][salt] that will be stored in the database for each token.
 
 ## MIN_REFRESH_INTERVAL
-This is the minimun time in seconds before the token expiricy is updated.
+This is the minimum time in seconds that needs to pass for the token expiry to be updated 
+in the database.
 
 [salt]: https://en.wikipedia.org/wiki/Salt_(cryptography)
