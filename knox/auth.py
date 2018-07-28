@@ -64,14 +64,9 @@ class TokenAuthentication(BaseAuthentication):
         token = token.decode("utf-8")
         for auth_token in AuthToken.objects.filter(
                 token_key=token[:CONSTANTS.TOKEN_KEY_LENGTH]):
-            for other_token in auth_token.user.auth_token_set.all():
-                if other_token.digest != auth_token.digest and other_token.expires is not None:
-                    if other_token.expires < timezone.now():
-                        other_token.delete()
-            if auth_token.expires is not None:
-                if auth_token.expires < timezone.now():
-                    auth_token.delete()
-                    continue
+            if self._cleanup_token(auth_token):
+                continue
+
             try:
                 digest = hash_token(token, auth_token.salt)
             except (TypeError, binascii.Error):
@@ -98,3 +93,15 @@ class TokenAuthentication(BaseAuthentication):
 
     def authenticate_header(self, request):
         return 'Token'
+
+    def _cleanup_token(self, auth_token):
+        for other_token in auth_token.user.auth_token_set.all():
+            if other_token.digest != auth_token.digest and other_token.expires is not None:
+                if other_token.expires < timezone.now():
+                    other_token.delete()
+        if auth_token.expires is not None:
+            if auth_token.expires < timezone.now():
+                auth_token.delete()
+                return True
+        return False
+
