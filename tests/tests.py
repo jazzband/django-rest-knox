@@ -1,5 +1,5 @@
 import base64
-import datetime
+from datetime import datetime, timedelta
 
 from django.contrib.auth import get_user_model
 
@@ -14,8 +14,7 @@ from freezegun import freeze_time
 
 from rest_framework.test import (
     APIRequestFactory,
-    APITestCase as TestCase,
-    override_settings
+    APITestCase as TestCase
 )
 
 from knox.auth import TokenAuthentication
@@ -23,6 +22,7 @@ from knox.models import AuthToken
 from knox.settings import CONSTANTS, knox_settings
 
 User = get_user_model()
+root_url = reverse('api-root')
 
 
 def get_basic_auth_header(username, password):
@@ -87,10 +87,9 @@ class AuthTestCase(TestCase):
     def test_expired_tokens_login_fails(self):
         self.assertEqual(AuthToken.objects.count(), 0)
         token = AuthToken.objects.create(
-            user=self.user, expires=datetime.timedelta(seconds=0))
-        url = reverse('api-root')
+            user=self.user, expires=timedelta(seconds=0))
         self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % token))
-        response = self.client.post(url, {}, format='json')
+        response = self.client.post(root_url, {}, format='json')
         self.assertEqual(response.status_code, 401)
         self.assertEqual(response.data, {"detail": "Invalid token."})
 
@@ -99,7 +98,7 @@ class AuthTestCase(TestCase):
         for _ in range(10):
             # 0 TTL gives an expired token
             token = AuthToken.objects.create(
-                user=self.user, expires=datetime.timedelta(seconds=0))
+                user=self.user, expires=timedelta(seconds=0))
         self.assertEqual(AuthToken.objects.count(), 10)
 
         # Attempting a single logout should delete all tokens
@@ -122,18 +121,16 @@ class AuthTestCase(TestCase):
 
     def test_invalid_token_length_returns_401_code(self):
         invalid_token = "1" * (CONSTANTS.TOKEN_KEY_LENGTH - 1)
-        url = reverse('api-root')
         self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % invalid_token))
-        response = self.client.post(url, {}, format='json')
+        response = self.client.post(root_url, {}, format='json')
         self.assertEqual(response.status_code, 401)
         self.assertEqual(response.data, {"detail": "Invalid token."})
 
     def test_invalid_odd_length_token_returns_401_code(self):
         token = AuthToken.objects.create(self.user)
         odd_length_token = token + '1'
-        url = reverse('api-root')
         self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % odd_length_token))
-        response = self.client.post(url, {}, format='json')
+        response = self.client.post(root_url, {}, format='json')
         self.assertEqual(response.status_code, 401)
         self.assertEqual(response.data, {"detail": "Invalid token."})
 
