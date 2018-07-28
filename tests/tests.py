@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.test import override_settings
 
 try:
     # For django >= 2.0
@@ -29,6 +30,9 @@ root_url = reverse('api-root')
 def get_basic_auth_header(username, password):
     return 'Basic %s' % base64.b64encode(
         ('%s:%s' % (username, password)).encode('ascii')).decode()
+
+no_auto_refresh_knox = settings.REST_KNOX.copy()
+no_auto_refresh_knox["AUTO_REFRESH"] = False
 
 
 class AuthTestCase(TestCase):
@@ -166,3 +170,20 @@ class AuthTestCase(TestCase):
         with freeze_time(new_expiry + timedelta(seconds=1)):
             response = self.client.get(root_url, {}, format='json')
             self.assertEqual(response.status_code, 401)
+
+    @override_settings(REST_KNOX=no_auto_refresh_knox)
+    def test_token_expiry_is_not_extended_with_auto_refresh_deativated(self):
+        self.assertEqual(knox_settings.TOKEN_TTL, timedelta(hours=10))
+
+        now = datetime.now()
+        with freeze_time(now):
+            token_key = AuthToken.objects.create(user=self.user)
+
+        original_expiry = AuthToken.objects.get().expires
+
+        self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % token_key))
+        with freeze_time(now + timedelta(hours=1)):
+            response = self.client.get(root_url, {}, format='json')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(original_expiry, AuthToken.objects.get().expires)

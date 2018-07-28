@@ -77,10 +77,9 @@ class TokenAuthentication(BaseAuthentication):
             except (TypeError, binascii.Error):
                 raise exceptions.AuthenticationFailed(msg)
             if compare_digest(digest, auth_token.digest):
-                if knox_settings.AUTO_REFRESH:
+                if settings.REST_KNOX["AUTO_REFRESH"]:
                     self.renew_token(auth_token)
                 return self.validate_user(auth_token)
-        # Authentication with this token has failed
         raise exceptions.AuthenticationFailed(msg)
 
     def renew_token(self, auth_token):
