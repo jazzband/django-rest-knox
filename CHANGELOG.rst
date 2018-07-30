@@ -1,4 +1,9 @@
 ######
+3.2.0
+######
+- Introduce new setting AUTO_REFRESH for controlling if token expiry time should be extended automatically
+
+######
 3.1.5
 ######
 - Make AuthTokenAdmin more compatible with big user tables

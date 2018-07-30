@@ -1,7 +1,9 @@
 import base64
-import datetime
+from datetime import datetime, timedelta
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.test import override_settings
 
 try:
     # For django >= 2.0
@@ -14,8 +16,7 @@ from freezegun import freeze_time
 
 from rest_framework.test import (
     APIRequestFactory,
-    APITestCase as TestCase,
-    override_settings
+    APITestCase as TestCase
 )
 
 from knox.auth import TokenAuthentication
@@ -23,11 +24,15 @@ from knox.models import AuthToken
 from knox.settings import CONSTANTS, knox_settings
 
 User = get_user_model()
+root_url = reverse('api-root')
 
 
 def get_basic_auth_header(username, password):
     return 'Basic %s' % base64.b64encode(
         ('%s:%s' % (username, password)).encode('ascii')).decode()
+
+no_auto_refresh_knox = settings.REST_KNOX.copy()
+no_auto_refresh_knox["AUTO_REFRESH"] = False
 
 
 class AuthTestCase(TestCase):
@@ -76,7 +81,7 @@ class AuthTestCase(TestCase):
         self.assertEqual(AuthToken.objects.count(), 0)
         for _ in range(10):
             token = AuthToken.objects.create(user=self.user)
-            token2 = AuthToken.objects.create(user=self.user2)
+            AuthToken.objects.create(user=self.user2)
         self.assertEqual(AuthToken.objects.count(), 20)
 
         url = reverse('knox_logoutall')
@@ -87,10 +92,9 @@ class AuthTestCase(TestCase):
     def test_expired_tokens_login_fails(self):
         self.assertEqual(AuthToken.objects.count(), 0)
         token = AuthToken.objects.create(
-            user=self.user, expires=datetime.timedelta(seconds=0))
-        url = reverse('api-root')
+            user=self.user, expires=timedelta(seconds=0))
         self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % token))
-        response = self.client.post(url, {}, format='json')
+        response = self.client.post(root_url, {}, format='json')
         self.assertEqual(response.status_code, 401)
         self.assertEqual(response.data, {"detail": "Invalid token."})
 
@@ -99,7 +103,7 @@ class AuthTestCase(TestCase):
         for _ in range(10):
             # 0 TTL gives an expired token
             token = AuthToken.objects.create(
-                user=self.user, expires=datetime.timedelta(seconds=0))
+                user=self.user, expires=timedelta(seconds=0))
         self.assertEqual(AuthToken.objects.count(), 10)
 
         # Attempting a single logout should delete all tokens
@@ -122,43 +126,81 @@ class AuthTestCase(TestCase):
 
     def test_invalid_token_length_returns_401_code(self):
         invalid_token = "1" * (CONSTANTS.TOKEN_KEY_LENGTH - 1)
-        url = reverse('api-root')
         self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % invalid_token))
-        response = self.client.post(url, {}, format='json')
+        response = self.client.post(root_url, {}, format='json')
         self.assertEqual(response.status_code, 401)
         self.assertEqual(response.data, {"detail": "Invalid token."})
 
     def test_invalid_odd_length_token_returns_401_code(self):
         token = AuthToken.objects.create(self.user)
         odd_length_token = token + '1'
-        url = reverse('api-root')
         self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % odd_length_token))
-        response = self.client.post(url, {}, format='json')
+        response = self.client.post(root_url, {}, format='json')
         self.assertEqual(response.status_code, 401)
         self.assertEqual(response.data, {"detail": "Invalid token."})
 
-    def test_refresh_token(self):
-        url = reverse('api-root')
-        original_date = datetime.datetime(2018, 7, 25, 0, 0, 0, 0)
-        ttl = knox_settings.TOKEN_TTL # 10 hours
-        self.assertEqual(AuthToken.objects.count(), 0)
-        # Create token with 10 hours expiracy
-        with freeze_time(original_date):
-            token = AuthToken.objects.create(user=self.user)
+    def test_token_expiry_is_extended_with_auto_refresh_activated(self):
+        self.assertEqual(settings.REST_KNOX["AUTO_REFRESH"], True)
+        self.assertEqual(knox_settings.TOKEN_TTL, timedelta(hours=10))
+        ttl = knox_settings.TOKEN_TTL
+        original_time = datetime(2018, 7, 25, 0, 0, 0, 0)
 
-        # token is refreshed 5 hours later
-        self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % token))
-        with freeze_time(original_date + ttl / 2):
-            response = self.client.get(url, {}, format='json')
+        with freeze_time(original_time):
+            token_key = AuthToken.objects.create(user=self.user)
+
+        self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % token_key))
+        five_hours_later = original_time + timedelta(hours=5)
+        with freeze_time(five_hours_later):
+            response = self.client.get(root_url, {}, format='json')
         self.assertEqual(response.status_code, 200)
 
-        # 15 Hours after original token creation token
-        # should not be expired
-        with freeze_time(original_date + 3 / 2 * ttl):
-            response = self.client.get(url, {}, format='json')
+        # original expiry date was extended:
+        new_expiry = AuthToken.objects.get().expires
+        self.assertEqual(new_expiry.replace(tzinfo=None),
+                         original_time + ttl + timedelta(hours=5))
+
+        # token works after orignal expiry:
+        after_original_expiry = original_time + ttl + timedelta(hours=1)
+        with freeze_time(after_original_expiry):
+            response = self.client.get(root_url, {}, format='json')
             self.assertEqual(response.status_code, 200)
 
-        # 15 hours without refresh the token is expired
-        with freeze_time(original_date + 3 * ttl):
-            response = self.client.get(url, {}, format='json')
+        # token does not work after new expiry:
+        new_expiry = AuthToken.objects.get().expires
+        with freeze_time(new_expiry + timedelta(seconds=1)):
+            response = self.client.get(root_url, {}, format='json')
             self.assertEqual(response.status_code, 401)
+
+    @override_settings(REST_KNOX=no_auto_refresh_knox)
+    def test_token_expiry_is_not_extended_with_auto_refresh_deativated(self):
+        self.assertEqual(knox_settings.TOKEN_TTL, timedelta(hours=10))
+
+        now = datetime.now()
+        with freeze_time(now):
+            token_key = AuthToken.objects.create(user=self.user)
+
+        original_expiry = AuthToken.objects.get().expires
+
+        self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % token_key))
+        with freeze_time(now + timedelta(hours=1)):
+            response = self.client.get(root_url, {}, format='json')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(original_expiry, AuthToken.objects.get().expires)
+
+    def test_token_expiry_is_not_extended_within_MIN_REFRESH_INTERVAL(self):
+        self.assertEqual(settings.REST_KNOX["AUTO_REFRESH"], True)
+
+        now = datetime.now()
+        with freeze_time(now):
+            token_key = AuthToken.objects.create(user=self.user)
+
+        original_expiry = AuthToken.objects.get().expires
+
+        self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % token_key))
+        in_min_interval = now + timedelta(seconds=CONSTANTS.MIN_REFRESH_INTERVAL - 10)
+        with freeze_time(in_min_interval):
+            response = self.client.get(root_url, {}, format='json')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(original_expiry, AuthToken.objects.get().expires)
