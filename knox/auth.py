@@ -18,7 +18,7 @@ from rest_framework.authentication import (
 
 from knox.crypto import hash_token
 from knox.models import AuthToken
-from knox.settings import CONSTANTS
+from knox.settings import CONSTANTS, knox_settings
 
 User = settings.AUTH_USER_MODEL
 
@@ -64,22 +64,26 @@ class TokenAuthentication(BaseAuthentication):
         token = token.decode("utf-8")
         for auth_token in AuthToken.objects.filter(
                 token_key=token[:CONSTANTS.TOKEN_KEY_LENGTH]):
-            for other_token in auth_token.user.auth_token_set.all():
-                if other_token.digest != auth_token.digest and other_token.expires is not None:
-                    if other_token.expires < timezone.now():
-                        other_token.delete()
-            if auth_token.expires is not None:
-                if auth_token.expires < timezone.now():
-                    auth_token.delete()
-                    continue
+            if self._cleanup_token(auth_token):
+                continue
+
             try:
                 digest = hash_token(token, auth_token.salt)
             except (TypeError, binascii.Error):
                 raise exceptions.AuthenticationFailed(msg)
             if compare_digest(digest, auth_token.digest):
+                if settings.REST_KNOX["AUTO_REFRESH"]:
+                    self.renew_token(auth_token)
                 return self.validate_user(auth_token)
-        # Authentication with this token has failed
         raise exceptions.AuthenticationFailed(msg)
+
+    def renew_token(self, auth_token):
+        current_expiry = auth_token.expires
+        new_expiry = timezone.now() + knox_settings.TOKEN_TTL
+        auth_token.expires = new_expiry
+        # Throttle refreshing of token to avoid db writes
+        if (new_expiry - current_expiry).total_seconds() > CONSTANTS.MIN_REFRESH_INTERVAL:
+            auth_token.save(update_fields=('expires',))
 
     def validate_user(self, auth_token):
         if not auth_token.user.is_active:
@@ -89,3 +93,15 @@ class TokenAuthentication(BaseAuthentication):
 
     def authenticate_header(self, request):
         return 'Token'
+
+    def _cleanup_token(self, auth_token):
+        for other_token in auth_token.user.auth_token_set.all():
+            if other_token.digest != auth_token.digest and other_token.expires is not None:
+                if other_token.expires < timezone.now():
+                    other_token.delete()
+        if auth_token.expires is not None:
+            if auth_token.expires < timezone.now():
+                auth_token.delete()
+                return True
+        return False
+
