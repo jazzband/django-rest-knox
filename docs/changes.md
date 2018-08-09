@@ -1,5 +1,9 @@
 #Changelog
 
+## 3.x.x
+- **Breaking changes**: Successful authentication **ONLY** returns `Token` object by default now. 
+`USER_SERIALIZER` must be overridden to return custom data.
+
 ## 3.2.0
 - Introduce new setting AUTO_REFRESH for controlling if token expiry time should be extended automatically
 

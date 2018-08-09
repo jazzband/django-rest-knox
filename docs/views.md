@@ -13,13 +13,17 @@ schemes. If you would like to use a different authentication scheme to the
 default, you can extend this class to provide your own value for
 `authentication_classes`
 
-When it receives an authenticated request, it will return json
-- `user` an object representing the user that was authenticated
-- `token` the token that should be used for any token
+---
+When the endpoint authenticates a request, a json object will be returned 
+containing the `token` key along with the actual value for the key by default.
 
-The returned `user` object is serialized using the `USER_SERIALIZER` setting.
-If this setting is not changed, the default serializer returns the user's
-`first_name`, `last_name` and `username`.
+> *This is because `USER_SERIALIZER` setting is `None` by default.*
+
+If you wish to return custom data upon successful authentication
+like `first_name`, `last_name`, and `username` then the included `UserSerializer`
+class can be used inside `REST_KNOX` settings by adding `knox.serializers.UserSerializer`
+---
+
 
 Obviously, if your app uses a custom user model that does not have these fields,
 a custom serializer must be used.
