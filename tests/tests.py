@@ -31,8 +31,10 @@ def get_basic_auth_header(username, password):
     return 'Basic %s' % base64.b64encode(
         ('%s:%s' % (username, password)).encode('ascii')).decode()
 
-no_auto_refresh_knox = settings.REST_KNOX.copy()
-no_auto_refresh_knox["AUTO_REFRESH"] = False
+
+auto_refresh_knox = {
+    'AUTO_REFRESH': True
+}
 
 
 class AuthTestCase(TestCase):
@@ -139,6 +141,7 @@ class AuthTestCase(TestCase):
         self.assertEqual(response.status_code, 401)
         self.assertEqual(response.data, {"detail": "Invalid token."})
 
+    @override_settings(REST_KNOX=auto_refresh_knox)
     def test_token_expiry_is_extended_with_auto_refresh_activated(self):
         self.assertEqual(settings.REST_KNOX["AUTO_REFRESH"], True)
         self.assertEqual(knox_settings.TOKEN_TTL, timedelta(hours=10))
@@ -171,7 +174,6 @@ class AuthTestCase(TestCase):
             response = self.client.get(root_url, {}, format='json')
             self.assertEqual(response.status_code, 401)
 
-    @override_settings(REST_KNOX=no_auto_refresh_knox)
     def test_token_expiry_is_not_extended_with_auto_refresh_deativated(self):
         self.assertEqual(knox_settings.TOKEN_TTL, timedelta(hours=10))
 
@@ -188,6 +190,7 @@ class AuthTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(original_expiry, AuthToken.objects.get().expires)
 
+    @override_settings(REST_KNOX=auto_refresh_knox)
     def test_token_expiry_is_not_extended_within_MIN_REFRESH_INTERVAL(self):
         self.assertEqual(settings.REST_KNOX["AUTO_REFRESH"], True)
 

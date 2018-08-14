@@ -21,6 +21,18 @@ IMPORT_STRINGS = {
 knox_settings = APISettings(USER_SETTINGS, DEFAULTS, IMPORT_STRINGS)
 
 
+def read_knox_setting(name):
+    '''
+    Read a rest knox setting. Used to check setting that need to be
+    overriden in tests
+    '''
+    rest_knox_settings = getattr(settings, 'REST_KNOX', {})
+    return rest_knox_settings.get(
+        name,
+        DEFAULTS.get(name, None)
+    )
+
+
 def reload_api_settings(*args, **kwargs):
     global knox_settings
     setting, value = kwargs['setting'], kwargs['value']

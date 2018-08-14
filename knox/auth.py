@@ -18,7 +18,7 @@ from rest_framework.authentication import (
 
 from knox.crypto import hash_token
 from knox.models import AuthToken
-from knox.settings import CONSTANTS, knox_settings
+from knox.settings import CONSTANTS, knox_settings, read_knox_setting
 
 User = settings.AUTH_USER_MODEL
 
@@ -72,7 +72,7 @@ class TokenAuthentication(BaseAuthentication):
             except (TypeError, binascii.Error):
                 raise exceptions.AuthenticationFailed(msg)
             if compare_digest(digest, auth_token.digest):
-                if settings.REST_KNOX["AUTO_REFRESH"]:
+                if read_knox_setting('AUTO_REFRESH'):
                     self.renew_token(auth_token)
                 return self.validate_user(auth_token)
         raise exceptions.AuthenticationFailed(msg)
