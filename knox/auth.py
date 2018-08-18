@@ -31,7 +31,7 @@ class TokenAuthentication(BaseAuthentication):
     authentication scheme to cope with the fact that Tokens are not stored
     in plaintext in the database
 
-    If succesful
+    If sucessful
     - `request.user` will be a django `User` instance
     - `request.auth` will be an `AuthToken` instance
     '''

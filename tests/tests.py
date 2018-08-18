@@ -107,7 +107,6 @@ class AuthTestCase(TestCase):
         self.assertEqual(AuthToken.objects.count(), 10)
 
         # Attempting a single logout should delete all tokens
-
         url = reverse('knox_logout')
         self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % token))
         self.client.post(url, {}, format='json')
@@ -140,8 +139,6 @@ class AuthTestCase(TestCase):
         self.assertEqual(response.data, {"detail": "Invalid token."})
 
     def test_token_expiry_is_extended_with_auto_refresh_activated(self):
-        self.assertEqual(settings.REST_KNOX["AUTO_REFRESH"], True)
-        self.assertEqual(knox_settings.TOKEN_TTL, timedelta(hours=10))
         ttl = knox_settings.TOKEN_TTL
         original_time = datetime(2018, 7, 25, 0, 0, 0, 0)
 
@@ -159,7 +156,7 @@ class AuthTestCase(TestCase):
         self.assertEqual(new_expiry.replace(tzinfo=None),
                          original_time + ttl + timedelta(hours=5))
 
-        # token works after orignal expiry:
+        # token works after original expiry:
         after_original_expiry = original_time + ttl + timedelta(hours=1)
         with freeze_time(after_original_expiry):
             response = self.client.get(root_url, {}, format='json')
