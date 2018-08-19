@@ -22,6 +22,7 @@ from rest_framework.test import (
 
 from knox.auth import TokenAuthentication
 from knox.models import AuthToken
+from knox.serializers import TokenSerializer
 from knox.settings import CONSTANTS, knox_settings
 
 User = get_user_model()
@@ -209,3 +210,61 @@ class AuthTestCase(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(original_expiry, AuthToken.objects.get().expires)
+
+    def test_authentication_serializer(self):
+
+        serializer = TokenSerializer(data={})
+        is_valid = serializer.is_valid()
+        expected_errors = {
+            'username': ['This field is required.'],
+            'password': ['This field is required.']
+        }
+        self.assertFalse(is_valid)
+        self.assertEqual(serializer.errors, expected_errors)
+
+    def test_authentication_json_post(self):
+
+        credentials = {
+            'username': self.username,
+            'password': self.password
+        }
+        url = reverse('knox-api-auth')
+        response = self.client.post(url, credentials, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('token', response.data)
+
+    def test_authentication_json_post_invalid_credentials(self):
+
+        credentials = {
+            'username': self.username,
+            'password': "fffff"
+        }
+        url = reverse('knox-api-auth')
+        response = self.client.post(url, credentials, format='json')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual({'non_field_errors': ['Unable to login with provided credentials.']}, response.data)
+
+    def test_authentication_json_post_non_existent_user(self):
+
+        credentials = {
+            'username': 'idontexist',
+            'password': 'idontwork'
+        }
+        url = reverse('knox-api-auth')
+        response = self.client.post(url, credentials, format='json')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual({'non_field_errors': ['Unable to login with provided credentials.']}, response.data)
+
+    def test_authentication_json_post_missing_field(self):
+
+        credentials = {}
+        url = reverse('knox-api-auth')
+        response = self.client.post(url, credentials, format='json')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(
+            {
+                'username': ['This field is required.'],
+                'password': ['This field is required.']
+            },
+            response.data
+        )

@@ -7,6 +7,7 @@ from rest_framework.views import APIView
 
 from knox.auth import TokenAuthentication
 from knox.models import AuthToken
+from knox.serializers import TokenSerializer
 from knox.settings import knox_settings
 
 
@@ -47,3 +48,27 @@ class LogoutAllView(APIView):
         request.user.auth_token_set.all().delete()
         user_logged_out.send(sender=request.user.__class__, request=request, user=request.user)
         return Response(None, status=status.HTTP_204_NO_CONTENT)
+
+
+class BaseJSONAuthenticationView(APIView):
+    authentication_classes = ()
+    permission_classes = ()
+
+    def post(self, request, *args, **kwargs):
+
+        serializer = TokenSerializer(
+            data=request.data
+        )
+        if serializer.is_valid():
+            user = serializer.validated_data['user']
+            token = AuthToken.objects.create(user)
+            return Response({'token': token})
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class JSONAuthenticationView(BaseJSONAuthenticationView):
+
+    serializer_class = TokenSerializer
+
+
+obtain_token = JSONAuthenticationView.as_view()

@@ -7,8 +7,10 @@ except ImportError:
     path = url
 
 from .views import RootView
+from knox.views import obtain_token
 
 urlpatterns = [
     path(r'^api/', include('knox.urls')),
+    path(r'^api/auth/$', obtain_token, name="knox-api-auth"),
     path(r'^api/$', RootView.as_view(), name="api-root"),
 ]
