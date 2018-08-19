@@ -1,5 +1,8 @@
 #Changelog
 
+## 3.2.1
+- Fix !111: Avoid knox failing if settings are not overwritten
+
 ## 3.2.0
 - Introduce new setting AUTO_REFRESH for controlling if token expiry time should be extended automatically
 
