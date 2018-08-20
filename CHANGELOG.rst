@@ -1,4 +1,9 @@
 ######
+3.3.0
+######
+- **Breaking changes**: Successful authentication **ONLY** returns `Token` object by default now. `USER_SERIALIZER` must be overridden to return custom data. This also removes hardcoded user fields from `UserSerializer` class to allow more generic behaivor by default.
+
+######
 3.2.0
 ######
 - Introduce new setting AUTO_REFRESH for controlling if token expiry time should be extended automatically
