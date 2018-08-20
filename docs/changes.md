@@ -1,4 +1,7 @@
-#Changelog
+# Changelog
+
+## 3.4.0
+- adds optional token limit
 
 ## 3.3.1
 - Ensure compatibility with Django 2.1 up to Python 3.7

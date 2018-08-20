@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from django.utils.six.moves import reload_module
 from django.contrib.auth import get_user_model
 from django.test import override_settings
-from knox import auth
+from knox import auth, views
 
 try:
     # For django >= 2.0
@@ -38,6 +38,11 @@ def get_basic_auth_header(username, password):
 auto_refresh_knox = knox_settings.defaults.copy()
 auto_refresh_knox["AUTO_REFRESH"] = True
 
+token_user_limit_knox = knox_settings.defaults.copy()
+token_user_limit_knox["TOKEN_LIMIT_PER_USER"] = 10
+
+user_serializer_knox = knox_settings.defaults.copy()
+user_serializer_knox["USER_SERIALIZER"] = UserSerializer
 
 class AuthTestCase(TestCase):
 
@@ -73,15 +78,18 @@ class AuthTestCase(TestCase):
         self.assertNotIn(username_field, response.data)
 
     def test_login_returns_serialized_token_and_username_field(self):
-        self.assertEqual(AuthToken.objects.count(), 0)
-        url = reverse('knox_login')
-        self.client.credentials(
-            HTTP_AUTHORIZATION=get_basic_auth_header(self.username, self.password)
-        )
-        knox_settings.USER_SERIALIZER = UserSerializer
-        response = self.client.post(url, {}, format='json')
+
+        with override_settings(REST_KNOX=user_serializer_knox):
+            reload_module(views)
+            self.assertEqual(AuthToken.objects.count(), 0)
+            url = reverse('knox_login')
+            self.client.credentials(
+                HTTP_AUTHORIZATION=get_basic_auth_header(self.username, self.password)
+            )
+            response = self.client.post(url, {}, format='json')
+            self.assertEqual(user_serializer_knox["USER_SERIALIZER"], UserSerializer)
+        reload_module(views)
         self.assertEqual(response.status_code, 200)
-        self.assertNotEqual(knox_settings.USER_SERIALIZER, None)
         self.assertIn('token', response.data)
         username_field = self.user.USERNAME_FIELD
         self.assertIn('user', response.data)
@@ -254,3 +262,37 @@ class AuthTestCase(TestCase):
 
         self.assertTrue(self.signal_was_called)
 
+    def test_exceed_token_amount_per_user(self):
+
+        with override_settings(REST_KNOX=token_user_limit_knox):
+            reload_module(views)
+            for _ in range(10):
+                token = AuthToken.objects.create(user=self.user)
+            url = reverse('knox_login')
+            self.client.credentials(
+                HTTP_AUTHORIZATION=get_basic_auth_header(self.username, self.password)
+            )
+            response = self.client.post(url, {}, format='json')
+        reload_module(views)
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.data, {"error": "Maximum amount of tokens allowed per user exceeded."})
+
+    def test_does_not_exceed_on_expired_keys(self):
+
+        with override_settings(REST_KNOX=token_user_limit_knox):
+            reload_module(views)
+            for _ in range(9):
+                token = AuthToken.objects.create(user=self.user)
+            AuthToken.objects.create(user=self.user, expires=timedelta(seconds=0))
+            # now 10 keys, but only 9 valid so request should succeed.
+            url = reverse('knox_login')
+            self.client.credentials(
+                HTTP_AUTHORIZATION=get_basic_auth_header(self.username, self.password)
+            )
+            response = self.client.post(url, {}, format='json')
+            failed_response = self.client.post(url, {}, format='json')
+        reload_module(views)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('token', response.data)
+        self.assertEqual(failed_response.status_code, 403)
+        self.assertEqual(failed_response.data, {"error": "Maximum amount of tokens allowed per user exceeded."})
