@@ -1,7 +1,12 @@
 ######
 3.3.0
 ######
-- **Breaking changes**: Successful authentication **ONLY** returns `Token` object by default now. `USER_SERIALIZER` must be overridden to return custom data. This also removes hardcoded user fields from `UserSerializer` class to allow more generic behaivor by default.
+- **Breaking changes**: Successful authentication **ONLY** returns `Token` object by default now.
+`USER_SERIALIZER` must be overridden to return more data.
+
+######
+3.2.1
+- Fix !111: Avoid knox failing if settings are not overwritten
 
 ######
 3.2.0
