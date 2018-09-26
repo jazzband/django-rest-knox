@@ -19,6 +19,7 @@ from rest_framework.authentication import (
 from knox.crypto import hash_token
 from knox.models import AuthToken
 from knox.settings import CONSTANTS, knox_settings
+from knox.signals import token_expired
 
 User = settings.AUTH_USER_MODEL
 
@@ -99,9 +100,13 @@ class TokenAuthentication(BaseAuthentication):
             if other_token.digest != auth_token.digest and other_token.expires is not None:
                 if other_token.expires < timezone.now():
                     other_token.delete()
+                    username = other_token.user.username
+                    token_expired.send(sender=self.__class__, username=username, source="other_token")
         if auth_token.expires is not None:
             if auth_token.expires < timezone.now():
+                username = auth_token.user.username
                 auth_token.delete()
+                token_expired.send(sender=self.__class__, username=username, source="auth_token")
                 return True
         return False
 

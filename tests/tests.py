@@ -21,6 +21,7 @@ from rest_framework.test import (
 )
 
 from knox.auth import TokenAuthentication
+from knox.signals import token_expired
 from knox.models import AuthToken
 from knox.settings import CONSTANTS, knox_settings
 from knox.serializers import UserSerializer
@@ -238,3 +239,18 @@ class AuthTestCase(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(original_expiry, AuthToken.objects.get().expires)
+
+    def test_expiry_signals(self):
+        self.signal_was_called = False
+
+        def handler(sender, username, **kwargs):
+            self.signal_was_called = True
+
+        token_expired.connect(handler)
+
+        token =  AuthToken.objects.create(user=self.user, expires=timedelta(0))
+        self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % token))
+        response = self.client.post(root_url, {}, format='json')
+
+        self.assertTrue(self.signal_was_called)
+
