@@ -242,12 +242,12 @@ class AuthTestCase(TestCase):
 
     def test_expiry_signals(self):
         self.signal_was_called = False
-        
+
         def handler(sender, username, **kwargs):
             self.signal_was_called = True
-        
+
         token_expired.connect(handler)
-        
+
         token =  AuthToken.objects.create(user=self.user, expires=timedelta(0))
         self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % token))
         response = self.client.post(root_url, {}, format='json')
