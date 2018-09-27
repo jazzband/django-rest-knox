@@ -1,5 +1,8 @@
 #Changelog
 
+## 3.3.1
+- Ensure compatibility with Django 2.1 up to Python 3.7
+
 ## 3.3.0
 - **Breaking changes**: Successful authentication **ONLY** returns `Token` object by default now.
 `USER_SERIALIZER` must be overridden to return more data.
