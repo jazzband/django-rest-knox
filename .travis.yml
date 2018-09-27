@@ -13,6 +13,8 @@ matrix:
       env: TOX_ENVS=py36-django111,py36-django20,py36-django21
     - python: "3.7"
       env: TOX_ENVS=py37-django20,py37-django21
+      dist: xenial
+      sudo: true
 script:
   - tox -e $TOX_ENVS
 
