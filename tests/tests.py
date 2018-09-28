@@ -21,8 +21,10 @@ from rest_framework.test import (
 )
 
 from knox.auth import TokenAuthentication
+from knox.signals import token_expired
 from knox.models import AuthToken
 from knox.settings import CONSTANTS, knox_settings
+from knox.serializers import UserSerializer
 
 User = get_user_model()
 root_url = reverse('api-root')
@@ -56,6 +58,34 @@ class AuthTestCase(TestCase):
             self.client.post(url, {}, format='json')
         self.assertEqual(AuthToken.objects.count(), 5)
         self.assertTrue(all(e.token_key for e in AuthToken.objects.all()))
+
+    def test_login_returns_serialized_token(self):
+        self.assertEqual(AuthToken.objects.count(), 0)
+        url = reverse('knox_login')
+        self.client.credentials(
+            HTTP_AUTHORIZATION=get_basic_auth_header(self.username, self.password)
+        )
+        response = self.client.post(url, {}, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(knox_settings.USER_SERIALIZER, None)
+        self.assertIn('token', response.data)
+        username_field = self.user.USERNAME_FIELD
+        self.assertNotIn(username_field, response.data)
+
+    def test_login_returns_serialized_token_and_username_field(self):
+        self.assertEqual(AuthToken.objects.count(), 0)
+        url = reverse('knox_login')
+        self.client.credentials(
+            HTTP_AUTHORIZATION=get_basic_auth_header(self.username, self.password)
+        )
+        knox_settings.USER_SERIALIZER = UserSerializer
+        response = self.client.post(url, {}, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertNotEqual(knox_settings.USER_SERIALIZER, None)
+        self.assertIn('token', response.data)
+        username_field = self.user.USERNAME_FIELD
+        self.assertIn('user', response.data)
+        self.assertIn(username_field, response.data['user'])
 
     def test_logout_deletes_keys(self):
         self.assertEqual(AuthToken.objects.count(), 0)
@@ -209,3 +239,18 @@ class AuthTestCase(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(original_expiry, AuthToken.objects.get().expires)
+
+    def test_expiry_signals(self):
+        self.signal_was_called = False
+
+        def handler(sender, username, **kwargs):
+            self.signal_was_called = True
+
+        token_expired.connect(handler)
+
+        token =  AuthToken.objects.create(user=self.user, expires=timedelta(0))
+        self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % token))
+        response = self.client.post(root_url, {}, format='json')
+
+        self.assertTrue(self.signal_was_called)
+
