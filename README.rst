@@ -1,3 +1,5 @@
+*Dear contributors: kindly open pull requests targeting develop, not the master branch.*
+
 django-rest-knox
 ================
 
