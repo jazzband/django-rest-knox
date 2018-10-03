@@ -11,6 +11,7 @@ DEFAULTS = {
     'TOKEN_TTL': timedelta(hours=10),
     'USER_SERIALIZER': None,
     'AUTO_REFRESH': False,
+    'MIN_REFRESH_INTERVAL': 60,
 }
 
 IMPORT_STRINGS = {
@@ -37,7 +38,6 @@ class CONSTANTS:
     TOKEN_KEY_LENGTH = 8
     DIGEST_LENGTH = 128
     SALT_LENGTH = 16
-    MIN_REFRESH_INTERVAL = 60
 
     def __setattr__(self, *args, **kwargs):
         raise RuntimeException('''
