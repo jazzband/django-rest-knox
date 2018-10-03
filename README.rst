@@ -41,3 +41,11 @@ problems present in the default implementation:
 
 More information can be found in the
 `Documentation <http://james1345.github.io/django-rest-knox/>`__
+
+Run the tests locally
+---------------------
+
+If you need to debug a test locally and if you have `docker <https://www.docker.com/>`__ installed:
+
+simply run the ``./docker-run-test.sh`` script and it will run the test suite in every Python /
+Django versions.
