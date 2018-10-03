@@ -1,4 +1,4 @@
-*Dear contributors: kindly open pull requests targeting develop, not the master branch.*
+*Dear contributors, kindly open pull requests targeting the develop branch, not the master branch. You work is very appreciated, thank you! =)*
 
 django-rest-knox
 ================
