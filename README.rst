@@ -49,3 +49,6 @@ If you need to debug a test locally and if you have `docker <https://www.docker.
 
 simply run the ``./docker-run-test.sh`` script and it will run the test suite in every Python /
 Django versions.
+
+You could also simply run regular ``tox`` in the root folder as well, but that would make testing the matrix of
+Python / Django versions a bit more tricky.
