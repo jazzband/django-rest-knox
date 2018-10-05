@@ -11,6 +11,8 @@
     now.`USER_SERIALIZER` must be overridden to return more
     data.
 
+-   Introduce new setting `MIN_REFRESH_INTERVAL` to configure the time
+    interval (in seconds) to wait before a token is automatically refreshed.
 
 3.2.1
 =====
