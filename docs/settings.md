@@ -62,6 +62,10 @@ succesfully returning from `LoginView`. The default is `knox.serializers.UserSer
 This defines if the token expiry time is extended by TOKEN_TTL each time the token
 is used.
 
+## MIN_REFRESH_INTERVAL
+This is the minimum time in seconds that needs to pass for the token expiry to be updated
+in the database.
+
 # Constants `knox.settings`
 Knox also provides some constants for information. These must not be changed in
 external code; they are used in the model definitions in knox and an error will
@@ -79,9 +83,5 @@ This is the length of the digest that will be stored in the database for each to
 
 ## SALT_LENGTH
 This is the length of the [salt][salt] that will be stored in the database for each token.
-
-## MIN_REFRESH_INTERVAL
-This is the minimum time in seconds that needs to pass for the token expiry to be updated 
-in the database.
 
 [salt]: https://en.wikipedia.org/wiki/Salt_(cryptography)

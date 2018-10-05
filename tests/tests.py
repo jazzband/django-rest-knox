@@ -230,7 +230,7 @@ class AuthTestCase(TestCase):
         original_expiry = AuthToken.objects.get().expires
 
         self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % token_key))
-        in_min_interval = now + timedelta(seconds=CONSTANTS.MIN_REFRESH_INTERVAL - 10)
+        in_min_interval = now + timedelta(seconds=knox_settings.MIN_REFRESH_INTERVAL - 10)
         with override_settings(REST_KNOX=auto_refresh_knox):
             reload_module(auth)  # necessary to reload settings in core code
             with freeze_time(in_min_interval):
