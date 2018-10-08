@@ -14,6 +14,7 @@ REST_KNOX = {
   'AUTH_TOKEN_CHARACTER_LENGTH': 64,
   'TOKEN_TTL': timedelta(hours=10),
   'USER_SERIALIZER': 'knox.serializers.UserSerializer',
+  'TOKEN_LIMIT_PER_USER': None,
   'AUTO_REFRESH': FALSE,
 }
 #...snip...
@@ -53,6 +54,10 @@ Setting the TOKEN_TTL to `None` will create tokens that never expire.
 
 Warning: setting a 0 or negative timedelta will create tokens that instantly expire,
 the system will not prevent you setting this.
+
+## TOKEN_LIMIT_PER_USER
+This allows you to control how many tokens can be issued per user.
+By default this option is disabled and set to `None` -- thus no limit.
 
 ## USER_SERIALIZER
 This is the reference to the class used to serialize the `User` objects when
