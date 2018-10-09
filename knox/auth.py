@@ -40,8 +40,9 @@ class TokenAuthentication(BaseAuthentication):
 
     def authenticate(self, request):
         auth = get_authorization_header(request).split()
-
-        if not auth or auth[0].lower() != b'token':
+        prefix = knox_settings.AUTH_HEADER_PREFIX.encode()
+        
+        if not auth or auth[0].lower() != prefix.lower():
             return None
         if len(auth) == 1:
             msg = _('Invalid token header. No credentials provided.')
@@ -93,7 +94,7 @@ class TokenAuthentication(BaseAuthentication):
         return (auth_token.user, auth_token)
 
     def authenticate_header(self, request):
-        return 'Token'
+        return knox_settings.AUTH_HEADER_PREFIX
 
     def _cleanup_token(self, auth_token):
         for other_token in auth_token.user.auth_token_set.all():
