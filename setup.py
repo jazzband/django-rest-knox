@@ -19,6 +19,7 @@ setup(
     version='3.3.1',
     description='Authentication for django rest framework',
     long_description=long_description,
+    long_description_content_type='text/markdown',
 
     # The project's main homepage.
     url='https://github.com/James1345/django-rest-knox',
