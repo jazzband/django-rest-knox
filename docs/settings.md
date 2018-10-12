@@ -71,6 +71,9 @@ is used.
 This is the minimum time in seconds that needs to pass for the token expiry to be updated
 in the database.
 
+## AUTH_HEADER_PREFIX
+This is the Authorization header value prefix. The default is `Token`
+
 # Constants `knox.settings`
 Knox also provides some constants for information. These must not be changed in
 external code; they are used in the model definitions in knox and an error will

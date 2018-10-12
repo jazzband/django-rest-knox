@@ -9,6 +9,7 @@ import binascii
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
+from django.contrib.auth import get_user_model
 
 from rest_framework import exceptions
 from rest_framework.authentication import (
@@ -21,7 +22,9 @@ from knox.models import AuthToken
 from knox.settings import CONSTANTS, knox_settings
 from knox.signals import token_expired
 
-User = settings.AUTH_USER_MODEL
+User = get_user_model()
+
+username_field = getattr(User, 'USERNAME_FIELD', 'username')
 
 
 class TokenAuthentication(BaseAuthentication):
@@ -40,8 +43,9 @@ class TokenAuthentication(BaseAuthentication):
 
     def authenticate(self, request):
         auth = get_authorization_header(request).split()
-
-        if not auth or auth[0].lower() != b'token':
+        prefix = knox_settings.AUTH_HEADER_PREFIX.encode()
+        
+        if not auth or auth[0].lower() != prefix.lower():
             return None
         if len(auth) == 1:
             msg = _('Invalid token header. No credentials provided.')
@@ -93,18 +97,18 @@ class TokenAuthentication(BaseAuthentication):
         return (auth_token.user, auth_token)
 
     def authenticate_header(self, request):
-        return 'Token'
+        return knox_settings.AUTH_HEADER_PREFIX
 
     def _cleanup_token(self, auth_token):
         for other_token in auth_token.user.auth_token_set.all():
             if other_token.digest != auth_token.digest and other_token.expires is not None:
                 if other_token.expires < timezone.now():
                     other_token.delete()
-                    username = other_token.user.username
+                    username = getattr(other_token.user, username_field)
                     token_expired.send(sender=self.__class__, username=username, source="other_token")
         if auth_token.expires is not None:
             if auth_token.expires < timezone.now():
-                username = auth_token.user.username
+                username = getattr(auth_token.user, username_field)
                 auth_token.delete()
                 token_expired.send(sender=self.__class__, username=username, source="auth_token")
                 return True

@@ -44,6 +44,9 @@ token_user_limit_knox["TOKEN_LIMIT_PER_USER"] = 10
 user_serializer_knox = knox_settings.defaults.copy()
 user_serializer_knox["USER_SERIALIZER"] = UserSerializer
 
+auth_header_prefix_knox = knox_settings.defaults.copy()
+auth_header_prefix_knox["AUTH_HEADER_PREFIX"] = 'Baerer'
+
 class AuthTestCase(TestCase):
 
     def setUp(self):
@@ -296,3 +299,16 @@ class AuthTestCase(TestCase):
         self.assertIn('token', response.data)
         self.assertEqual(failed_response.status_code, 403)
         self.assertEqual(failed_response.data, {"error": "Maximum amount of tokens allowed per user exceeded."})
+
+    def test_invalid_prefix_return_401(self):
+
+        with override_settings(REST_KNOX=auth_header_prefix_knox):
+            reload_module(auth)
+            token = AuthToken.objects.create(user=self.user)
+            self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % token))
+            failed_response = self.client.get(root_url)
+            self.client.credentials(HTTP_AUTHORIZATION=('Baerer %s' % token))
+            response = self.client.get(root_url)
+        reload_module(auth)
+        self.assertEqual(failed_response.status_code, 401)
+        self.assertEqual(response.status_code, 200)
