@@ -1,4 +1,7 @@
 from django.contrib.auth.signals import user_logged_in, user_logged_out
+from django.utils import timezone
+from django.conf import settings
+
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -15,6 +18,12 @@ class LoginView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def post(self, request, format=None):
+        if knox_settings.TOKEN_LIMIT_PER_USER is not None:
+            if request.user.auth_token_set.filter(expires__gt=timezone.now()).count() >= knox_settings.TOKEN_LIMIT_PER_USER:
+                return Response(
+                    {"error": "Maximum amount of tokens allowed per user exceeded."},
+                    status=status.HTTP_403_FORBIDDEN
+                )
         token = AuthToken.objects.create(request.user)
         user_logged_in.send(sender=request.user.__class__, request=request, user=request.user)
         UserSerializer = knox_settings.USER_SERIALIZER

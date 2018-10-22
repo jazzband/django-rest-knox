@@ -10,8 +10,10 @@ DEFAULTS = {
     'AUTH_TOKEN_CHARACTER_LENGTH': 64,
     'TOKEN_TTL': timedelta(hours=10),
     'USER_SERIALIZER': None,
+    'TOKEN_LIMIT_PER_USER': None,
     'AUTO_REFRESH': False,
     'MIN_REFRESH_INTERVAL': 60,
+    'AUTH_HEADER_PREFIX': 'Token',
 }
 
 IMPORT_STRINGS = {

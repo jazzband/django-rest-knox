@@ -13,7 +13,8 @@ in to DRF. However, it overcomes some problems present in the default implementa
 
     Knox provides one token per call to the login view - allowing
     each client to have its own token which is deleted on the server side when the client
-    logs out.
+    logs out. Knox also provides an optional setting to limit the amount of tokens generated
+    per user.
 
     Knox also provides an option for a logged in client to remove *all* tokens
     that the server has - forcing all clients to re-authenticate.
