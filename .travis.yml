@@ -1,6 +1,8 @@
 language: python
 install:
   - pip install tox
+script:
+  - flake8 --exclude=*migrations* knox knox_project
 matrix:
   include:
     - python: "2.7"

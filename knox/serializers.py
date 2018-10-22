@@ -6,6 +6,7 @@ User = get_user_model()
 
 username_field = User.USERNAME_FIELD if hasattr(User, 'USERNAME_FIELD') else 'username'
 
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
