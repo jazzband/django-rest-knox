@@ -47,6 +47,7 @@ user_serializer_knox["USER_SERIALIZER"] = UserSerializer
 auth_header_prefix_knox = knox_settings.defaults.copy()
 auth_header_prefix_knox["AUTH_HEADER_PREFIX"] = 'Baerer'
 
+
 class AuthTestCase(TestCase):
 
     def setUp(self):
@@ -259,9 +260,9 @@ class AuthTestCase(TestCase):
 
         token_expired.connect(handler)
 
-        token =  AuthToken.objects.create(user=self.user, expires=timedelta(0))
+        token = AuthToken.objects.create(user=self.user, expires=timedelta(0))
         self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % token))
-        response = self.client.post(root_url, {}, format='json')
+        self.client.post(root_url, {}, format='json')
 
         self.assertTrue(self.signal_was_called)
 
@@ -270,7 +271,7 @@ class AuthTestCase(TestCase):
         with override_settings(REST_KNOX=token_user_limit_knox):
             reload_module(views)
             for _ in range(10):
-                token = AuthToken.objects.create(user=self.user)
+                AuthToken.objects.create(user=self.user)
             url = reverse('knox_login')
             self.client.credentials(
                 HTTP_AUTHORIZATION=get_basic_auth_header(self.username, self.password)
@@ -285,7 +286,7 @@ class AuthTestCase(TestCase):
         with override_settings(REST_KNOX=token_user_limit_knox):
             reload_module(views)
             for _ in range(9):
-                token = AuthToken.objects.create(user=self.user)
+                AuthToken.objects.create(user=self.user)
             AuthToken.objects.create(user=self.user, expires=timedelta(seconds=0))
             # now 10 keys, but only 9 valid so request should succeed.
             url = reverse('knox_login')

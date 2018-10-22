@@ -42,7 +42,7 @@ class CONSTANTS:
     SALT_LENGTH = 16
 
     def __setattr__(self, *args, **kwargs):
-        raise RuntimeException('''
+        raise Exception('''
             Constant values must NEVER be changed at runtime, as they are
             integral to the structure of database tables
             ''')
