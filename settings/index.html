@@ -90,6 +90,10 @@
         
             <li><a class="toctree-l4" href="#user_serializer">USER_SERIALIZER</a></li>
         
+            <li><a class="toctree-l4" href="#auto_refresh">AUTO_REFRESH</a></li>
+        
+            <li><a class="toctree-l4" href="#min_refresh_interval">MIN_REFRESH_INTERVAL</a></li>
+        
         </ul>
     
 
@@ -165,6 +169,7 @@ REST_KNOX = {
   'AUTH_TOKEN_CHARACTER_LENGTH': 64,
   'TOKEN_TTL': timedelta(hours=10),
   'USER_SERIALIZER': 'knox.serializers.UserSerializer',
+  'AUTO_REFRESH': FALSE,
 }
 #...snip...
 </code></pre>
@@ -196,6 +201,12 @@ the system will not prevent you setting this.</p>
 <h2 id="user_serializer">USER_SERIALIZER</h2>
 <p>This is the reference to the class used to serialize the <code>User</code> objects when
 succesfully returning from <code>LoginView</code>. The default is <code>knox.serializers.UserSerializer</code></p>
+<h2 id="auto_refresh">AUTO_REFRESH</h2>
+<p>This defines if the token expiry time is extended by TOKEN_TTL each time the token
+is used.</p>
+<h2 id="min_refresh_interval">MIN_REFRESH_INTERVAL</h2>
+<p>This is the minimum time in seconds that needs to pass for the token expiry to be updated
+in the database.</p>
 <h1 id="constants-knoxsettings">Constants <code>knox.settings</code></h1>
 <p>Knox also provides some constants for information. These must not be changed in
 external code; they are used in the model definitions in knox and an error will

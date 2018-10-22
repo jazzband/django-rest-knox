@@ -89,6 +89,16 @@
     
         <ul>
         
+            <li><a class="toctree-l3" href="#331">3.3.1</a></li>
+        
+            <li><a class="toctree-l3" href="#330">3.3.0</a></li>
+        
+            <li><a class="toctree-l3" href="#321">3.2.1</a></li>
+        
+            <li><a class="toctree-l3" href="#320">3.2.0</a></li>
+        
+            <li><a class="toctree-l3" href="#315">3.1.5</a></li>
+        
             <li><a class="toctree-l3" href="#314">3.1.4</a></li>
         
             <li><a class="toctree-l3" href="#313">3.1.3</a></li>
@@ -159,6 +169,28 @@
             <div class="section">
               
                 <h1 id="changelog">Changelog</h1>
+<h2 id="331">3.3.1</h2>
+<ul>
+<li>Ensure compatibility with Django 2.1 up to Python 3.7</li>
+</ul>
+<h2 id="330">3.3.0</h2>
+<ul>
+<li><strong>Breaking changes</strong>: Successful authentication <strong>ONLY</strong> returns <code>Token</code> object by default now.
+<code>USER_SERIALIZER</code> must be overridden to return more data.</li>
+</ul>
+<h2 id="321">3.2.1</h2>
+<ul>
+<li>Fix !111: Avoid knox failing if settings are not overwritten</li>
+</ul>
+<h2 id="320">3.2.0</h2>
+<ul>
+<li>Introduce new setting AUTO_REFRESH for controlling if token expiry time should be extended automatically</li>
+</ul>
+<h2 id="315">3.1.5</h2>
+<ul>
+<li>Make AuthTokenAdmin more compatible with big user tables</li>
+<li>Extend docs regarding usage of Token Authentication as single authentication method.</li>
+</ul>
 <h2 id="314">3.1.4</h2>
 <ul>
 <li>Fix compability with django-rest-swagger (bad inheritance)</li>
