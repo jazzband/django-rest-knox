@@ -1,3 +1,8 @@
+3.4.0
+=====
+-   Adds optional token limit
+
+
 3.3.1
 =====
 
