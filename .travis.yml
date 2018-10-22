@@ -1,8 +1,6 @@
 language: python
 install:
   - pip install tox
-script:
-  - flake8 --exclude=*migrations* knox knox_project tests
 matrix:
   include:
     - python: "2.7"
@@ -19,7 +17,7 @@ matrix:
       sudo: true
 script:
   - tox -e $TOX_ENVS
-
+  - flake8 --exclude=*migrations* knox knox_project tests
 deploy:
   provider: pypi
   user: james.mcmahon
@@ -31,3 +29,5 @@ deploy:
   only:
     - master
   distributions: "sdist bdist_wheel"
+git:
+  depth: false
