@@ -17,7 +17,7 @@ matrix:
       dist: xenial
       sudo: true
 before_script:
-  - flake8 --exclude=*migrations* knox knox_project tests
+  - flake8 .
 script:
   - tox -e $TOX_ENVS
 deploy:
