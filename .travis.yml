@@ -23,8 +23,7 @@ script:
 deploy:
   provider: pypi
   user: james.mcmahon
-  password:
-    secure: Su3QSlbo42uACLCDMyW1yiGI/EStct4Dds41k3x/QnGEhn3jZqlEJcxJgP0MpDLNzqBm4zu1If+BZUPDaUCjha/2TzU7xaL6BHjKONM+K+yWFwK10CpHpQ2249e9nQxVveftVW/F4FRjPx5QlZzS8aoM55/KNk1YKFnynG9h2n2hK03N8NT2DKkT6WKcChrNQfI6zEm+d5KnQNC5Q1CTpnhORKgPFtq+K1x+u57j+2rERYFJ2ee2r3U7w3YPbmxdfIxxitz+V514+CLnMmNCbnZzlwv7bBK5v5qg1LUo4FCjCgeJRONfoi2DwpPdyjGhxvbl4hpDkwyWkqWg51tQ83lOJGWWVV+Kw9W0kla5kZqAyeMF1kQWk0PV/qrKBWHXT5frMDKvtneXYmyVgChGrkE8iNwPMySx3Wc/nPar8Du/ma0ZFhF4T3ErV/xBzzva8Y2ItJRNhrqbSj5zkn23n16tcsI2guhAAa5p8eK//XjJnv9WswC6xX0DxvndHjePtLOV+sexYqKOx00Lo4fW9oX09o8NmCjWM5cmc+3N5iNHr8U7UFQjYOOzRGBS50J7iKdmpxFU2ou1STA7f8PTjOjjWuDMbXGkj7AnoPaqUhfbf7an5SQ0I0mv3BFhsLYl0nbYcKwmchzWqtcTPhIu4iFO8g7e0xdN/+83zpbMf4I=
+  password: testpasswordfortravis
   on:
     tags: true
     repo: James1345/django-rest-knox
