@@ -16,9 +16,10 @@ matrix:
       env: TOX_ENVS=py37-django20,py37-django21
       dist: xenial
       sudo: true
+before_script:
+  - flake8 --exclude=*migrations* knox knox_project tests
 script:
   - tox -e $TOX_ENVS
-  - flake8 --exclude=*migrations* knox knox_project tests
 deploy:
   provider: pypi
   user: james.mcmahon
