@@ -6,7 +6,6 @@ except ImportError:
 
 import binascii
 
-from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
 from django.contrib.auth import get_user_model
@@ -23,8 +22,6 @@ from knox.settings import CONSTANTS, knox_settings
 from knox.signals import token_expired
 
 User = get_user_model()
-
-username_field = getattr(User, 'USERNAME_FIELD', 'username')
 
 
 class TokenAuthentication(BaseAuthentication):
@@ -44,7 +41,7 @@ class TokenAuthentication(BaseAuthentication):
     def authenticate(self, request):
         auth = get_authorization_header(request).split()
         prefix = knox_settings.AUTH_HEADER_PREFIX.encode()
-        
+
         if not auth or auth[0].lower() != prefix.lower():
             return None
         if len(auth) == 1:
@@ -104,13 +101,12 @@ class TokenAuthentication(BaseAuthentication):
             if other_token.digest != auth_token.digest and other_token.expires is not None:
                 if other_token.expires < timezone.now():
                     other_token.delete()
-                    username = getattr(other_token.user, username_field)
+                    username = other_token.user.get_username()
                     token_expired.send(sender=self.__class__, username=username, source="other_token")
         if auth_token.expires is not None:
             if auth_token.expires < timezone.now():
-                username = getattr(auth_token.user, username_field)
+                username = auth_token.user.get_username()
                 auth_token.delete()
                 token_expired.send(sender=self.__class__, username=username, source="auth_token")
                 return True
         return False
-
