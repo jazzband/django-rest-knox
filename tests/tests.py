@@ -51,10 +51,14 @@ auth_header_prefix_knox["AUTH_HEADER_PREFIX"] = 'Baerer'
 class AuthTestCase(TestCase):
 
     def setUp(self):
-        self.username, self.email, self.password = 'john.doe', 'john.doe@example.com', 'hunter2'
+        self.username = 'john.doe'
+        self.email = 'john.doe@example.com'
+        self.password = 'hunter2'
         self.user = User.objects.create_user(self.username, self.email, self.password)
 
-        self.username2, self.email2, self.password2 = 'jane.doe', 'jane.doe@example.com', 'hunter2'
+        self.username2 = 'jane.doe'
+        self.email2 = 'jane.doe@example.com'
+        self.password2 = 'hunter2'
         self.user2 = User.objects.create_user(self.username2, self.email2, self.password2)
 
     def test_login_creates_keys(self):
@@ -108,7 +112,8 @@ class AuthTestCase(TestCase):
         url = reverse('knox_logout')
         self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % token))
         self.client.post(url, {}, format='json')
-        self.assertEqual(AuthToken.objects.count(), 1, 'other tokens should remain after logout')
+        self.assertEqual(AuthToken.objects.count(), 1,
+                         'other tokens should remain after logout')
 
     def test_logout_all_deletes_keys(self):
         self.assertEqual(AuthToken.objects.count(), 0)
@@ -131,7 +136,8 @@ class AuthTestCase(TestCase):
         url = reverse('knox_logoutall')
         self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % token))
         self.client.post(url, {}, format='json')
-        self.assertEqual(AuthToken.objects.count(), 10, 'tokens from other users should not be affected by logout all')
+        self.assertEqual(AuthToken.objects.count(), 10,
+                         'tokens from other users should not be affected by logout all')
 
     def test_expired_tokens_login_fails(self):
         self.assertEqual(AuthToken.objects.count(), 0)
@@ -279,7 +285,8 @@ class AuthTestCase(TestCase):
             response = self.client.post(url, {}, format='json')
         reload_module(views)
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(response.data, {"error": "Maximum amount of tokens allowed per user exceeded."})
+        self.assertEqual(response.data,
+                         {"error": "Maximum amount of tokens allowed per user exceeded."})
 
     def test_does_not_exceed_on_expired_keys(self):
 
@@ -299,7 +306,8 @@ class AuthTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn('token', response.data)
         self.assertEqual(failed_response.status_code, 403)
-        self.assertEqual(failed_response.data, {"error": "Maximum amount of tokens allowed per user exceeded."})
+        self.assertEqual(failed_response.data,
+                         {"error": "Maximum amount of tokens allowed per user exceeded."})
 
     def test_invalid_prefix_return_401(self):
 

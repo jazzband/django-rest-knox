@@ -6,7 +6,6 @@ except ImportError:
 
 import binascii
 
-from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
 from django.contrib.auth import get_user_model
@@ -35,7 +34,7 @@ class TokenAuthentication(BaseAuthentication):
     authentication scheme to cope with the fact that Tokens are not stored
     in plaintext in the database
 
-    If sucessful
+    If successful
     - `request.user` will be a django `User` instance
     - `request.auth` will be an `AuthToken` instance
     '''
@@ -44,7 +43,7 @@ class TokenAuthentication(BaseAuthentication):
     def authenticate(self, request):
         auth = get_authorization_header(request).split()
         prefix = knox_settings.AUTH_HEADER_PREFIX.encode()
-        
+
         if not auth or auth[0].lower() != prefix.lower():
             return None
         if len(auth) == 1:
@@ -87,7 +86,8 @@ class TokenAuthentication(BaseAuthentication):
         new_expiry = timezone.now() + knox_settings.TOKEN_TTL
         auth_token.expires = new_expiry
         # Throttle refreshing of token to avoid db writes
-        if (new_expiry - current_expiry).total_seconds() > knox_settings.MIN_REFRESH_INTERVAL:
+        delta = (new_expiry - current_expiry).total_seconds()
+        if delta > knox_settings.MIN_REFRESH_INTERVAL:
             auth_token.save(update_fields=('expires',))
 
     def validate_user(self, auth_token):
@@ -101,16 +101,17 @@ class TokenAuthentication(BaseAuthentication):
 
     def _cleanup_token(self, auth_token):
         for other_token in auth_token.user.auth_token_set.all():
-            if other_token.digest != auth_token.digest and other_token.expires is not None:
+            if other_token.digest != auth_token.digest and other_token.expires:
                 if other_token.expires < timezone.now():
                     other_token.delete()
                     username = getattr(other_token.user, username_field)
-                    token_expired.send(sender=self.__class__, username=username, source="other_token")
+                    token_expired.send(sender=self.__class__,
+                                       username=username, source="other_token")
         if auth_token.expires is not None:
             if auth_token.expires < timezone.now():
                 username = getattr(auth_token.user, username_field)
                 auth_token.delete()
-                token_expired.send(sender=self.__class__, username=username, source="auth_token")
+                token_expired.send(sender=self.__class__,
+                                   username=username, source="auth_token")
                 return True
         return False
-
