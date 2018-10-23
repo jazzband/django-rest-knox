@@ -23,8 +23,6 @@ from knox.signals import token_expired
 
 User = get_user_model()
 
-username_field = getattr(User, 'USERNAME_FIELD', 'username')
-
 
 class TokenAuthentication(BaseAuthentication):
     '''
@@ -104,12 +102,12 @@ class TokenAuthentication(BaseAuthentication):
             if other_token.digest != auth_token.digest and other_token.expires:
                 if other_token.expires < timezone.now():
                     other_token.delete()
-                    username = getattr(other_token.user, username_field)
+                    username = other_token.user.get_username()
                     token_expired.send(sender=self.__class__,
                                        username=username, source="other_token")
         if auth_token.expires is not None:
             if auth_token.expires < timezone.now():
-                username = getattr(auth_token.user, username_field)
+                username = auth_token.user.get_username()
                 auth_token.delete()
                 token_expired.send(sender=self.__class__,
                                    username=username, source="auth_token")
