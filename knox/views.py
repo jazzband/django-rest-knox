@@ -18,14 +18,16 @@ class LoginView(APIView):
 
     def post(self, request, format=None):
         if knox_settings.TOKEN_LIMIT_PER_USER is not None:
-            if request.user.auth_token_set.filter(
-                    expires__gt=timezone.now()).count() >= knox_settings.TOKEN_LIMIT_PER_USER:
+            now = timezone.now()
+            token = request.user.auth_token_set.filter(expires__gt=now)
+            if token.count() >= knox_settings.TOKEN_LIMIT_PER_USER:
                 return Response(
                     {"error": "Maximum amount of tokens allowed per user exceeded."},
                     status=status.HTTP_403_FORBIDDEN
                 )
         token = AuthToken.objects.create(request.user)
-        user_logged_in.send(sender=request.user.__class__, request=request, user=request.user)
+        user_logged_in.send(sender=request.user.__class__,
+                            request=request, user=request.user)
         UserSerializer = knox_settings.USER_SERIALIZER
         context = {'request': self.request, 'format': self.format_kwarg, 'view': self}
         if UserSerializer is None:
@@ -44,7 +46,8 @@ class LogoutView(APIView):
 
     def post(self, request, format=None):
         request._auth.delete()
-        user_logged_out.send(sender=request.user.__class__, request=request, user=request.user)
+        user_logged_out.send(sender=request.user.__class__,
+                             request=request, user=request.user)
         return Response(None, status=status.HTTP_204_NO_CONTENT)
 
 
@@ -58,5 +61,6 @@ class LogoutAllView(APIView):
 
     def post(self, request, format=None):
         request.user.auth_token_set.all().delete()
-        user_logged_out.send(sender=request.user.__class__, request=request, user=request.user)
+        user_logged_out.send(sender=request.user.__class__,
+                             request=request, user=request.user)
         return Response(None, status=status.HTTP_204_NO_CONTENT)
