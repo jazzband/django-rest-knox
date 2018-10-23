@@ -1,8 +1,7 @@
 language: python
 install:
   - pip install tox
-script:
-  - flake8 --exclude=*migrations* knox knox_project
+  - pip install flake8
 matrix:
   include:
     - python: "2.7"
@@ -17,9 +16,10 @@ matrix:
       env: TOX_ENVS=py37-django20,py37-django21
       dist: xenial
       sudo: true
+before_script:
+  - flake8 .
 script:
   - tox -e $TOX_ENVS
-
 deploy:
   provider: pypi
   user: james.mcmahon
@@ -31,3 +31,5 @@ deploy:
   only:
     - master
   distributions: "sdist bdist_wheel"
+git:
+  depth: false

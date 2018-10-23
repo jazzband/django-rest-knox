@@ -30,6 +30,7 @@ def reload_api_settings(*args, **kwargs):
     if setting == 'REST_KNOX':
         knox_settings = APISettings(value, DEFAULTS, IMPORT_STRINGS)
 
+
 setting_changed.connect(reload_api_settings)
 
 
@@ -46,4 +47,6 @@ class CONSTANTS:
             Constant values must NEVER be changed at runtime, as they are
             integral to the structure of database tables
             ''')
+
+
 CONSTANTS = CONSTANTS()
