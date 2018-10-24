@@ -27,6 +27,7 @@ deploy:
   on:
     tags: true
     repo: James1345/django-rest-knox
+    python: "3.7"
   only:
     - master
   distributions: "sdist bdist_wheel"
