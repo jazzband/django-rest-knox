@@ -1,6 +1,14 @@
 3.4.0
 =====
--   Adds optional token limit
+
+Our release cycle was broken since 3.1.5, hence you can not find the previous releases on pypi. We now fixed the problem.
+
+- Adds optional token limit
+- #129, #128 fixed
+- Changelog and Readme converted to markdown
+- Auth header prefix is now configurable
+- We ensure not to have flake8 errors in our code during our build
+- MIN_REFRESH_INTERVAL is now a configurable setting
 
 
 3.3.1
