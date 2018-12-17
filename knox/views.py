@@ -19,6 +19,9 @@ class LoginView(APIView):
     def get_context(self):
         return {'request': self.request, 'format': self.format_kwarg, 'view': self}
 
+    def get_token_ttl(self):
+        return knox_settings.TOKEN_TTL
+
     def post(self, request, format=None):
         if knox_settings.TOKEN_LIMIT_PER_USER is not None:
             now = timezone.now()
@@ -28,7 +31,8 @@ class LoginView(APIView):
                     {"error": "Maximum amount of tokens allowed per user exceeded."},
                     status=status.HTTP_403_FORBIDDEN
                 )
-        token = AuthToken.objects.create(request.user)
+        token_ttl = self.get_token_ttl()
+        token = AuthToken.objects.create(request.user, token_ttl)
         user_logged_in.send(sender=request.user.__class__,
                             request=request, user=request.user)
         UserSerializer = knox_settings.USER_SERIALIZER
