@@ -29,11 +29,11 @@ class LoginView(APIView):
         user_logged_in.send(sender=request.user.__class__,
                             request=request, user=request.user)
         UserSerializer = knox_settings.USER_SERIALIZER
-        context = {'request': self.request, 'format': self.format_kwarg, 'view': self}
         if UserSerializer is None:
             return Response(
                 {'token': token}
             )
+        context = {'request': self.request, 'format': self.format_kwarg, 'view': self}
         return Response({
             'user': UserSerializer(request.user, context=context).data,
             'token': token,
