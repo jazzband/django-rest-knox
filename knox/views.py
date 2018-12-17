@@ -16,6 +16,9 @@ class LoginView(APIView):
     authentication_classes = api_settings.DEFAULT_AUTHENTICATION_CLASSES
     permission_classes = (IsAuthenticated,)
 
+    def get_context(self):
+        return {'request': self.request, 'format': self.format_kwarg, 'view': self}
+
     def post(self, request, format=None):
         if knox_settings.TOKEN_LIMIT_PER_USER is not None:
             now = timezone.now()
@@ -33,7 +36,7 @@ class LoginView(APIView):
             return Response(
                 {'token': token}
             )
-        context = {'request': self.request, 'format': self.format_kwarg, 'view': self}
+        context = self.get_context()
         return Response({
             'user': UserSerializer(request.user, context=context).data,
             'token': token,
