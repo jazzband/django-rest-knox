@@ -1,3 +1,9 @@
+3.5.0
+=====
+
+- The context, token TTL and tokens per user settings in `LoginView` are now dynamic
+
+
 3.4.0
 =====
 

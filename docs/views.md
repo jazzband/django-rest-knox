@@ -13,6 +13,12 @@ schemes. If you would like to use a different authentication scheme to the
 default, you can extend this class to provide your own value for
 `authentication_classes`
 
+It is possible to customize LoginView behaviour by overriding the following
+helper methods:
+- `get_context`, to change the context passed to the `UserSerializer`
+- `get_token_ttl`, to change the token ttl
+- `get_token_limit_per_user`, to change the number of tokens available for a user
+
 ---
 When the endpoint authenticates a request, a json object will be returned 
 containing the `token` key along with the actual value for the key by default.
@@ -22,8 +28,8 @@ containing the `token` key along with the actual value for the key by default.
 If you wish to return custom data upon successful authentication
 like `first_name`, `last_name`, and `username` then the included `UserSerializer`
 class can be used inside `REST_KNOX` settings by adding `knox.serializers.UserSerializer`
----
 
+---
 
 Obviously, if your app uses a custom user model that does not have these fields,
 a custom serializer must be used.

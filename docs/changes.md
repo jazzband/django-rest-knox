@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.5.0
+
+- The context, token TTL and tokens per user settings in `LoginView` are now dynamic
+
 ## 3.4.0
 Our release cycle was broken since 3.1.5, hence you can not find the previous releases on pypi. We now fixed the problem.
 
