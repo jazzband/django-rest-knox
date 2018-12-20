@@ -22,11 +22,15 @@ class LoginView(APIView):
     def get_token_ttl(self):
         return knox_settings.TOKEN_TTL
 
+    def get_token_limit_per_user(self):
+        return knox_settings.TOKEN_LIMIT_PER_USER
+
     def post(self, request, format=None):
-        if knox_settings.TOKEN_LIMIT_PER_USER is not None:
+        token_limit_per_user = self.get_token_limit_per_user()
+        if token_limit_per_user is not None:
             now = timezone.now()
             token = request.user.auth_token_set.filter(expires__gt=now)
-            if token.count() >= knox_settings.TOKEN_LIMIT_PER_USER:
+            if token.count() >= token_limit_per_user:
                 return Response(
                     {"error": "Maximum amount of tokens allowed per user exceeded."},
                     status=status.HTTP_403_FORBIDDEN
