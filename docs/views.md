@@ -18,6 +18,7 @@ helper methods:
 - `get_context`, to change the context passed to the `UserSerializer`
 - `get_token_ttl`, to change the token ttl
 - `get_token_limit_per_user`, to change the number of tokens available for a user
+- `get_user_serializer_class`, to change the class used for serializing the user
 
 ---
 When the endpoint authenticates a request, a json object will be returned 

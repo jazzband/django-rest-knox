@@ -25,6 +25,9 @@ class LoginView(APIView):
     def get_token_limit_per_user(self):
         return knox_settings.TOKEN_LIMIT_PER_USER
 
+    def get_user_serializer_class(self):
+        return knox_settings.USER_SERIALIZER
+
     def post(self, request, format=None):
         token_limit_per_user = self.get_token_limit_per_user()
         if token_limit_per_user is not None:
@@ -39,11 +42,11 @@ class LoginView(APIView):
         token = AuthToken.objects.create(request.user, token_ttl)
         user_logged_in.send(sender=request.user.__class__,
                             request=request, user=request.user)
-        UserSerializer = knox_settings.USER_SERIALIZER
+        UserSerializer = self.get_user_serializer_class()
         if UserSerializer is None:
-            return Response(
-                {'token': token}
-            )
+            return Response({
+                'token': token
+            })
         context = self.get_context()
         return Response({
             'user': UserSerializer(request.user, context=context).data,
