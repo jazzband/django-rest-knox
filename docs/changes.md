@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.6.0
+
+- The user serializer for each `LoginView`is now dynamic
+
 ## 3.5.0
 
 - The context, token TTL and tokens per user settings in `LoginView` are now dynamic

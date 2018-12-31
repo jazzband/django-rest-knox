@@ -1,3 +1,9 @@
+3.6.0
+=====
+
+- The user serializer for each `LoginView`is now dynamic
+
+
 3.5.0
 =====
 
