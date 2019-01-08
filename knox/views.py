@@ -1,6 +1,5 @@
 from django.contrib.auth.signals import user_logged_in, user_logged_out
 from django.utils import timezone
-
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
