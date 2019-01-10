@@ -1,10 +1,18 @@
 import base64
 from datetime import datetime, timedelta
 
-from django.utils.six.moves import reload_module
 from django.contrib.auth import get_user_model
 from django.test import override_settings
+from django.utils.six.moves import reload_module
+from freezegun import freeze_time
+from rest_framework.test import APIRequestFactory, APITestCase as TestCase
+
 from knox import auth, views
+from knox.auth import TokenAuthentication
+from knox.models import AuthToken
+from knox.serializers import UserSerializer
+from knox.settings import CONSTANTS, knox_settings
+from knox.signals import token_expired
 
 try:
     # For django >= 2.0
@@ -12,19 +20,6 @@ try:
 except ImportError:
     # For django < 2.0
     from django.conf.urls import reverse
-
-from freezegun import freeze_time
-
-from rest_framework.test import (
-    APIRequestFactory,
-    APITestCase as TestCase
-)
-
-from knox.auth import TokenAuthentication
-from knox.signals import token_expired
-from knox.models import AuthToken
-from knox.settings import CONSTANTS, knox_settings
-from knox.serializers import UserSerializer
 
 User = get_user_model()
 root_url = reverse('api-root')
