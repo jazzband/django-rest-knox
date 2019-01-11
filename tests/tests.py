@@ -1,6 +1,7 @@
 import base64
 from datetime import datetime, timedelta
 
+import pytz
 from django.contrib.auth import get_user_model
 from django.test import override_settings
 from django.utils.six.moves import reload_module
@@ -44,6 +45,13 @@ auth_header_prefix_knox["AUTH_HEADER_PREFIX"] = 'Baerer'
 
 token_no_expiration_knox = knox_settings.defaults.copy()
 token_no_expiration_knox["TOKEN_TTL"] = None
+
+refresh_endpoint_knox = knox_settings.defaults.copy()
+refresh_endpoint_knox["ENABLE_REFRESH_ENDPOINT"] = True
+
+token_ttl_is_none_knox = knox_settings.defaults.copy()
+token_ttl_is_none_knox["ENABLE_REFRESH_ENDPOINT"] = True
+token_ttl_is_none_knox["TOKEN_TTL"] = None
 
 
 class AuthTestCase(TestCase):
@@ -119,7 +127,7 @@ class AuthTestCase(TestCase):
             instance, token = AuthToken.objects.create(user=self.user)
         self.assertEqual(AuthToken.objects.count(), 10)
 
-        url = reverse('knox_logoutall')
+        url = reverse('knox_logout_all')
         self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % token))
         self.client.post(url, {}, format='json')
         self.assertEqual(AuthToken.objects.count(), 0)
@@ -131,7 +139,7 @@ class AuthTestCase(TestCase):
             AuthToken.objects.create(user=self.user2)
         self.assertEqual(AuthToken.objects.count(), 20)
 
-        url = reverse('knox_logoutall')
+        url = reverse('knox_logout_all')
         self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % token))
         self.client.post(url, {}, format='json')
         self.assertEqual(AuthToken.objects.count(), 10,
@@ -366,3 +374,93 @@ class AuthTestCase(TestCase):
             response.data['expiry'],
             AuthToken.objects.first().expiry
         )
+
+    def test_token_expiry_is_extended_via_refresh_endpoint(self):
+
+        ttl = knox_settings.TOKEN_TTL
+        original_time = datetime(2018, 7, 25, 0, 0, 0, 0, tzinfo=pytz.UTC)
+
+        with freeze_time(original_time):
+            instance, token = AuthToken.objects.create(user=self.user)
+
+        self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % token))
+        five_hours_later = original_time + timedelta(hours=5)
+
+        with override_settings(REST_KNOX=refresh_endpoint_knox):
+            reload_module(views)
+            root_url = reverse('api-root')
+            url = reverse('knox_refresh')
+            with freeze_time(five_hours_later):
+                response = self.client.post(
+                    url,
+                    {},
+                    format='json'
+                )
+        reload_module(views)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+        self.assertIn(
+            'expiry',
+            response.data
+        )
+        expected_expiry = original_time + ttl + timedelta(hours=5)
+        self.assertEqual(
+            response.data['expiry'],
+            expected_expiry
+        )
+
+        new_expiry = AuthToken.objects.get().expiry
+        self.assertEqual(
+            new_expiry,
+            expected_expiry,
+            "Expiry time should have been extended to {} but is {}.".format(
+                expected_expiry,
+                new_expiry
+            )
+        )
+
+        # token works after original expiry:
+        after_original_expiry = original_time + ttl + timedelta(hours=1)
+        with freeze_time(after_original_expiry):
+            response = self.client.get(root_url, {}, format='json')
+            self.assertEqual(response.status_code, 200)
+
+        # token does not work after new expiry:
+        new_expiry = AuthToken.objects.get().expiry
+        with freeze_time(new_expiry + timedelta(seconds=1)):
+            response = self.client.get(root_url, {}, format='json')
+            self.assertEqual(response.status_code, 401)
+
+    def test_endpoint_not_enabled_403_forbidden(self):
+
+        instance, token = AuthToken.objects.create(user=self.user)
+
+        self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % token))
+        url = reverse('knox_refresh')
+        response = self.client.post(
+            url,
+            {},
+            format='json'
+        )
+
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.data, None)
+
+    def test_endpoint_enabled_but_token_ttl_is_none(self):
+        """raises valuerror"""
+
+        instance, token = AuthToken.objects.create(user=self.user)
+
+        self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % token))
+
+        with override_settings(REST_KNOX=token_ttl_is_none_knox):
+            reload_module(views)
+            url = reverse('knox_refresh')
+            with self.assertRaises(ValueError):
+                self.client.post(
+                    url,
+                    {},
+                    format='json'
+                )
+        reload_module(views)

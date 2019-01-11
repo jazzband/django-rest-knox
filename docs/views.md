@@ -53,3 +53,11 @@ system and can no longer be used to authenticate.
 **Note** It is not recommended to alter the Logout views. They are designed
 specifically for token management, and to respond to Knox authentication.
 Modified forms of the class may cause unpredictable results.
+
+## TokenRefreshView
+This view accepts only a post request with an empty body.
+On a successful request, the token used to authenticate will be refreshed and its expiry will be extended by the amount set in `TOKEN_TTL`.
+
+The response body includes an expiry key with a timestamp that represents the token's new expiry. 
+
+**Note**: To enable this view set `ENABLE_REFRESH_ENDPOINT` to `True`.

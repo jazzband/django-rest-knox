@@ -79,3 +79,30 @@ class LogoutAllView(APIView):
         user_logged_out.send(sender=request.user.__class__,
                              request=request, user=request.user)
         return Response(None, status=status.HTTP_204_NO_CONTENT)
+
+
+class TokenRefreshView(APIView):
+
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+    auto_refresh = False
+
+    def post(self, request, format=None):
+
+        if not knox_settings.ENABLE_REFRESH_ENDPOINT:
+            return Response(
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        if knox_settings.TOKEN_TTL is None:
+            raise ValueError(
+                'Value of \'TOKEN_TTL\' cannot be \'None\' in this context.'
+            )
+
+        request.auth.expiry = timezone.now() + knox_settings.TOKEN_TTL
+        request.auth.save()
+
+        return Response(
+            {'expiry': request.auth.expiry},
+            status=status.HTTP_200_OK
+        )

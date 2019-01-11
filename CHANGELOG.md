@@ -18,6 +18,8 @@ to fit these new changes.
 
 - `AuthToken` model field has been changed from `expires` to `expiry`
 - Successful login now always returns a `expiry` field for when the token expires
+- New endpoint allows refreshing a token to increase its expiration date. See the documentation for more information
+- Reverse url for `LogoutAllView` has been renamed to `knox_logout_all` and the url changed to `/api/auth/logout/all`
 
 3.6.0
 =====

@@ -13,6 +13,7 @@ REST_KNOX = {
   'SECURE_HASH_ALGORITHM': 'cryptography.hazmat.primitives.hashes.SHA512',
   'AUTH_TOKEN_CHARACTER_LENGTH': 64,
   'TOKEN_TTL': timedelta(hours=10),
+  'ENABLE_REFRESH_ENDPOINT': False,
   'USER_SERIALIZER': 'knox.serializers.UserSerializer',
   'TOKEN_LIMIT_PER_USER': None,
   'AUTO_REFRESH': FALSE,
@@ -54,6 +55,15 @@ Setting the TOKEN_TTL to `None` will create tokens that never expire.
 
 Warning: setting a 0 or negative timedelta will create tokens that instantly expire,
 the system will not prevent you setting this.
+
+## ENABLE_REFRESH_ENDPOINT
+Set this setting to `True` to allow users to extend the life of a token. However this endpoint is disabled by default.
+
+Send an authenticated `POST` request to increase token with the amount
+set for `TOKEN_TTL`.
+
+**Warning**: This setting depends on `TOKEN_TTL` being set to not `None`. 
+Otherwise it will raise a `ValueError` which in turn will cause an internal server error (500).
 
 ## TOKEN_LIMIT_PER_USER
 This allows you to control how many tokens can be issued per user.

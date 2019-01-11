@@ -37,6 +37,9 @@ class TokenAuthentication(BaseAuthentication):
     model = AuthToken
 
     def authenticate(self, request):
+
+        # view = getattr(request, 'parser_context', None)['view']
+        view = request.parser_context['view']
         auth = get_authorization_header(request).split()
         prefix = knox_settings.AUTH_HEADER_PREFIX.encode()
 
@@ -50,10 +53,10 @@ class TokenAuthentication(BaseAuthentication):
                     'Token string should not contain spaces.')
             raise exceptions.AuthenticationFailed(msg)
 
-        user, auth_token = self.authenticate_credentials(auth[1])
+        user, auth_token = self.authenticate_credentials(auth[1], view)
         return (user, auth_token)
 
-    def authenticate_credentials(self, token):
+    def authenticate_credentials(self, token, view):
         '''
         Due to the random nature of hashing a salted value, this must inspect
         each auth_token individually to find the correct one.
@@ -72,7 +75,8 @@ class TokenAuthentication(BaseAuthentication):
             except (TypeError, binascii.Error):
                 raise exceptions.AuthenticationFailed(msg)
             if compare_digest(digest, auth_token.digest):
-                if knox_settings.AUTO_REFRESH and auth_token.expiry:
+                auto_refresh = getattr(view, 'auto_refresh', knox_settings.AUTO_REFRESH)
+                if auto_refresh and auth_token.expiry:
                     self.renew_token(auth_token)
                 return self.validate_user(auth_token)
         raise exceptions.AuthenticationFailed(msg)
