@@ -23,6 +23,8 @@ helper methods:
 ---
 When the endpoint authenticates a request, a json object will be returned 
 containing the `token` key along with the actual value for the key by default.
+The success response also includes a `expiry` key with a timestamp for when
+the token expires.
 
 > *This is because `USER_SERIALIZER` setting is `None` by default.*
 

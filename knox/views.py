@@ -31,26 +31,28 @@ class LoginView(APIView):
         token_limit_per_user = self.get_token_limit_per_user()
         if token_limit_per_user is not None:
             now = timezone.now()
-            token = request.user.auth_token_set.filter(expires__gt=now)
+            token = request.user.auth_token_set.filter(expiry__gt=now)
             if token.count() >= token_limit_per_user:
                 return Response(
                     {"error": "Maximum amount of tokens allowed per user exceeded."},
                     status=status.HTTP_403_FORBIDDEN
                 )
         token_ttl = self.get_token_ttl()
-        token = AuthToken.objects.create(request.user, token_ttl)
+        instance, token = AuthToken.objects.create(request.user, token_ttl)
         user_logged_in.send(sender=request.user.__class__,
                             request=request, user=request.user)
         UserSerializer = self.get_user_serializer_class()
-        if UserSerializer is None:
-            return Response({
-                'token': token
-            })
-        context = self.get_context()
-        return Response({
-            'user': UserSerializer(request.user, context=context).data,
-            'token': token,
-        })
+
+        data = {
+            'expiry': instance.expiry,
+            'token': token
+        }
+        if UserSerializer is not None:
+            data["user"] = UserSerializer(
+                request.user,
+                context=self.get_context()
+            ).data
+        return Response(data)
 
 
 class LogoutView(APIView):

@@ -1,3 +1,24 @@
+4.0.0
+=====
+
+**BREAKING** This is a major release version because it
+breaks the existing API.
+
+Changes have been made to the `create()` method on the `AuthToken` model. 
+It now returns the model instance and the raw `token` instead
+of just the `token` to allow the `expiry` field to be included in the
+success response.
+
+Model field of `AuthToken` has been renamed from `expires` to `expiry`
+to remain consistent across the code base. This patch requires you
+to run a migration.
+
+Depending on your usage you might have to adjust your code
+to fit these new changes.
+
+- `AuthToken` model field has been changed from `expires` to `expiry`
+- Successful login now always returns a `expiry` field for when the token expires
+
 3.6.0
 =====
 
