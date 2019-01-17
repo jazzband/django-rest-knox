@@ -1,7 +1,7 @@
 site_name: Django-Rest-Knox
 repo_url: https://github.com/James1345/django-rest-knox
 theme: readthedocs
-pages:
+nav:
   - Home: 'index.md'
   - Installation: 'installation.md'
   - API Guide:
