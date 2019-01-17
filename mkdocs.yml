@@ -1,7 +1,7 @@
 site_name: Django-Rest-Knox
 repo_url: https://github.com/James1345/django-rest-knox
 theme: readthedocs
-pages:
+nav:
   - Home: 'index.md'
   - Installation: 'installation.md'
   - API Guide:
@@ -9,4 +9,6 @@ pages:
       - URLs: 'urls.md'
       - Authentication: 'auth.md'
       - Settings: 'settings.md'
-  - Changes: 'changes.md'
+  - Changelog: 'changelog.md'
+
+dev_addr: !!python/object/apply:os.getenv ["MKDOCS_DEV_ADDR"]
