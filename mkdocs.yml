@@ -9,4 +9,4 @@ pages:
       - URLs: 'urls.md'
       - Authentication: 'auth.md'
       - Settings: 'settings.md'
-  - Changes: 'changes.md'
+  - Changelog: 'changelog.md'
