@@ -1,10 +1,10 @@
 import binascii
+from os import urandom as generate_bytes
 
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
-from os import urandom as generate_bytes
 
-from knox.settings import knox_settings, CONSTANTS
+from knox.settings import CONSTANTS, knox_settings
 
 sha = knox_settings.SECURE_HASH_ALGORITHM
 

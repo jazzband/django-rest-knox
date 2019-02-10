@@ -6,14 +6,12 @@ except ImportError:
 
 import binascii
 
-from django.utils.translation import ugettext_lazy as _
-from django.utils import timezone
 from django.contrib.auth import get_user_model
-
+from django.utils import timezone
+from django.utils.translation import ugettext_lazy as _
 from rest_framework import exceptions
 from rest_framework.authentication import (
-    BaseAuthentication,
-    get_authorization_header
+    BaseAuthentication, get_authorization_header,
 )
 
 from knox.crypto import hash_token
@@ -74,19 +72,19 @@ class TokenAuthentication(BaseAuthentication):
             except (TypeError, binascii.Error):
                 raise exceptions.AuthenticationFailed(msg)
             if compare_digest(digest, auth_token.digest):
-                if knox_settings.AUTO_REFRESH and auth_token.expires:
+                if knox_settings.AUTO_REFRESH and auth_token.expiry:
                     self.renew_token(auth_token)
                 return self.validate_user(auth_token)
         raise exceptions.AuthenticationFailed(msg)
 
     def renew_token(self, auth_token):
-        current_expiry = auth_token.expires
+        current_expiry = auth_token.expiry
         new_expiry = timezone.now() + knox_settings.TOKEN_TTL
-        auth_token.expires = new_expiry
+        auth_token.expiry = new_expiry
         # Throttle refreshing of token to avoid db writes
         delta = (new_expiry - current_expiry).total_seconds()
         if delta > knox_settings.MIN_REFRESH_INTERVAL:
-            auth_token.save(update_fields=('expires',))
+            auth_token.save(update_fields=('expiry',))
 
     def validate_user(self, auth_token):
         if not auth_token.user.is_active:
@@ -99,14 +97,14 @@ class TokenAuthentication(BaseAuthentication):
 
     def _cleanup_token(self, auth_token):
         for other_token in auth_token.user.auth_token_set.all():
-            if other_token.digest != auth_token.digest and other_token.expires:
-                if other_token.expires < timezone.now():
+            if other_token.digest != auth_token.digest and other_token.expiry:
+                if other_token.expiry < timezone.now():
                     other_token.delete()
                     username = other_token.user.get_username()
                     token_expired.send(sender=self.__class__,
                                        username=username, source="other_token")
-        if auth_token.expires is not None:
-            if auth_token.expires < timezone.now():
+        if auth_token.expiry is not None:
+            if auth_token.expiry < timezone.now():
                 username = auth_token.user.get_username()
                 auth_token.delete()
                 token_expired.send(sender=self.__class__,
