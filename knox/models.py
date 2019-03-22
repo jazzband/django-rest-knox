@@ -28,6 +28,7 @@ class AuthToken(models.Model):
 
     objects = AuthTokenManager()
 
+    name = models.CharField(max_length=200, default='')
     digest = models.CharField(
         max_length=CONSTANTS.DIGEST_LENGTH, primary_key=True)
     token_key = models.CharField(
