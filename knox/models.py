@@ -23,17 +23,23 @@ class AuthTokenManager(models.Manager):
         # Note only the token - not the AuthToken object - is returned
         return token
 
-    def create_and_return(self, user, expires=knox_settings.TOKEN_TTL):
+    def create_and_return(self, **kwargs):
         token = crypto.create_token_string()
         salt = crypto.create_salt_string()
         digest = crypto.hash_token(token, salt)
 
+        expires = kwargs.get('expires', None)
         if expires is not None:
             expires = timezone.now() + expires
 
-        auth_token = super(AuthTokenManager, self).create(
-            token_key=token[:CONSTANTS.TOKEN_KEY_LENGTH], digest=digest,
-            salt=salt, user=user, expires=expires)
+        kwargs.update({
+            'digest': digest,
+            'salt': salt,
+            'expires': expires,
+            'token_key': token_key=token[:CONSTANTS.TOKEN_KEY_LENGTH]
+        })
+
+        auth_token = super(AuthTokenManager, self).create(**kwargs)
         auth_token.token = token
 
         return auth_token
