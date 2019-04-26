@@ -27,6 +27,9 @@ class LoginView(APIView):
     def get_user_serializer_class(self):
         return knox_settings.USER_SERIALIZER
 
+    def get_expiry_serializer_class(self):
+        return knox_settings.EXPIRY_SERIALIZER
+
     def post(self, request, format=None):
         token_limit_per_user = self.get_token_limit_per_user()
         if token_limit_per_user is not None:
@@ -42,16 +45,24 @@ class LoginView(APIView):
         user_logged_in.send(sender=request.user.__class__,
                             request=request, user=request.user)
         UserSerializer = self.get_user_serializer_class()
+        ExpirySerializer = self.get_expiry_serializer_class()
 
         data = {
-            'expiry': instance.expiry,
             'token': token
         }
+        if ExpirySerializer is not None:
+            data.update(ExpirySerializer(
+                {'expiry': instance.expiry},
+                context=self.get_context()
+            ).data)
+        else:
+            data['expiry'] = instance.expiry
         if UserSerializer is not None:
             data["user"] = UserSerializer(
                 request.user,
                 context=self.get_context()
             ).data
+
         return Response(data)
 
 

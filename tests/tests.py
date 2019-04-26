@@ -5,12 +5,13 @@ from django.contrib.auth import get_user_model
 from django.test import override_settings
 from django.utils.six.moves import reload_module
 from freezegun import freeze_time
+from rest_framework.serializers import DateTimeField
 from rest_framework.test import APIRequestFactory, APITestCase as TestCase
 
 from knox import auth, views
 from knox.auth import TokenAuthentication
 from knox.models import AuthToken
-from knox.serializers import UserSerializer
+from knox.serializers import ExpirySerializer, UserSerializer
 from knox.settings import CONSTANTS, knox_settings
 from knox.signals import token_expired
 
@@ -38,6 +39,9 @@ token_user_limit_knox["TOKEN_LIMIT_PER_USER"] = 10
 
 user_serializer_knox = knox_settings.defaults.copy()
 user_serializer_knox["USER_SERIALIZER"] = UserSerializer
+
+expiry_serializer_knox = knox_settings.defaults.copy()
+expiry_serializer_knox["EXPIRY_SERIALIZER"] = ExpirySerializer
 
 auth_header_prefix_knox = knox_settings.defaults.copy()
 auth_header_prefix_knox["AUTH_HEADER_PREFIX"] = 'Baerer'
@@ -100,6 +104,27 @@ class AuthTestCase(TestCase):
         username_field = self.user.USERNAME_FIELD
         self.assertIn('user', response.data)
         self.assertIn(username_field, response.data['user'])
+        self.assertIsInstance(response.data['expiry'], datetime)
+
+    def test_login_returns_serialized_token_and_expiry_field(self):
+        with override_settings(REST_KNOX=expiry_serializer_knox):
+            reload_module(views)
+            url = reverse('knox_login')
+            self.client.credentials(
+                HTTP_AUTHORIZATION=get_basic_auth_header(self.username, self.password)
+            )
+            response = self.client.post(url, {}, format='json')
+            self.assertEqual(
+                expiry_serializer_knox["EXPIRY_SERIALIZER"], ExpirySerializer
+            )
+        reload_module(views)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('token', response.data)
+        self.assertIn('expiry', response.data)
+        instance = AuthToken.objects.first()
+        self.assertEqual(
+            response.data['expiry'], DateTimeField().to_representation(instance.expiry)
+        )
 
     def test_logout_deletes_keys(self):
         self.assertEqual(AuthToken.objects.count(), 0)
