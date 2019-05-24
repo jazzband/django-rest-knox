@@ -3,6 +3,7 @@ from django.utils import timezone
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.serializers import DateTimeField
 from rest_framework.settings import api_settings
 from rest_framework.views import APIView
 
@@ -27,6 +28,9 @@ class LoginView(APIView):
     def get_user_serializer_class(self):
         return knox_settings.USER_SERIALIZER
 
+    def get_expiry_datetime_format(self):
+        return knox_settings.EXPIRY_DATETIME_FORMAT
+
     def post(self, request, format=None):
         token_limit_per_user = self.get_token_limit_per_user()
         if token_limit_per_user is not None:
@@ -42,9 +46,11 @@ class LoginView(APIView):
         user_logged_in.send(sender=request.user.__class__,
                             request=request, user=request.user)
         UserSerializer = self.get_user_serializer_class()
+        datetime_format = self.get_expiry_datetime_format()
 
         data = {
-            'expiry': instance.expiry,
+            'expiry': DateTimeField(
+                format=datetime_format).to_representation(instance.expiry),
             'token': token
         }
         if UserSerializer is not None:
