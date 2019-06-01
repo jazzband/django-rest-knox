@@ -8,7 +8,7 @@
   
   
   <link rel="shortcut icon" href="../img/favicon.ico">
-  <title>Settings - Django-Rest-Knox</title>
+  <title>Settings `knox.settings` - Django-Rest-Knox</title>
   <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
 
   <link rel="stylesheet" href="../css/theme.css" type="text/css" />
@@ -17,7 +17,7 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "Settings";
+    var mkdocs_page_name = "Settings `knox.settings`";
     var mkdocs_page_input_path = "settings.md";
     var mkdocs_page_url = "/settings/";
   </script>
@@ -49,7 +49,17 @@
           
             <li class="toctree-l1">
 		
-    <a class="" href="..">Home</a>
+    <a class="" href="..">Django-Rest-Knox</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../auth/">Authentication `knox.auth`</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../changelog/">Changelog</a>
 	    </li>
           
             <li class="toctree-l1">
@@ -57,65 +67,58 @@
     <a class="" href="../installation/">Installation</a>
 	    </li>
           
-            <li class="toctree-l1">
+            <li class="toctree-l1 current">
 		
-    <span class="caption-text">API Guide</span>
-    <ul class="subnav">
-                <li class="">
-                    
-    <a class="" href="../views/">Views</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../urls/">URLs</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../auth/">Authentication</a>
-                </li>
-                <li class=" current">
-                    
-    <a class="current" href="./">Settings</a>
+    <a class="current" href="./">Settings `knox.settings`</a>
     <ul class="subnav">
             
-    <li class="toctree-l3"><a href="#settings-knoxsettings">Settings knox.settings</a></li>
+    <li class="toctree-l2"><a href="#settings-knoxsettings">Settings knox.settings</a></li>
     
         <ul>
         
-            <li><a class="toctree-l4" href="#secure_hash_algorithm">SECURE_HASH_ALGORITHM</a></li>
+            <li><a class="toctree-l3" href="#secure_hash_algorithm">SECURE_HASH_ALGORITHM</a></li>
         
-            <li><a class="toctree-l4" href="#auth_token_character_length">AUTH_TOKEN_CHARACTER_LENGTH</a></li>
+            <li><a class="toctree-l3" href="#auth_token_character_length">AUTH_TOKEN_CHARACTER_LENGTH</a></li>
         
-            <li><a class="toctree-l4" href="#token_ttl">TOKEN_TTL</a></li>
+            <li><a class="toctree-l3" href="#token_ttl">TOKEN_TTL</a></li>
         
-            <li><a class="toctree-l4" href="#user_serializer">USER_SERIALIZER</a></li>
+            <li><a class="toctree-l3" href="#token_limit_per_user">TOKEN_LIMIT_PER_USER</a></li>
         
-            <li><a class="toctree-l4" href="#auto_refresh">AUTO_REFRESH</a></li>
+            <li><a class="toctree-l3" href="#user_serializer">USER_SERIALIZER</a></li>
         
-            <li><a class="toctree-l4" href="#min_refresh_interval">MIN_REFRESH_INTERVAL</a></li>
+            <li><a class="toctree-l3" href="#auto_refresh">AUTO_REFRESH</a></li>
+        
+            <li><a class="toctree-l3" href="#min_refresh_interval">MIN_REFRESH_INTERVAL</a></li>
+        
+            <li><a class="toctree-l3" href="#auth_header_prefix">AUTH_HEADER_PREFIX</a></li>
+        
+            <li><a class="toctree-l3" href="#expiry_datetime_format">EXPIRY_DATETIME_FORMAT</a></li>
         
         </ul>
     
 
-    <li class="toctree-l3"><a href="#constants-knoxsettings">Constants knox.settings</a></li>
+    <li class="toctree-l2"><a href="#constants-knoxsettings">Constants knox.settings</a></li>
     
         <ul>
         
-            <li><a class="toctree-l4" href="#digest_length">DIGEST_LENGTH</a></li>
+            <li><a class="toctree-l3" href="#digest_length">DIGEST_LENGTH</a></li>
         
-            <li><a class="toctree-l4" href="#salt_length">SALT_LENGTH</a></li>
+            <li><a class="toctree-l3" href="#salt_length">SALT_LENGTH</a></li>
         
         </ul>
     
 
-    </ul>
-                </li>
     </ul>
 	    </li>
           
             <li class="toctree-l1">
 		
-    <a class="" href="../changes/">Changes</a>
+    <a class="" href="../urls/">Urls</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../views/">Views</a>
 	    </li>
           
         </ul>
@@ -139,12 +142,8 @@
     <li><a href="..">Docs</a> &raquo;</li>
     
       
-        
-          <li>API Guide &raquo;</li>
-        
-      
     
-    <li>Settings</li>
+    <li>Settings `knox.settings`</li>
     <li class="wy-breadcrumbs-aside">
       
         <a href="https://github.com/James1345/django-rest-knox/edit/master/docs/settings.md"
@@ -164,12 +163,15 @@ All settings are namespaced in the <code>'REST_KNOX'</code> setting.</p>
 <pre><code class="python">#...snip...
 # These are the default values if none are set
 from datetime import timedelta
+from rest_framework.settings import api_settings
 REST_KNOX = {
   'SECURE_HASH_ALGORITHM': 'cryptography.hazmat.primitives.hashes.SHA512',
   'AUTH_TOKEN_CHARACTER_LENGTH': 64,
   'TOKEN_TTL': timedelta(hours=10),
   'USER_SERIALIZER': 'knox.serializers.UserSerializer',
-  'AUTO_REFRESH': FALSE,
+  'TOKEN_LIMIT_PER_USER': None,
+  'AUTO_REFRESH': False,
+  'EXPIRY_DATETIME_FORMAT': api_settings.DATETME_FORMAT,
 }
 #...snip...
 </code></pre>
@@ -198,6 +200,9 @@ removed from the system.</p>
 <p>Setting the TOKEN_TTL to <code>None</code> will create tokens that never expire.</p>
 <p>Warning: setting a 0 or negative timedelta will create tokens that instantly expire,
 the system will not prevent you setting this.</p>
+<h2 id="token_limit_per_user">TOKEN_LIMIT_PER_USER</h2>
+<p>This allows you to control how many tokens can be issued per user.
+By default this option is disabled and set to <code>None</code> -- thus no limit.</p>
 <h2 id="user_serializer">USER_SERIALIZER</h2>
 <p>This is the reference to the class used to serialize the <code>User</code> objects when
 succesfully returning from <code>LoginView</code>. The default is <code>knox.serializers.UserSerializer</code></p>
@@ -207,6 +212,12 @@ is used.</p>
 <h2 id="min_refresh_interval">MIN_REFRESH_INTERVAL</h2>
 <p>This is the minimum time in seconds that needs to pass for the token expiry to be updated
 in the database.</p>
+<h2 id="auth_header_prefix">AUTH_HEADER_PREFIX</h2>
+<p>This is the Authorization header value prefix. The default is <code>Token</code></p>
+<h2 id="expiry_datetime_format">EXPIRY_DATETIME_FORMAT</h2>
+<p>This is the expiry datetime format returned in the login view. The default is the
+<a href="https://www.django-rest-framework.org/api-guide/settings/#date-and-time-formatting">DATETIME_FORMAT</a> of Django REST framework. May be any of <code>None</code>, <code>iso-8601</code>
+or a Python <a href="https://docs.python.org/3/library/time.html#time.strftime">strftime format</a> string.</p>
 <h1 id="constants-knoxsettings">Constants <code>knox.settings</code></h1>
 <p>Knox also provides some constants for information. These must not be changed in
 external code; they are used in the model definitions in knox and an error will
@@ -228,10 +239,10 @@ print(CONSTANTS.SALT_LENGTH) #=&gt; 16
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../changes/" class="btn btn-neutral float-right" title="Changes">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../urls/" class="btn btn-neutral float-right" title="Urls">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../auth/" class="btn btn-neutral" title="Authentication"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../installation/" class="btn btn-neutral" title="Installation"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -259,10 +270,10 @@ print(CONSTANTS.SALT_LENGTH) #=&gt; 16
           <a href="https://github.com/James1345/django-rest-knox/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
       
       
-        <span><a href="../auth/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../installation/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../changes/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../urls/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>
