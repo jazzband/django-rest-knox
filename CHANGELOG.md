@@ -1,3 +1,7 @@
+## 4.0.1
+
+- Fix for tox config to build Django 2.2 on python 3.6
+
 ## 4.0.0
 
 **BREAKING** This is a major release version because it

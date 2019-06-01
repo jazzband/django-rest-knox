@@ -5,6 +5,7 @@ from django.contrib.auth import get_user_model
 from django.test import override_settings
 from django.utils.six.moves import reload_module
 from freezegun import freeze_time
+from rest_framework.serializers import DateTimeField
 from rest_framework.test import APIRequestFactory, APITestCase as TestCase
 
 from knox import auth, views
@@ -44,6 +45,10 @@ auth_header_prefix_knox["AUTH_HEADER_PREFIX"] = 'Baerer'
 
 token_no_expiration_knox = knox_settings.defaults.copy()
 token_no_expiration_knox["TOKEN_TTL"] = None
+
+EXPIRY_DATETIME_FORMAT = '%H:%M %d/%m/%y'
+expiry_datetime_format_knox = knox_settings.defaults.copy()
+expiry_datetime_format_knox["EXPIRY_DATETIME_FORMAT"] = EXPIRY_DATETIME_FORMAT
 
 
 class AuthTestCase(TestCase):
@@ -100,6 +105,31 @@ class AuthTestCase(TestCase):
         username_field = self.user.USERNAME_FIELD
         self.assertIn('user', response.data)
         self.assertIn(username_field, response.data['user'])
+
+    def test_login_returns_configured_expiry_datetime_format(self):
+
+        with override_settings(REST_KNOX=expiry_datetime_format_knox):
+            reload_module(views)
+            self.assertEqual(AuthToken.objects.count(), 0)
+            url = reverse('knox_login')
+            self.client.credentials(
+                HTTP_AUTHORIZATION=get_basic_auth_header(self.username, self.password)
+            )
+            response = self.client.post(url, {}, format='json')
+            self.assertEqual(
+                expiry_datetime_format_knox["EXPIRY_DATETIME_FORMAT"],
+                EXPIRY_DATETIME_FORMAT
+            )
+        reload_module(views)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('token', response.data)
+        self.assertNotIn('user', response.data)
+        self.assertEqual(
+            response.data['expiry'],
+            DateTimeField(format=EXPIRY_DATETIME_FORMAT).to_representation(
+                AuthToken.objects.first().expiry
+            )
+        )
 
     def test_logout_deletes_keys(self):
         self.assertEqual(AuthToken.objects.count(), 0)
@@ -364,5 +394,5 @@ class AuthTestCase(TestCase):
         self.assertIn('expiry', response.data)
         self.assertEqual(
             response.data['expiry'],
-            AuthToken.objects.first().expiry
+            DateTimeField().to_representation(AuthToken.objects.first().expiry)
         )

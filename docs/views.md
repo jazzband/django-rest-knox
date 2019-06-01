@@ -15,13 +15,36 @@ default, you can extend this class to provide your own value for
 
 It is possible to customize LoginView behaviour by overriding the following
 helper methods:
-- `get_context`, to change the context passed to the `UserSerializer`
-- `get_token_ttl`, to change the token ttl
-- `get_token_limit_per_user`, to change the number of tokens available for a user
-- `get_user_serializer_class`, to change the class used for serializing the user
+- `get_context(self)`, to change the context passed to the `UserSerializer`
+- `get_token_ttl(self)`, to change the token ttl
+- `get_token_limit_per_user(self)`, to change the number of tokens available for a user
+- `get_user_serializer_class(self)`, to change the class used for serializing the user
+- `get_expiry_datetime_format(self)`, to change the datetime format used for expiry
+- `format_expiry_datetime(self, expiry)`, to format the expiry `datetime` object at your convinience
+
+Finally, if none of these helper methods are sufficient, you can also override `get_post_response_data`
+to return a fully customized payload.
+
+```python
+...snip...
+    def get_post_response_data(self, request, token, instance):
+        UserSerializer = self.get_user_serializer_class()
+
+        data = {
+            'expiry': self.format_expiry_datetime(instance.expiry),
+            'token': token
+        }
+        if UserSerializer is not None:
+            data["user"] = UserSerializer(
+                request.user,
+                context=self.get_context()
+            ).data
+        return data
+...snip...
+```
 
 ---
-When the endpoint authenticates a request, a json object will be returned 
+When the endpoint authenticates a request, a json object will be returned
 containing the `token` key along with the actual value for the key by default.
 The success response also includes a `expiry` key with a timestamp for when
 the token expires.
