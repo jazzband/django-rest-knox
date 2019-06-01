@@ -9,6 +9,7 @@ Example `settings.py`
 #...snip...
 # These are the default values if none are set
 from datetime import timedelta
+from rest_framework.settings import api_settings
 REST_KNOX = {
   'SECURE_HASH_ALGORITHM': 'cryptography.hazmat.primitives.hashes.SHA512',
   'AUTH_TOKEN_CHARACTER_LENGTH': 64,
@@ -16,6 +17,7 @@ REST_KNOX = {
   'USER_SERIALIZER': 'knox.serializers.UserSerializer',
   'TOKEN_LIMIT_PER_USER': None,
   'AUTO_REFRESH': False,
+  'EXPIRY_DATETIME_FORMAT': api_settings.DATETME_FORMAT,
 }
 #...snip...
 ```
@@ -73,6 +75,14 @@ in the database.
 
 ## AUTH_HEADER_PREFIX
 This is the Authorization header value prefix. The default is `Token`
+
+## EXPIRY_DATETIME_FORMAT
+This is the expiry datetime format returned in the login view. The default is the
+[DATETIME_FORMAT][DATETIME_FORMAT] of Django REST framework. May be any of `None`, `iso-8601`
+or a Python [strftime format][strftime format] string.
+
+[DATETIME_FORMAT]: https://www.django-rest-framework.org/api-guide/settings/#date-and-time-formatting
+[strftime format]: https://docs.python.org/3/library/time.html#time.strftime
 
 # Constants `knox.settings`
 Knox also provides some constants for information. These must not be changed in

@@ -3,6 +3,7 @@ from django.utils import timezone
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.serializers import DateTimeField
 from rest_framework.settings import api_settings
 from rest_framework.views import APIView
 
@@ -27,6 +28,27 @@ class LoginView(APIView):
     def get_user_serializer_class(self):
         return knox_settings.USER_SERIALIZER
 
+    def get_expiry_datetime_format(self):
+        return knox_settings.EXPIRY_DATETIME_FORMAT
+
+    def format_expiry_datetime(self, expiry):
+        datetime_format = self.get_expiry_datetime_format()
+        return DateTimeField(format=datetime_format).to_representation(expiry)
+
+    def get_post_response_data(self, request, token, instance):
+        UserSerializer = self.get_user_serializer_class()
+
+        data = {
+            'expiry': self.format_expiry_datetime(instance.expiry),
+            'token': token
+        }
+        if UserSerializer is not None:
+            data["user"] = UserSerializer(
+                request.user,
+                context=self.get_context()
+            ).data
+        return data
+
     def post(self, request, format=None):
         token_limit_per_user = self.get_token_limit_per_user()
         if token_limit_per_user is not None:
@@ -41,17 +63,7 @@ class LoginView(APIView):
         instance, token = AuthToken.objects.create(request.user, token_ttl)
         user_logged_in.send(sender=request.user.__class__,
                             request=request, user=request.user)
-        UserSerializer = self.get_user_serializer_class()
-
-        data = {
-            'expiry': instance.expiry,
-            'token': token
-        }
-        if UserSerializer is not None:
-            data["user"] = UserSerializer(
-                request.user,
-                context=self.get_context()
-            ).data
+        data = self.get_post_response_data(request, token, instance)
         return Response(data)
 
 
