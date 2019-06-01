@@ -1,3 +1,11 @@
+## 4.1.0
+
+- Expiry format now defaults to whatever is used Django REST framework
+- The behavior can be overriden via EXPIRY_DATETIME_FORMAT setting
+- Fully customizable expiry format via format_expiry_datetime
+- Fully customizable response payload via get_post_response_data
+
+
 ## 4.0.1
 
 - Fix for tox config to build Django 2.2 on python 3.6
