@@ -8,8 +8,8 @@ from rest_framework.settings import api_settings
 from rest_framework.views import APIView
 
 from knox.auth import TokenAuthentication
-from knox.models import AuthToken
 from knox.settings import knox_settings
+from knox.utils import get_token_model
 
 
 class LoginView(APIView):
@@ -60,7 +60,7 @@ class LoginView(APIView):
                     status=status.HTTP_403_FORBIDDEN
                 )
         token_ttl = self.get_token_ttl()
-        instance, token = AuthToken.objects.create(request.user, token_ttl)
+        instance, token = get_token_model().objects.create(request.user, token_ttl)
         user_logged_in.send(sender=request.user.__class__,
                             request=request, user=request.user)
         data = self.get_post_response_data(request, token, instance)
