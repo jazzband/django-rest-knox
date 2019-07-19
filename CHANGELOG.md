@@ -1,3 +1,7 @@
+## UNRELEASED
+
+- Fix race condition on concurrent logout call
+
 ## 4.1.0
 
 - Expiry format now defaults to whatever is used Django REST framework
