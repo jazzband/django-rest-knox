@@ -9,7 +9,7 @@ User = settings.AUTH_USER_MODEL
 
 
 class AuthTokenManager(models.Manager):
-    def create(self, user, expiry=knox_settings.TOKEN_TTL):
+    def create(self, user, expiry=knox_settings.TOKEN_TTL, **kwargs):
         token = crypto.create_token_string()
         salt = crypto.create_salt_string()
         digest = crypto.hash_token(token, salt)
@@ -19,7 +19,7 @@ class AuthTokenManager(models.Manager):
 
         instance = super(AuthTokenManager, self).create(
             token_key=token[:CONSTANTS.TOKEN_KEY_LENGTH], digest=digest,
-            salt=salt, user=user, expiry=expiry)
+            salt=salt, user=user, expiry=expiry, **kwargs)
         return instance, token
 
 
@@ -37,6 +37,11 @@ class AuthToken(models.Model):
                              related_name='auth_token_set', on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
     expiry = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        # Work around for a bug in Django:
+        # https://code.djangoproject.com/ticket/19422
+        abstract = 'knox' not in settings.INSTALLED_APPS
 
     def __str__(self):
         return '%s : %s' % (self.digest, self.user)
