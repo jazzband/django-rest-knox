@@ -7,6 +7,7 @@ except ImportError:
 import binascii
 
 from django.contrib.auth import get_user_model
+from django.db import DatabaseError
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from rest_framework import exceptions
@@ -73,7 +74,13 @@ class TokenAuthentication(BaseAuthentication):
                 raise exceptions.AuthenticationFailed(msg)
             if compare_digest(digest, auth_token.digest):
                 if knox_settings.AUTO_REFRESH and auth_token.expiry:
-                    self.renew_token(auth_token)
+                    # It may happen that a token gets deleted while we try
+                    # to update its expiry, catch that and consider the token
+                    # invalid
+                    try:
+                        self.renew_token(auth_token)
+                    except DatabaseError:
+                        break
                 return self.validate_user(auth_token)
         raise exceptions.AuthenticationFailed(msg)
 

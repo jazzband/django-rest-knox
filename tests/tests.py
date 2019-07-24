@@ -2,9 +2,11 @@ import base64
 from datetime import datetime, timedelta
 
 from django.contrib.auth import get_user_model
+from django.db import DatabaseError
 from django.test import override_settings
 from django.utils.six.moves import reload_module
 from freezegun import freeze_time
+from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.serializers import DateTimeField
 from rest_framework.test import APIRequestFactory, APITestCase as TestCase
 
@@ -14,6 +16,13 @@ from knox.models import AuthToken
 from knox.serializers import UserSerializer
 from knox.settings import CONSTANTS, knox_settings
 from knox.signals import token_expired
+
+try:
+    # Python 3
+    from unittest import mock
+except ImportError:
+    # Python 2
+    import mock
 
 try:
     # For django >= 2.0
@@ -396,3 +405,19 @@ class AuthTestCase(TestCase):
             response.data['expiry'],
             DateTimeField().to_representation(AuthToken.objects.first().expiry)
         )
+
+    def test_authenticate_credentials_handles_expiry_update_of_gone_token(self):
+        """This tests a race condition of an authentication against logout
+
+        It may happen that a token gets deleted while we are inside
+        authenticate_credentials with the Django ORM raising a DatabaseError
+        when trying to update the expiry time."""
+
+        instance, token = AuthToken.objects.create(user=self.user)
+        with override_settings(REST_KNOX=auto_refresh_knox):
+            reload_module(auth)
+            token_auth = TokenAuthentication()
+            with mock.patch.object(token_auth, 'renew_token') as m:
+                m.side_effect = DatabaseError()
+                with self.assertRaises(AuthenticationFailed):
+                    token_auth.authenticate_credentials(token.encode('utf-8'))
