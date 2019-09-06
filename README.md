@@ -30,7 +30,7 @@ default implementation:
     an attacker unrestricted access to an account with a token if the
     database were compromised.
 
-    Knox tokens are only stored in an encrypted form. Even if the
+    Knox tokens are only stored in a secure hash form (like a password). Even if the
     database were somehow stolen, an attacker would not be able to log
     in with the stolen credentials.
 
