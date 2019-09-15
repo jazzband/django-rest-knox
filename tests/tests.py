@@ -287,7 +287,7 @@ class AuthTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(original_expiry, AuthToken.objects.get().expiry)
 
-    def test_token_expiry_is_extended_with_global_auto_refresh_deativated_and_specific_token_activated(self):
+    def test_token_expiry_is_extended_for_token_with_auto_refresh_deativated(self):
         self.assertEqual(knox_settings.AUTO_REFRESH, False)
         self.assertEqual(knox_settings.TOKEN_TTL, timedelta(hours=10))
 
@@ -295,7 +295,7 @@ class AuthTestCase(TestCase):
         original_time = datetime(2018, 7, 25, 0, 0, 0, 0)
 
         with freeze_time(original_time):
-            instance, token = AuthToken.objects.create(user=self.user,auto_refresh=True)
+            instance, token = AuthToken.objects.create(user=self.user, auto_refresh=True)
 
         self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % token))
         five_hours_later = original_time + timedelta(hours=5)
@@ -323,13 +323,13 @@ class AuthTestCase(TestCase):
             response = self.client.get(root_url, {}, format='json')
             self.assertEqual(response.status_code, 401)
 
-    def test_token_expiry_is_not_extended_with_global_auto_refresh_ativated_and_specific_token_deactivated(self):
+    def test_token_expiry_is_not_extended_for_token_with_auto_refresh_activated(self):
         self.assertEqual(knox_settings.AUTO_REFRESH, False)
         self.assertEqual(knox_settings.TOKEN_TTL, timedelta(hours=10))
 
         now = datetime.now()
         with freeze_time(now):
-            instance, token = AuthToken.objects.create(user=self.user,auto_refresh=False)
+            instance, token = AuthToken.objects.create(user=self.user, auto_refresh=False)
 
         original_expiry = AuthToken.objects.get().expiry
 
