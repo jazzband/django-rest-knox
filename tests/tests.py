@@ -287,6 +287,62 @@ class AuthTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(original_expiry, AuthToken.objects.get().expiry)
 
+    def test_token_expiry_is_extended_with_global_auto_refresh_deativated_and_specific_token_activated(self):
+        self.assertEqual(knox_settings.AUTO_REFRESH, False)
+        self.assertEqual(knox_settings.TOKEN_TTL, timedelta(hours=10))
+
+        ttl = knox_settings.TOKEN_TTL
+        original_time = datetime(2018, 7, 25, 0, 0, 0, 0)
+
+        with freeze_time(original_time):
+            instance, token = AuthToken.objects.create(user=self.user,auto_refresh=True)
+
+        self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % token))
+        five_hours_later = original_time + timedelta(hours=5)
+        with freeze_time(five_hours_later):
+            response = self.client.get(root_url, {}, format='json')
+        reload_module(auth)
+        self.assertEqual(response.status_code, 200)
+
+        # original expiry date was extended:
+        new_expiry = AuthToken.objects.get().expiry
+        expected_expiry = original_time + ttl + timedelta(hours=5)
+        self.assertEqual(new_expiry.replace(tzinfo=None), expected_expiry,
+                         "Expiry time should have been extended to {} but is {}."
+                         .format(expected_expiry, new_expiry))
+
+        # token works after original expiry:
+        after_original_expiry = original_time + ttl + timedelta(hours=1)
+        with freeze_time(after_original_expiry):
+            response = self.client.get(root_url, {}, format='json')
+            self.assertEqual(response.status_code, 200)
+
+        # token does not work after new expiry:
+        new_expiry = AuthToken.objects.get().expiry
+        with freeze_time(new_expiry + timedelta(seconds=1)):
+            response = self.client.get(root_url, {}, format='json')
+            self.assertEqual(response.status_code, 401)
+
+    def test_token_expiry_is_not_extended_with_global_auto_refresh_ativated_and_specific_token_deactivated(self):
+        self.assertEqual(knox_settings.AUTO_REFRESH, False)
+        self.assertEqual(knox_settings.TOKEN_TTL, timedelta(hours=10))
+
+        now = datetime.now()
+        with freeze_time(now):
+            instance, token = AuthToken.objects.create(user=self.user,auto_refresh=False)
+
+        original_expiry = AuthToken.objects.get().expiry
+
+        self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % token))
+        with override_settings(REST_KNOX=auto_refresh_knox):
+            reload_module(auth)  # necessary to reload settings in core code
+            with freeze_time(now + timedelta(hours=1)):
+                response = self.client.get(root_url, {}, format='json')
+        reload_module(auth)  # necessary to reload settings in core code
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(original_expiry, AuthToken.objects.get().expiry)
+
     def test_expiry_signals(self):
         self.signal_was_called = False
 
