@@ -36,7 +36,7 @@ class AuthToken(models.Model):
                              related_name='auth_token_set', on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
     expiry = models.DateTimeField(null=True, blank=True)
-    auto_refresh = models.BooleanField(null=True)
+    auto_refresh = models.NullBooleanField(null=True)
 
     def __str__(self):
         return '%s : %s' % (self.digest, self.user)
