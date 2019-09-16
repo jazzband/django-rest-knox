@@ -55,7 +55,7 @@ class TokenAuthentication(BaseAuthentication):
 
     def authenticate_credentials(self, token):
         '''
-        Due to the random nature of hashing a salted value, this must inspect
+        Due to the random nature of hashing a value, this must inspect
         each auth_token individually to find the correct one.
 
         Tokens that have expired will be deleted and skipped
@@ -68,7 +68,7 @@ class TokenAuthentication(BaseAuthentication):
                 continue
 
             try:
-                digest = hash_token(token, auth_token.salt)
+                digest = hash_token(token)
             except (TypeError, binascii.Error):
                 raise exceptions.AuthenticationFailed(msg)
             if compare_digest(digest, auth_token.digest):

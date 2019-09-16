@@ -4,7 +4,7 @@ from os import urandom as generate_bytes
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 
-from knox.settings import CONSTANTS, knox_settings
+from knox.settings import knox_settings
 
 sha = knox_settings.SECURE_HASH_ALGORITHM
 
@@ -15,20 +15,14 @@ def create_token_string():
     ).decode()
 
 
-def create_salt_string():
-    return binascii.hexlify(
-        generate_bytes(int(CONSTANTS.SALT_LENGTH / 2))).decode()
-
-
-def hash_token(token, salt):
+def hash_token(token):
     '''
-    Calculates the hash of a token and salt.
+    Calculates the hash of a token.
     input is unhexlified
 
-    token and salt must contain an even number of hex digits or
-    a binascii.Error exception will be raised
+    token must contain an even number of hex digits or a binascii.Error
+    exception will be raised
     '''
     digest = hashes.Hash(sha(), backend=default_backend())
     digest.update(binascii.unhexlify(token))
-    digest.update(binascii.unhexlify(salt))
     return binascii.hexlify(digest.finalize()).decode()
