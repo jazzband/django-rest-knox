@@ -9,4 +9,4 @@ username_field = User.USERNAME_FIELD if hasattr(User, 'USERNAME_FIELD') else 'us
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = (username_field,)
+        fields = (username_field,'id')
