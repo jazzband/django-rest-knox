@@ -5,6 +5,7 @@ from django.contrib.auth import get_user_model
 from django.test import override_settings
 from django.utils.six.moves import reload_module
 from freezegun import freeze_time
+from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.serializers import DateTimeField
 from rest_framework.test import APIRequestFactory, APITestCase as TestCase
 
@@ -200,6 +201,34 @@ class AuthTestCase(TestCase):
         self.assertEqual(
             token[:CONSTANTS.TOKEN_KEY_LENGTH],
             auth_token.token_key,
+        )
+
+    def test_authorization_header_empty(self):
+        rf = APIRequestFactory()
+        request = rf.get('/')
+        request.META = {'HTTP_AUTHORIZATION': ''}
+        self.assertEqual(TokenAuthentication().authenticate(request), None)
+
+    def test_authorization_header_prefix_only(self):
+        rf = APIRequestFactory()
+        request = rf.get('/')
+        request.META = {'HTTP_AUTHORIZATION': 'Token'}
+        with self.assertRaises(AuthenticationFailed) as err:
+            (self.user, auth_token) = TokenAuthentication().authenticate(request)
+        self.assertIn(
+            'Invalid token header. No credentials provided.',
+            str(err.exception),
+        )
+
+    def test_authorization_header_spaces_in_token_string(self):
+        rf = APIRequestFactory()
+        request = rf.get('/')
+        request.META = {'HTTP_AUTHORIZATION': 'Token wordone wordtwo'}
+        with self.assertRaises(AuthenticationFailed) as err:
+            (self.user, auth_token) = TokenAuthentication().authenticate(request)
+        self.assertIn(
+            'Invalid token header. Token string should not contain spaces.',
+            str(err.exception),
         )
 
     def test_invalid_token_length_returns_401_code(self):
