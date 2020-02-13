@@ -31,6 +31,9 @@ class AuthToken(models.Model):
         max_length=CONSTANTS.DIGEST_LENGTH, primary_key=True)
     token_key = models.CharField(
         max_length=CONSTANTS.TOKEN_KEY_LENGTH, db_index=True)
+    # optional (but handy) human name to identify a token
+    label = models.CharField(
+        max_length=32, null=True, blank=True)
     salt = models.CharField(
         max_length=CONSTANTS.SALT_LENGTH, unique=True)
     user = models.ForeignKey(User, null=False, blank=False,
@@ -39,4 +42,4 @@ class AuthToken(models.Model):
     expiry = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
-        return '%s : %s' % (self.digest, self.user)
+        return '%s %s : %s' % (self.label, self.digest, self.user)
