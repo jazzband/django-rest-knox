@@ -3,11 +3,11 @@ from datetime import datetime, timedelta
 
 from django.contrib.auth import get_user_model
 from django.test import override_settings
-from django.utils.six.moves import reload_module
 from freezegun import freeze_time
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.serializers import DateTimeField
 from rest_framework.test import APIRequestFactory, APITestCase as TestCase
+from six.moves import reload_module
 
 from knox import auth, views
 from knox.auth import TokenAuthentication
