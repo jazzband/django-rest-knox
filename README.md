@@ -30,7 +30,7 @@ default implementation:
     an attacker unrestricted access to an account with a token if the
     database were compromised.
 
-    Knox tokens are only stored in an encrypted form. Even if the
+    Knox tokens are only stored in a secure hash form (like a password). Even if the
     database were somehow stolen, an attacker would not be able to log
     in with the stolen credentials.
 
@@ -45,7 +45,7 @@ More information can be found in the
 
 If you need to debug a test locally and if you have [docker](https://www.docker.com/) installed:
 
-simply run the ``./docker-run-test.sh`` script and it will run the test suite in every Python /
+simply run the ``./docker-run-tests.sh`` script and it will run the test suite in every Python /
 Django versions.
 
 You could also simply run regular ``tox`` in the root folder as well, but that would make testing the matrix of

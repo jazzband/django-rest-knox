@@ -17,7 +17,7 @@ REST_KNOX = {
   'USER_SERIALIZER': 'knox.serializers.UserSerializer',
   'TOKEN_LIMIT_PER_USER': None,
   'AUTO_REFRESH': False,
-  'EXPIRY_DATETIME_FORMAT': api_settings.DATETME_FORMAT,
+  'EXPIRY_DATETIME_FORMAT': api_settings.DATETIME_FORMAT,
 }
 #...snip...
 ```
@@ -93,13 +93,7 @@ be raised if there is an attempt to change them.
 from knox.settings import CONSTANTS
 
 print(CONSTANTS.DIGEST_LENGTH) #=> 128
-print(CONSTANTS.SALT_LENGTH) #=> 16
 ```
 
 ## DIGEST_LENGTH
 This is the length of the digest that will be stored in the database for each token.
-
-## SALT_LENGTH
-This is the length of the [salt][salt] that will be stored in the database for each token.
-
-[salt]: https://en.wikipedia.org/wiki/Salt_(cryptography)

@@ -6,8 +6,6 @@ matrix:
   include:
     - python: "2.7"
       env: TOX_ENVS=py27-django111
-    - python: "3.4"
-      env: TOX_ENVS=py34-django111,py34-django20
     - python: "3.5"
       env: TOX_ENVS=py35-django111,py35-django20,py35-django20,py35-django21
     - python: "3.6"
