@@ -281,7 +281,7 @@ class AuthTestCase(TestCase):
             response = self.client.get(root_url, {}, format='json')
             self.assertEqual(response.status_code, 401)
 
-    def test_token_expiry_is_not_extended_with_auto_refresh_deativated(self):
+    def test_token_expiry_is_not_extended_with_auto_refresh_deactivated(self):
         self.assertEqual(knox_settings.AUTO_REFRESH, False)
         self.assertEqual(knox_settings.TOKEN_TTL, timedelta(hours=10))
 
