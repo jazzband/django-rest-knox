@@ -18,6 +18,10 @@ matrix:
       env: TOX_ENVS=py37-django20,py37-django21,py37-django22
       dist: xenial
       sudo: true
+    - python: "3.8"
+      env: TOX_ENVS=py38-django30,py38-django31
+      dist: xenial
+      sudo: true
 before_script:
   - flake8 .
 script:
