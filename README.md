@@ -6,7 +6,7 @@ django-rest-knox
 Authentication Module for django rest auth
 
 Knox provides easy to use authentication for [Django REST
-Framework](http://www.django-rest-framework.org/) The aim is to allow
+Framework](https://www.django-rest-framework.org/) The aim is to allow
 for common patterns in applications that are REST based, with little
 extra effort; and to ensure that connections remain secure.
 
@@ -39,7 +39,7 @@ default implementation:
     the app settings (default is 10 hours.)
 
 More information can be found in the
-[Documentation](http://james1345.github.io/django-rest-knox/)
+[Documentation](https://james1345.github.io/django-rest-knox/)
 
 # Run the tests locally
 
