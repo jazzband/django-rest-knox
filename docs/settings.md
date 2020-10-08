@@ -58,7 +58,8 @@ Warning: setting a 0 or negative timedelta will create tokens that instantly exp
 the system will not prevent you setting this.
 
 ## TOKEN_LIMIT_PER_USER
-This allows you to control how many tokens can be issued per user.
+This allows you to control how many valid tokens can be issued per user.
+If the limit for valid tokens is reached, an error is returned at login.
 By default this option is disabled and set to `None` -- thus no limit.
 
 ## USER_SERIALIZER
