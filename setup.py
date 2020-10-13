@@ -46,8 +46,6 @@ setup(
 
         # Pick your license as you wish (should match "license" above)
         'License :: OSI Approved :: MIT License',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
@@ -67,7 +65,11 @@ setup(
     # your project is installed. For an analysis of "install_requires" vs pip's
     # requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
-    install_requires=['django', 'djangorestframework', 'cryptography'],
+    install_requires=[
+        'django>=2.2',
+        'djangorestframework',
+        'cryptography',
+    ],
 
     # List additional groups of dependencies here (e.g. development
     # dependencies). You can install these using the following syntax,
