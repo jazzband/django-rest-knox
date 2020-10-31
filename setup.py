@@ -65,6 +65,7 @@ setup(
     # your project is installed. For an analysis of "install_requires" vs pip's
     # requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
+    python_requires='>=3.6',
     install_requires=[
         'django>=2.2',
         'djangorestframework',
