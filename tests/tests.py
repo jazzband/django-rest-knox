@@ -165,7 +165,7 @@ class AuthTestCase(TestCase):
     def test_expired_tokens_login_fails(self):
         self.assertEqual(AuthToken.objects.count(), 0)
         instance, token = AuthToken.objects.create(
-            user=self.user, expiry=timedelta(seconds=0))
+            user=self.user, expiry=timedelta(seconds=-1))
         self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % token))
         response = self.client.post(root_url, {}, format='json')
         self.assertEqual(response.status_code, 401)
@@ -174,9 +174,9 @@ class AuthTestCase(TestCase):
     def test_expired_tokens_deleted(self):
         self.assertEqual(AuthToken.objects.count(), 0)
         for _ in range(10):
-            # 0 TTL gives an expired token
+            # -1 TTL gives an expired token
             instance, token = AuthToken.objects.create(
-                user=self.user, expiry=timedelta(seconds=0))
+                user=self.user, expiry=timedelta(seconds=-1))
         self.assertEqual(AuthToken.objects.count(), 10)
 
         # Attempting a single logout should delete all tokens
@@ -318,7 +318,7 @@ class AuthTestCase(TestCase):
 
         token_expired.connect(handler)
 
-        instance, token = AuthToken.objects.create(user=self.user, expiry=timedelta(0))
+        instance, token = AuthToken.objects.create(user=self.user, expiry=timedelta(seconds=-1))
         self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % token))
         self.client.post(root_url, {}, format='json')
 
@@ -346,7 +346,7 @@ class AuthTestCase(TestCase):
             reload_module(views)
             for _ in range(9):
                 AuthToken.objects.create(user=self.user)
-            AuthToken.objects.create(user=self.user, expiry=timedelta(seconds=0))
+            AuthToken.objects.create(user=self.user, expiry=timedelta(seconds=-1))
             # now 10 keys, but only 9 valid so request should succeed.
             url = reverse('knox_login')
             self.client.credentials(
