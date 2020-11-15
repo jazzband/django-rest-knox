@@ -69,7 +69,6 @@ setup(
     install_requires=[
         'django>=3.2',
         'djangorestframework',
-        'cryptography',
     ],
 
     # List additional groups of dependencies here (e.g. development

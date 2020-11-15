@@ -11,7 +11,7 @@ Example `settings.py`
 from datetime import timedelta
 from rest_framework.settings import api_settings
 REST_KNOX = {
-  'SECURE_HASH_ALGORITHM': 'cryptography.hazmat.primitives.hashes.SHA512',
+  'SECURE_HASH_ALGORITHM': 'hashlib.sha512',
   'AUTH_TOKEN_CHARACTER_LENGTH': 64,
   'TOKEN_TTL': timedelta(hours=10),
   'USER_SERIALIZER': 'knox.serializers.UserSerializer',
@@ -30,14 +30,13 @@ token storage.
 
 By default, Knox uses SHA-512 to hash tokens in the database.
 
-`cryptography.hazmat.primitives.hashes.Whirlpool` is an acceptable alternative setting
-for production use.
+`hashlib.sha3_512` is an acceptable alternative setting for production use.
 
 ### Tests
-SHA-512 and Whirlpool are secure, however, they are slow. This should not be a
+SHA-512 and SHA3-512 are secure, however, they are slow. This should not be a
 problem for your users, but when testing it may be noticeable (as test cases tend
 to use many more requests much more quickly than real users). In testing scenarios
-it is acceptable to use `MD5` hashing.(`cryptography.hazmat.primitives.hashes.MD5`)
+it is acceptable to use `MD5` hashing (`hashlib.md5`).
 
 MD5 is **not secure** and must *never* be used in production sites.
 
