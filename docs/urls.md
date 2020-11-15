@@ -6,7 +6,7 @@ This can easily be included in your url config:
 ```python
 urlpatterns = [
   #...snip...
-  url(r'api/auth/', include('knox.urls'))
+  path(r'api/auth/', include('knox.urls'))
   #...snip...
 ]
 ```
