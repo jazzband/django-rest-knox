@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 
 from django.contrib.auth import get_user_model
 from django.test import override_settings
+from django.urls import reverse
 from freezegun import freeze_time
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.serializers import DateTimeField
@@ -15,13 +16,6 @@ from knox.models import AuthToken
 from knox.serializers import UserSerializer
 from knox.settings import CONSTANTS, knox_settings
 from knox.signals import token_expired
-
-try:
-    # For django >= 2.0
-    from django.urls import reverse
-except ImportError:
-    # For django < 2.0
-    from django.conf.urls import reverse
 
 User = get_user_model()
 root_url = reverse('api-root')
