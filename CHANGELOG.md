@@ -1,7 +1,7 @@
 ## 4.1.0
 
 - Expiry format now defaults to whatever is used Django REST framework
-- The behavior can be overriden via EXPIRY_DATETIME_FORMAT setting
+- The behavior can be overridden via EXPIRY_DATETIME_FORMAT setting
 - Fully customizable expiry format via format_expiry_datetime
 - Fully customizable response payload via get_post_response_data
 
@@ -71,13 +71,13 @@ Our release cycle was broken since 3.1.5, hence you can not find the previous re
 - Extend docs regarding usage of Token Authentication as single authentication method.
 
 ## 3.1.4
-- Fix compability with django-rest-swagger (bad inheritance)
+- Fix compatibility with django-rest-swagger (bad inheritance)
 
 ## 3.1.3
 - Avoid 500 error response for invalid-length token requests
 
 ## 3.1.2
-- restore compability with Python <2.7.7
+- restore compatibility with Python <2.7.7
 
 ## 3.1.1
 - use hmac.compare_digest instead of == for comparing hashes for more security

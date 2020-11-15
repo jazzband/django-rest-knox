@@ -4,7 +4,7 @@ Knox provides one class to handle authentication.
 
 ## TokenAuthentication
 
-This works using [DRF's authentication system](http://www.django-rest-framework.org/api-guide/authentication/).
+This works using [DRF's authentication system](https://www.django-rest-framework.org/api-guide/authentication/).
 
 Knox tokens should be generated using the provided views.
 Any `APIView` or `ViewSet` can be accessed using these tokens by adding `TokenAuthentication`
