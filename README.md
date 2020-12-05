@@ -1,7 +1,7 @@
 django-rest-knox
 ================
 
-[![image](https://travis-ci.org/James1345/django-rest-knox.svg?branch=develop)](https://travis-ci.org/James1345/django-rest-knox)
+[![image](https://github.com/James1345/django-rest-knox/workflows/Test/badge.svg?branch=develop)](https://github.com/James1345/django-rest-knox/actions)
 
 Authentication Module for django rest auth
 
