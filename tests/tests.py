@@ -15,7 +15,7 @@ from knox.auth import TokenAuthentication
 from knox.crypto import hash_token
 from knox.models import AuthToken
 from knox.serializers import UserSerializer
-from knox.settings import CONSTANTS, knox_settings
+from knox.settings import knox_settings
 from knox.signals import token_expired
 
 User = get_user_model()
