@@ -1,9 +1,3 @@
-try:
-    from hmac import compare_digest
-except ImportError:
-    def compare_digest(a, b):
-        return a == b
-
 import binascii
 
 from django.utils import timezone
@@ -62,20 +56,22 @@ class TokenAuthentication(BaseAuthentication):
         '''
         msg = _('Invalid token.')
         token = token.decode("utf-8")
-        for auth_token in AuthToken.objects.filter(
-                token_key=token[:CONSTANTS.TOKEN_KEY_LENGTH]):
-            if self._cleanup_token(auth_token):
-                continue
+        try:
+            digest = hash_token(token)
+        except (TypeError, binascii.Error):
+            raise exceptions.AuthenticationFailed(msg)
 
-            try:
-                digest = hash_token(token)
-            except (TypeError, binascii.Error):
-                raise exceptions.AuthenticationFailed(msg)
-            if compare_digest(digest, auth_token.digest):
-                if knox_settings.AUTO_REFRESH and auth_token.expiry:
-                    self.renew_token(auth_token)
-                return self.validate_user(auth_token)
-        raise exceptions.AuthenticationFailed(msg)
+        try:
+            auth_token = AuthToken.objects.get(digest=digest)
+        except AuthToken.DoesNotExist:
+            raise exceptions.AuthenticationFailed(msg)
+
+        if self._cleanup_token(auth_token):
+            raise exceptions.AuthenticationFailed(msg)
+
+        if knox_settings.AUTO_REFRESH and auth_token.expiry:
+            self.renew_token(auth_token)
+        return self.validate_user(auth_token)
 
     def renew_token(self, auth_token):
         current_expiry = auth_token.expiry
