@@ -15,6 +15,7 @@ from knox.settings import knox_settings
 class LoginView(APIView):
     authentication_classes = api_settings.DEFAULT_AUTHENTICATION_CLASSES
     permission_classes = (IsAuthenticated,)
+    model = AuthToken
 
     def get_context(self):
         return {'request': self.request, 'format': self.format_kwarg, 'view': self}
@@ -60,7 +61,7 @@ class LoginView(APIView):
                     status=status.HTTP_403_FORBIDDEN
                 )
         token_ttl = self.get_token_ttl()
-        instance, token = AuthToken.objects.create(request.user, token_ttl)
+        instance, token = self.model.objects.create(request.user, token_ttl)
         user_logged_in.send(sender=request.user.__class__,
                             request=request, user=request.user)
         data = self.get_post_response_data(request, token, instance)
