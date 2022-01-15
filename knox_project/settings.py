@@ -10,7 +10,6 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'rest_framework',
     'knox',
-    'django_nose',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -54,5 +53,3 @@ USE_L10N = True
 USE_TZ = True
 
 STATIC_URL = '/static/'
-
-TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
