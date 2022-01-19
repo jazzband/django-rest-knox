@@ -1,6 +1,3 @@
-token_auth.http
-knox_project/urls.py
-knox_project/settings.py
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
