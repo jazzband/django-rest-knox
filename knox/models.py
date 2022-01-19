@@ -37,3 +37,36 @@ class AuthToken(models.Model):
 
     def __str__(self):
         return '%s : %s' % (self.digest, self.user)
+
+
+from types import SimpleNamespace
+from knox.settings import CONSTANTS, knox_settings
+
+def get_token_from_request_header(request):
+    # here by default knox_settings.AUTH_HEADER_PREFIX is Token
+    if "Authorization" in request.headers:
+        try:
+            _, token = request.headers["Authorization"].split(" ")
+        except:
+            return None
+        if _ != knox_settings.AUTH_HEADER_PREFIX:
+            return None
+        return token
+
+def get_user_from_token(token):
+    objs = AuthToken.objects.filter(token_key=token[:CONSTANTS.TOKEN_KEY_LENGTH])
+    if len(objs) == 0:
+        return None
+    return objs.first().user
+
+# a decorator to get user from valid request with token
+def smart_token_user(func):
+    def inner(clsf, request, *args, **kwargs):
+        token = get_token_from_request_header(request=request)
+        if token is not None:
+            the_user = get_user_from_token(token)
+            if the_user is not None:
+                request.user = SimpleNamespace()
+                request.user = the_user
+                return func(clsf, request, *args, **kwargs)
+    return inner
