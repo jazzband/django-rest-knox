@@ -72,7 +72,9 @@ class TokenAuthentication(BaseAuthentication):
             except (TypeError, binascii.Error):
                 raise exceptions.AuthenticationFailed(msg)
             if compare_digest(digest, auth_token.digest):
-                if knox_settings.AUTO_REFRESH and auth_token.expiry:
+                if auth_token.expiry and (knox_settings.AUTO_REFRESH and
+                                          auth_token.auto_refresh is None
+                                          or auth_token.auto_refresh):
                     self.renew_token(auth_token)
                 return self.validate_user(auth_token)
         raise exceptions.AuthenticationFailed(msg)

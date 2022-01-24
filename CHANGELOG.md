@@ -1,3 +1,7 @@
+## 4.2.0
+
+- Auto refresh now configurable per token in order to override global `AUTO_REFRESH` setting
+
 ## 4.1.0
 
 - Expiry format now defaults to whatever is used Django REST framework
