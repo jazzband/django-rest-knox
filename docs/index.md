@@ -1,5 +1,5 @@
 # Django-Rest-Knox
-Knox provides easy to use authentication for [Django REST Framework](http://www.django-rest-framework.org/)
+Knox provides easy to use authentication for [Django REST Framework](https://www.django-rest-framework.org/)
 The aim is to allow for common patterns in applications that are REST based,
 with little extra effort; and to ensure that connections remain secure.
 

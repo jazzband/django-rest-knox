@@ -10,7 +10,6 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'rest_framework',
     'knox',
-    'django_nose',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -18,7 +17,6 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.middleware.security.SecurityMiddleware',
 )
 
@@ -55,5 +53,3 @@ USE_L10N = True
 USE_TZ = True
 
 STATIC_URL = '/static/'
-
-TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'

@@ -6,7 +6,7 @@ Knox depends on `cryptography` to provide bindings to `OpenSSL` for token genera
 This requires the OpenSSL build libraries to be available.
 
 ### Windows
-Cryptography is a statically linked build, no extra steps are needed
+Cryptography is a statically linked build, no extra steps are needed.
 
 ### Linux
 `cryptography` should build very easily on Linux provided you have a C compiler,
@@ -45,7 +45,7 @@ INSTALLED_APPS = (
 )
 ```
 
-- Make knox's TokenAuthentication your default authentification class
+- Make knox's TokenAuthentication your default authentication class
 for django-rest-framework:
 
 ```python

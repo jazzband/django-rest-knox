@@ -42,7 +42,6 @@ class CONSTANTS:
     '''
     TOKEN_KEY_LENGTH = 8
     DIGEST_LENGTH = 128
-    SALT_LENGTH = 16
 
     def __setattr__(self, *args, **kwargs):
         raise Exception('''

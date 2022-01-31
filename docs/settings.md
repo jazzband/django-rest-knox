@@ -35,7 +35,7 @@ for production use.
 
 ### Tests
 SHA-512 and Whirlpool are secure, however, they are slow. This should not be a
-problem for your users, but when testing it may be noticable (as test cases tend
+problem for your users, but when testing it may be noticeable (as test cases tend
 to use many more requests much more quickly than real users). In testing scenarios
 it is acceptable to use `MD5` hashing.(`cryptography.hazmat.primitives.hashes.MD5`)
 
@@ -63,7 +63,7 @@ By default this option is disabled and set to `None` -- thus no limit.
 
 ## USER_SERIALIZER
 This is the reference to the class used to serialize the `User` objects when
-succesfully returning from `LoginView`. The default is `knox.serializers.UserSerializer`
+successfully returning from `LoginView`. The default is `knox.serializers.UserSerializer`
 
 ## AUTO_REFRESH
 This defines if the token expiry time is extended by TOKEN_TTL each time the token
@@ -93,13 +93,7 @@ be raised if there is an attempt to change them.
 from knox.settings import CONSTANTS
 
 print(CONSTANTS.DIGEST_LENGTH) #=> 128
-print(CONSTANTS.SALT_LENGTH) #=> 16
 ```
 
 ## DIGEST_LENGTH
 This is the length of the digest that will be stored in the database for each token.
-
-## SALT_LENGTH
-This is the length of the [salt][salt] that will be stored in the database for each token.
-
-[salt]: https://en.wikipedia.org/wiki/Salt_(cryptography)

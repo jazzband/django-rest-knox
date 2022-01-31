@@ -3,10 +3,12 @@ from datetime import datetime, timedelta
 
 from django.contrib.auth import get_user_model
 from django.test import override_settings
-from django.utils.six.moves import reload_module
+from django.urls import reverse
 from freezegun import freeze_time
+from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.serializers import DateTimeField
 from rest_framework.test import APIRequestFactory, APITestCase as TestCase
+from six.moves import reload_module
 
 from knox import auth, views
 from knox.auth import TokenAuthentication
@@ -14,13 +16,6 @@ from knox.models import AuthToken
 from knox.serializers import UserSerializer
 from knox.settings import CONSTANTS, knox_settings
 from knox.signals import token_expired
-
-try:
-    # For django >= 2.0
-    from django.urls import reverse
-except ImportError:
-    # For django < 2.0
-    from django.conf.urls import reverse
 
 User = get_user_model()
 root_url = reverse('api-root')
@@ -170,7 +165,7 @@ class AuthTestCase(TestCase):
     def test_expired_tokens_login_fails(self):
         self.assertEqual(AuthToken.objects.count(), 0)
         instance, token = AuthToken.objects.create(
-            user=self.user, expiry=timedelta(seconds=0))
+            user=self.user, expiry=timedelta(seconds=-1))
         self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % token))
         response = self.client.post(root_url, {}, format='json')
         self.assertEqual(response.status_code, 401)
@@ -179,9 +174,9 @@ class AuthTestCase(TestCase):
     def test_expired_tokens_deleted(self):
         self.assertEqual(AuthToken.objects.count(), 0)
         for _ in range(10):
-            # 0 TTL gives an expired token
+            # -1 TTL gives an expired token
             instance, token = AuthToken.objects.create(
-                user=self.user, expiry=timedelta(seconds=0))
+                user=self.user, expiry=timedelta(seconds=-1))
         self.assertEqual(AuthToken.objects.count(), 10)
 
         # Attempting a single logout should delete all tokens
@@ -200,6 +195,34 @@ class AuthTestCase(TestCase):
         self.assertEqual(
             token[:CONSTANTS.TOKEN_KEY_LENGTH],
             auth_token.token_key,
+        )
+
+    def test_authorization_header_empty(self):
+        rf = APIRequestFactory()
+        request = rf.get('/')
+        request.META = {'HTTP_AUTHORIZATION': ''}
+        self.assertEqual(TokenAuthentication().authenticate(request), None)
+
+    def test_authorization_header_prefix_only(self):
+        rf = APIRequestFactory()
+        request = rf.get('/')
+        request.META = {'HTTP_AUTHORIZATION': 'Token'}
+        with self.assertRaises(AuthenticationFailed) as err:
+            (self.user, auth_token) = TokenAuthentication().authenticate(request)
+        self.assertIn(
+            'Invalid token header. No credentials provided.',
+            str(err.exception),
+        )
+
+    def test_authorization_header_spaces_in_token_string(self):
+        rf = APIRequestFactory()
+        request = rf.get('/')
+        request.META = {'HTTP_AUTHORIZATION': 'Token wordone wordtwo'}
+        with self.assertRaises(AuthenticationFailed) as err:
+            (self.user, auth_token) = TokenAuthentication().authenticate(request)
+        self.assertIn(
+            'Invalid token header. Token string should not contain spaces.',
+            str(err.exception),
         )
 
     def test_invalid_token_length_returns_401_code(self):
@@ -252,7 +275,7 @@ class AuthTestCase(TestCase):
             response = self.client.get(root_url, {}, format='json')
             self.assertEqual(response.status_code, 401)
 
-    def test_token_expiry_is_not_extended_with_auto_refresh_deativated(self):
+    def test_token_expiry_is_not_extended_with_auto_refresh_deactivated(self):
         self.assertEqual(knox_settings.AUTO_REFRESH, False)
         self.assertEqual(knox_settings.TOKEN_TTL, timedelta(hours=10))
 
@@ -295,7 +318,7 @@ class AuthTestCase(TestCase):
 
         token_expired.connect(handler)
 
-        instance, token = AuthToken.objects.create(user=self.user, expiry=timedelta(0))
+        instance, token = AuthToken.objects.create(user=self.user, expiry=timedelta(seconds=-1))
         self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % token))
         self.client.post(root_url, {}, format='json')
 
@@ -323,7 +346,7 @@ class AuthTestCase(TestCase):
             reload_module(views)
             for _ in range(9):
                 AuthToken.objects.create(user=self.user)
-            AuthToken.objects.create(user=self.user, expiry=timedelta(seconds=0))
+            AuthToken.objects.create(user=self.user, expiry=timedelta(seconds=-1))
             # now 10 keys, but only 9 valid so request should succeed.
             url = reverse('knox_login')
             self.client.credentials(

@@ -1,12 +1,12 @@
 django-rest-knox
 ================
 
-[![image](https://travis-ci.org/James1345/django-rest-knox.svg?branch=develop)](https://travis-ci.org/James1345/django-rest-knox)
+[![image](https://github.com/James1345/django-rest-knox/workflows/Test/badge.svg?branch=develop)](https://github.com/James1345/django-rest-knox/actions)
 
 Authentication Module for django rest auth
 
 Knox provides easy to use authentication for [Django REST
-Framework](http://www.django-rest-framework.org/) The aim is to allow
+Framework](https://www.django-rest-framework.org/) The aim is to allow
 for common patterns in applications that are REST based, with little
 extra effort; and to ensure that connections remain secure.
 
@@ -30,7 +30,7 @@ default implementation:
     an attacker unrestricted access to an account with a token if the
     database were compromised.
 
-    Knox tokens are only stored in an encrypted form. Even if the
+    Knox tokens are only stored in a secure hash form (like a password). Even if the
     database were somehow stolen, an attacker would not be able to log
     in with the stolen credentials.
 
@@ -39,13 +39,13 @@ default implementation:
     the app settings (default is 10 hours.)
 
 More information can be found in the
-[Documentation](http://james1345.github.io/django-rest-knox/)
+[Documentation](https://james1345.github.io/django-rest-knox/)
 
 # Run the tests locally
 
 If you need to debug a test locally and if you have [docker](https://www.docker.com/) installed:
 
-simply run the ``./docker-run-test.sh`` script and it will run the test suite in every Python /
+simply run the ``./docker-run-tests.sh`` script and it will run the test suite in every Python /
 Django versions.
 
 You could also simply run regular ``tox`` in the root folder as well, but that would make testing the matrix of
