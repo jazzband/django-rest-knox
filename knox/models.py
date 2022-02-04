@@ -22,7 +22,9 @@ class AuthTokenManager(models.Manager):
         return instance, token
 
 
-class AuthToken(models.Model):
+class AbstractAuthToken(models.Model):
+    class Meta:
+        abstract = True
 
     objects = AuthTokenManager()
 
@@ -37,3 +39,7 @@ class AuthToken(models.Model):
 
     def __str__(self):
         return '%s : %s' % (self.digest, self.user)
+
+
+class AuthToken(AbstractAuthToken):
+    pass
