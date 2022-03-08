@@ -17,8 +17,7 @@ class AuthTokenManager(models.Manager):
             expiry = timezone.now() + expiry
 
         instance = super(AuthTokenManager, self).create(
-            token_key=token[:CONSTANTS.TOKEN_KEY_LENGTH], digest=digest,
-            user=user, expiry=expiry)
+            digest=digest, user=user, expiry=expiry)
         return instance, token
 
 
@@ -28,8 +27,6 @@ class AuthToken(models.Model):
 
     digest = models.CharField(
         max_length=CONSTANTS.DIGEST_LENGTH, primary_key=True)
-    token_key = models.CharField(
-        max_length=CONSTANTS.TOKEN_KEY_LENGTH, db_index=True)
     user = models.ForeignKey(User, null=False, blank=False,
                              related_name='auth_token_set', on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)

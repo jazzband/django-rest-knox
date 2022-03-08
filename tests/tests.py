@@ -12,9 +12,10 @@ from six.moves import reload_module
 
 from knox import auth, views
 from knox.auth import TokenAuthentication
+from knox.crypto import hash_token
 from knox.models import AuthToken
 from knox.serializers import UserSerializer
-from knox.settings import CONSTANTS, knox_settings
+from knox.settings import knox_settings
 from knox.signals import token_expired
 
 User = get_user_model()
@@ -58,17 +59,6 @@ class AuthTestCase(TestCase):
         self.email2 = 'jane.doe@example.com'
         self.password2 = 'hunter2'
         self.user2 = User.objects.create_user(self.username2, self.email2, self.password2)
-
-    def test_login_creates_keys(self):
-        self.assertEqual(AuthToken.objects.count(), 0)
-        url = reverse('knox_login')
-        self.client.credentials(
-            HTTP_AUTHORIZATION=get_basic_auth_header(self.username, self.password))
-
-        for _ in range(5):
-            self.client.post(url, {}, format='json')
-        self.assertEqual(AuthToken.objects.count(), 5)
-        self.assertTrue(all(e.token_key for e in AuthToken.objects.all()))
 
     def test_login_returns_serialized_token(self):
         self.assertEqual(AuthToken.objects.count(), 0)
@@ -185,7 +175,7 @@ class AuthTestCase(TestCase):
         self.client.post(url, {}, format='json')
         self.assertEqual(AuthToken.objects.count(), 0)
 
-    def test_update_token_key(self):
+    def test_update_token_digest(self):
         self.assertEqual(AuthToken.objects.count(), 0)
         instance, token = AuthToken.objects.create(self.user)
         rf = APIRequestFactory()
@@ -193,8 +183,8 @@ class AuthTestCase(TestCase):
         request.META = {'HTTP_AUTHORIZATION': 'Token {}'.format(token)}
         (self.user, auth_token) = TokenAuthentication().authenticate(request)
         self.assertEqual(
-            token[:CONSTANTS.TOKEN_KEY_LENGTH],
-            auth_token.token_key,
+            hash_token(token),
+            auth_token.digest,
         )
 
     def test_authorization_header_empty(self):
@@ -224,13 +214,6 @@ class AuthTestCase(TestCase):
             'Invalid token header. Token string should not contain spaces.',
             str(err.exception),
         )
-
-    def test_invalid_token_length_returns_401_code(self):
-        invalid_token = "1" * (CONSTANTS.TOKEN_KEY_LENGTH - 1)
-        self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % invalid_token))
-        response = self.client.post(root_url, {}, format='json')
-        self.assertEqual(response.status_code, 401)
-        self.assertEqual(response.data, {"detail": "Invalid token."})
 
     def test_invalid_odd_length_token_returns_401_code(self):
         instance, token = AuthToken.objects.create(self.user)

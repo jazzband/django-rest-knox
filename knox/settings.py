@@ -40,7 +40,6 @@ class CONSTANTS:
     '''
     Constants cannot be changed at runtime
     '''
-    TOKEN_KEY_LENGTH = 8
     DIGEST_LENGTH = 128
 
     def __setattr__(self, *args, **kwargs):
