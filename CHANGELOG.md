@@ -1,7 +1,7 @@
 ## 4.2.0
 - compatibility with Python up to 3.10 and Django up to 4.0
 - integration with github CI instead of travis
-- Migration: "salt" field of model "AuthToken" is removed
+- Migration: "salt" field of model "AuthToken" is removed, WARNING: invalidates old tokens!
 
 ## 4.1.0
 
