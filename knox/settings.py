@@ -16,6 +16,7 @@ DEFAULTS = {
     'MIN_REFRESH_INTERVAL': 60,
     'AUTH_HEADER_PREFIX': 'Token',
     'EXPIRY_DATETIME_FORMAT': api_settings.DATETIME_FORMAT,
+    'TOKEN_MODEL': getattr(settings, 'KNOX_TOKEN_MODEL', 'knox.AuthToken'),
 }
 
 IMPORT_STRINGS = {

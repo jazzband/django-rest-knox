@@ -14,9 +14,9 @@ from rest_framework.authentication import (
 )
 
 from knox.crypto import hash_token
-from knox.models import AuthToken
 from knox.settings import CONSTANTS, knox_settings
 from knox.signals import token_expired
+from knox.utils import get_token_model
 
 
 class TokenAuthentication(BaseAuthentication):
@@ -31,7 +31,6 @@ class TokenAuthentication(BaseAuthentication):
     - `request.user` will be a django `User` instance
     - `request.auth` will be an `AuthToken` instance
     '''
-    model = AuthToken
 
     def authenticate(self, request):
         auth = get_authorization_header(request).split()
@@ -62,7 +61,7 @@ class TokenAuthentication(BaseAuthentication):
         '''
         msg = _('Invalid token.')
         token = token.decode("utf-8")
-        for auth_token in AuthToken.objects.filter(
+        for auth_token in get_token_model().objects.filter(
                 token_key=token[:CONSTANTS.TOKEN_KEY_LENGTH]):
             if self._cleanup_token(auth_token):
                 continue
