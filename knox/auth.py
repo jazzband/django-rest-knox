@@ -14,9 +14,9 @@ from rest_framework.authentication import (
 )
 
 from knox.crypto import hash_token
+from knox.models import get_token_model
 from knox.settings import CONSTANTS, knox_settings
 from knox.signals import token_expired
-from knox.utils import get_token_model
 
 
 class TokenAuthentication(BaseAuthentication):

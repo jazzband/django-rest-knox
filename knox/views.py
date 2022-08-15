@@ -8,8 +8,8 @@ from rest_framework.settings import api_settings
 from rest_framework.views import APIView
 
 from knox.auth import TokenAuthentication
+from knox.models import get_token_model
 from knox.settings import knox_settings
-from knox.utils import get_token_model
 
 
 class LoginView(APIView):

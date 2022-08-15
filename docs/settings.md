@@ -10,6 +10,9 @@ Example `settings.py`
 # These are the default values if none are set
 from datetime import timedelta
 from rest_framework.settings import api_settings
+
+KNOX_TOKEN_MODEL = 'knox.AuthToken'
+
 REST_KNOX = {
   'SECURE_HASH_ALGORITHM': 'cryptography.hazmat.primitives.hashes.SHA512',
   'AUTH_TOKEN_CHARACTER_LENGTH': 64,
@@ -17,10 +20,16 @@ REST_KNOX = {
   'USER_SERIALIZER': 'knox.serializers.UserSerializer',
   'TOKEN_LIMIT_PER_USER': None,
   'AUTO_REFRESH': False,
+  'MIN_REFRESH_INTERVAL': 60,
+  'AUTH_HEADER_PREFIX': 'Token',
   'EXPIRY_DATETIME_FORMAT': api_settings.DATETIME_FORMAT,
+  'TOKEN_MODEL': 'knox.AuthToken',
 }
 #...snip...
 ```
+
+## KNOX_TOKEN_MODEL
+This is the variable used in the swappable dependency of the `AuthToken` model
 
 ## SECURE_HASH_ALGORITHM
 This is a reference to the class used to provide the hashing algorithm for
@@ -80,6 +89,11 @@ This is the Authorization header value prefix. The default is `Token`
 This is the expiry datetime format returned in the login view. The default is the
 [DATETIME_FORMAT][DATETIME_FORMAT] of Django REST framework. May be any of `None`, `iso-8601`
 or a Python [strftime format][strftime format] string.
+
+## TOKEN_MODEL
+This is the reference to the model used as `AuthToken`. We can define a custom `AuthToken`
+model in our project that extends `knox.AbstractAuthToken` and add our business logic to it.
+The default is `knox.AuthToken`
 
 [DATETIME_FORMAT]: https://www.django-rest-framework.org/api-guide/settings/#date-and-time-formatting
 [strftime format]: https://docs.python.org/3/library/time.html#time.strftime
