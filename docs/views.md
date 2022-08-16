@@ -21,6 +21,7 @@ helper methods:
 - `get_user_serializer_class(self)`, to change the class used for serializing the user
 - `get_expiry_datetime_format(self)`, to change the datetime format used for expiry
 - `format_expiry_datetime(self, expiry)`, to format the expiry `datetime` object at your convenience
+- `create_token(self)`, to create the `AuthToken` instance at your convenience
 
 Finally, if none of these helper methods are sufficient, you can also override `get_post_response_data`
 to return a fully customized payload.
