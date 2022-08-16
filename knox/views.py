@@ -8,7 +8,7 @@ from rest_framework.settings import api_settings
 from rest_framework.views import APIView
 
 from knox.auth import TokenAuthentication
-from knox.models import AuthToken
+from knox.models import get_token_model
 from knox.settings import knox_settings
 
 
@@ -35,6 +35,11 @@ class LoginView(APIView):
         datetime_format = self.get_expiry_datetime_format()
         return DateTimeField(format=datetime_format).to_representation(expiry)
 
+    def create_token(self):
+        return get_token_model().objects.create(
+            user=self.request.user, expiry=self.get_token_ttl()
+        )
+
     def get_post_response_data(self, request, token, instance):
         UserSerializer = self.get_user_serializer_class()
 
@@ -59,8 +64,7 @@ class LoginView(APIView):
                     {"error": "Maximum amount of tokens allowed per user exceeded."},
                     status=status.HTTP_403_FORBIDDEN
                 )
-        token_ttl = self.get_token_ttl()
-        instance, token = AuthToken.objects.create(request.user, token_ttl)
+        instance, token = self.create_token()
         user_logged_in.send(sender=request.user.__class__,
                             request=request, user=request.user)
         data = self.get_post_response_data(request, token, instance)
