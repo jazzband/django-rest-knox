@@ -22,6 +22,9 @@ class LoginView(APIView):
     def get_token_ttl(self):
         return knox_settings.TOKEN_TTL
 
+    def get_token_prefix(self):
+        return knox_settings.TOKEN_PREFIX
+
     def get_token_limit_per_user(self):
         return knox_settings.TOKEN_LIMIT_PER_USER
 
@@ -36,8 +39,9 @@ class LoginView(APIView):
         return DateTimeField(format=datetime_format).to_representation(expiry)
 
     def create_token(self):
+        token_prefix = self.get_token_prefix()
         return get_token_model().objects.create(
-            user=self.request.user, expiry=self.get_token_ttl()
+            user=self.request.user, expiry=self.get_token_ttl(), prefix=token_prefix
         )
 
     def get_post_response_data(self, request, token, instance):

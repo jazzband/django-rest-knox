@@ -98,6 +98,10 @@ The default is `knox.AuthToken`
 [DATETIME_FORMAT]: https://www.django-rest-framework.org/api-guide/settings/#date-and-time-formatting
 [strftime format]: https://docs.python.org/3/library/time.html#time.strftime
 
+## TOKEN_PREFIX
+This is the prefix for the generated token that is used in the Authorization header. The default is just an empty string.
+It can be up to `CONSTANTS.MAXIMUM_TOKEN_PREFIX_LENGTH` long.
+
 # Constants `knox.settings`
 Knox also provides some constants for information. These must not be changed in
 external code; they are used in the model definitions in knox and an error will
@@ -111,3 +115,6 @@ print(CONSTANTS.DIGEST_LENGTH) #=> 128
 
 ## DIGEST_LENGTH
 This is the length of the digest that will be stored in the database for each token.
+
+## MAXIMUM_TOKEN_PREFIX_LENGTH
+This is the maximum length of the token prefix.

@@ -10,7 +10,7 @@ from rest_framework.serializers import DateTimeField
 from rest_framework.test import APIRequestFactory, APITestCase as TestCase
 from six.moves import reload_module
 
-from knox import auth, views
+from knox import auth, crypto, views
 from knox.auth import TokenAuthentication
 from knox.models import AuthToken
 from knox.serializers import UserSerializer
@@ -45,6 +45,13 @@ EXPIRY_DATETIME_FORMAT = '%H:%M %d/%m/%y'
 expiry_datetime_format_knox = knox_settings.defaults.copy()
 expiry_datetime_format_knox["EXPIRY_DATETIME_FORMAT"] = EXPIRY_DATETIME_FORMAT
 
+token_prefix = "TEST_"
+token_prefix_knox = knox_settings.defaults.copy()
+token_prefix_knox["TOKEN_PREFIX"] = token_prefix
+
+token_prefix_too_long = "a" * CONSTANTS.MAXIMUM_TOKEN_PREFIX_LENGTH + "a"
+token_prefix_too_long_knox = knox_settings.defaults.copy()
+token_prefix_too_long_knox["TOKEN_PREFIX"] = token_prefix_too_long
 
 class AuthTestCase(TestCase):
 
@@ -419,3 +426,65 @@ class AuthTestCase(TestCase):
             response.data['expiry'],
             DateTimeField().to_representation(AuthToken.objects.first().expiry)
         )
+
+    def test_login_returns_serialized_token_with_prefix_when_prefix_set(self):
+        with override_settings(REST_KNOX=token_prefix_knox):
+            reload_module(views)
+            reload_module(crypto)
+            self.assertEqual(AuthToken.objects.count(), 0)
+            url = reverse('knox_login')
+            self.client.credentials(
+                HTTP_AUTHORIZATION=get_basic_auth_header(self.username, self.password)
+            )
+            response = self.client.post(
+                url,
+                {},
+                format='json'
+            )
+            self.assertEqual(response.status_code, 200)
+            self.assertTrue(response.data['token'].startswith(token_prefix))
+        reload_module(views)
+        reload_module(crypto)
+
+    def test_token_with_prefix_returns_200(self):
+        with override_settings(REST_KNOX=token_prefix_knox):
+            reload_module(views)
+            self.assertEqual(AuthToken.objects.count(), 0)
+            url = reverse('knox_login')
+            self.client.credentials(
+                HTTP_AUTHORIZATION=get_basic_auth_header(self.username, self.password)
+            )
+            response = self.client.post(
+                url,
+                {},
+                format='json'
+            )
+            self.assertEqual(response.status_code, 200)
+            self.assertTrue(response.data['token'].startswith(token_prefix))
+            self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % response.data['token']))
+            response = self.client.get(root_url, {}, format='json')
+            self.assertEqual(response.status_code, 200)
+        reload_module(views)
+
+    def test_prefix_set_longer_than_max_length_raises_valueerror(self):
+        with self.assertRaises(ValueError):    
+            with override_settings(REST_KNOX=token_prefix_too_long_knox):
+                pass
+
+    def test_tokens_created_before_prefix_still_work(self):
+        self.client.credentials(
+            HTTP_AUTHORIZATION=get_basic_auth_header(self.username, self.password)
+        )
+        url = reverse('knox_login')
+        response = self.client.post(
+            url,
+            {},
+            format='json'
+        )
+        self.assertFalse(response.data['token'].startswith(token_prefix))
+        with override_settings(REST_KNOX=token_prefix_knox):
+            reload_module(views)
+            self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % response.data['token']))
+            response = self.client.get(root_url, {}, format='json')
+            self.assertEqual(response.status_code, 200)
+        reload_module(views)
