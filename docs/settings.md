@@ -101,6 +101,15 @@ The default is `knox.AuthToken`
 ## TOKEN_PREFIX
 This is the prefix for the generated token that is used in the Authorization header. The default is just an empty string.
 It can be up to `CONSTANTS.MAXIMUM_TOKEN_PREFIX_LENGTH` long.
+## ENABLE_COOKIE_AUTH
+This defines if the authentication will be done using a `HTTP-only` Cookie.
+The default is `False`
+## AUTH_COOKIE_SALT
+This is the Salt `(String)` that is added to better store and secure token value inside Cookies
+the default value is `"knox"` and it can be up to `CONSTANTS.MAXIMUM_SALT_LENGTH` long.
+## AUTH_COOKIE_KEY
+This is the `Cookie` key of the token. The default is `knox`.
+It can be up to `CONSTANTS.MAXIMUM_COOKIE_KEY_LENGTH` long.
 
 # Constants `knox.settings`
 Knox also provides some constants for information. These must not be changed in
@@ -118,3 +127,9 @@ This is the length of the digest that will be stored in the database for each to
 
 ## MAXIMUM_TOKEN_PREFIX_LENGTH
 This is the maximum length of the token prefix.
+
+## MAXIMUM_COOKIE_KEY_LENGTH
+This is the maximum length of the cookie `key`
+
+## MAXIMUM_SALT_LENGTH
+This is the maximum length of  Salt `(String)` that encode token value inside the cookie.

@@ -31,8 +31,24 @@ class TokenAuthentication(BaseAuthentication):
     - `request.user` will be a django `User` instance
     - `request.auth` will be an `AuthToken` instance
     '''
-
+    def authenticate_through_cookie(self, request):
+        prefix = knox_settings.AUTH_COOKIE_KEY
+        if prefix in request.COOKIES:
+            auth =request.get_signed_cookie(prefix,False,salt=knox_settings.AUTH_COOKIE_SALT)
+            if not auth or len(auth) == 0:
+                    msg = _('Failed to get token value from cookies')
+                    raise exceptions.AuthenticationFailed(msg)
+            user, auth_token = self.authenticate_credentials(auth.encode())
+            return (user, auth_token)
+        else :
+            msg = _('No credentials provided through cookies')
+            raise exceptions.AuthenticationFailed(msg)
+    
     def authenticate(self, request):
+
+        if knox_settings.ENABLE_COOKIE_AUTH:
+            return self.authenticate_through_cookie(request)
+
         auth = get_authorization_header(request).split()
         prefix = knox_settings.AUTH_HEADER_PREFIX.encode()
 
