@@ -53,6 +53,10 @@ token_prefix_too_long = "a" * CONSTANTS.MAXIMUM_TOKEN_PREFIX_LENGTH + "a"
 token_prefix_too_long_knox = knox_settings.defaults.copy()
 token_prefix_too_long_knox["TOKEN_PREFIX"] = token_prefix_too_long
 
+cookie_key='cookie'
+cookie_key_knox=knox_settings.defaults.copy()
+cookie_key_knox['AUTH_COOKIE_KEY']=cookie_key
+
 class AuthTestCase(TestCase):
 
     def setUp(self):
@@ -488,3 +492,54 @@ class AuthTestCase(TestCase):
             response = self.client.get(root_url, {}, format='json')
             self.assertEqual(response.status_code, 200)
         reload_module(views)
+    def test_login_create_token_cookie(self):
+        with override_settings(REST_KNOX=cookie_key_knox):
+            reload_module(auth)
+            reload_module(views)
+            self.assertEqual(AuthToken.objects.count(), 0)
+            url = reverse('knox_login')
+            self.client.credentials(
+                HTTP_AUTHORIZATION=get_basic_auth_header(self.username, self.password)
+            )
+            response = self.client.post(url, {}, format='json')
+            self.assertEqual(response.status_code, 200)
+            self.assertIn(cookie_key_knox["AUTH_COOKIE_KEY"], self.client.cookies.keys())
+            reload_module(auth)
+            response = self.client.get(root_url, {}, format='json')
+            self.assertEqual(response.status_code, 200)
+        reload_module(views)
+
+    def test_logout_deletes_token_cookie(self):
+        with override_settings(REST_KNOX=cookie_key_knox):
+            reload_module(auth)
+            reload_module(views)
+            self.assertEqual(AuthToken.objects.count(), 0)
+            for _ in range(2):
+                instance, token = AuthToken.objects.create(user=self.user)
+            self.assertEqual(AuthToken.objects.count(), 2)
+
+            url = reverse('knox_logout')
+
+            self.client.post(url, {}, format='json')
+            self.assertEqual(AuthToken.objects.count(), 1,
+                             'other tokens should remain after logout')
+            self.assertNotIn(cookie_key_knox["AUTH_COOKIE_KEY"], self.client.cookies.keys())
+        reload_module(auth)
+        reload_module(views)
+
+    def test_logout_all_deletes_token_cookie(self):
+        with override_settings(REST_KNOX=cookie_key_knox):
+            reload_module(auth)
+            reload_module(views)
+            self.assertEqual(AuthToken.objects.count(), 0)
+            for _ in range(10):
+                instance, token = AuthToken.objects.create(user=self.user)
+            self.assertEqual(AuthToken.objects.count(), 10)
+
+            url = reverse('knox_logoutall')
+            self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % token))
+            self.client.post(url, {}, format='json')
+            self.assertEqual(AuthToken.objects.count(), 0)
+            self.assertNotIn(cookie_key_knox["AUTH_COOKIE_KEY"], self.client.cookies.keys())  
+        reload_module(auth)
+        reload_module(views) 

@@ -18,6 +18,9 @@ DEFAULTS = {
     'EXPIRY_DATETIME_FORMAT': api_settings.DATETIME_FORMAT,
     'TOKEN_MODEL': getattr(settings, 'KNOX_TOKEN_MODEL', 'knox.AuthToken'),
     'TOKEN_PREFIX': '',
+    'ENABLE_COOKIE_AUTH':False,
+    'AUTH_COOKIE_SALT':"knox",
+    'AUTH_COOKIE_KEY': 'knox',
 }
 
 IMPORT_STRINGS = {
@@ -35,6 +38,10 @@ def reload_api_settings(*args, **kwargs):
         knox_settings = APISettings(value, DEFAULTS, IMPORT_STRINGS)
         if len(knox_settings.TOKEN_PREFIX) > CONSTANTS.MAXIMUM_TOKEN_PREFIX_LENGTH:
             raise ValueError("Illegal TOKEN_PREFIX length")
+        if len(knox_settings.AUTH_COOKIE_KEY) > CONSTANTS.MAXIMUM_COOKIE_KEY_LENGTH:
+            raise ValueError("unauthorized COOKIE_KEY length")
+        if len(knox_settings.AUTH_COOKIE_SALT) > CONSTANTS.MAXIMUM_SALT_LENGTH:
+            raise ValueError("unauthorized COOKIE_SALT length")
 
 
 setting_changed.connect(reload_api_settings)
@@ -47,6 +54,8 @@ class CONSTANTS:
     TOKEN_KEY_LENGTH = 15
     DIGEST_LENGTH = 128
     MAXIMUM_TOKEN_PREFIX_LENGTH = 10
+    MAXIMUM_SALT_LENGTH=10
+    MAXIMUM_COOKIE_KEY_LENGTH=8
 
     def __setattr__(self, *args, **kwargs):
         raise Exception('''

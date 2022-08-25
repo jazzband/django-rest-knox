@@ -33,6 +33,14 @@ class LoginView(APIView):
 
     def get_expiry_datetime_format(self):
         return knox_settings.EXPIRY_DATETIME_FORMAT
+    def get_cookie_auth_status(self):
+        return knox_settings.ENABLE_COOKIE_AUTH
+
+    def get_cookie_salt(self):
+        return knox_settings.AUTH_COOKIE_SALT
+
+    def get_cookie_key(self):
+        return knox_settings.AUTH_COOKIE_KEY
 
     def format_expiry_datetime(self, expiry):
         datetime_format = self.get_expiry_datetime_format()
@@ -72,18 +80,27 @@ class LoginView(APIView):
         user_logged_in.send(sender=request.user.__class__,
                             request=request, user=request.user)
         data = self.get_post_response_data(request, token, instance)
-        return Response(data)
-
+        response=Response(data)
+        if self.get_cookie_auth_status():
+            response.set_signed_cookie(self.get_cookie_key(), token, httponly=True,salt=self.get_cookie_salt())
+        return response
 
 class LogoutView(APIView):
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
+    def get_cookie_auth_status(self):
+        return knox_settings.ENABLE_COOKIE_AUTH
+    def get_cookie_key(self):
+        return knox_settings.AUTH_COOKIE_KEY
 
     def post(self, request, format=None):
         request._auth.delete()
         user_logged_out.send(sender=request.user.__class__,
                              request=request, user=request.user)
-        return Response(None, status=status.HTTP_204_NO_CONTENT)
+        response=Response(None, status=status.HTTP_204_NO_CONTENT)
+        if self.get_cookie_auth_status():
+            response.delete_cookie(self.get_cookie_key())
+        return response
 
 
 class LogoutAllView(APIView):
@@ -94,8 +111,18 @@ class LogoutAllView(APIView):
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
 
+    def get_cookie_auth_status(self):
+        return knox_settings.ENABLE_COOKIE_AUTH
+
+    def get_cookie_key(self):
+        return knox_settings.AUTH_COOKIE_KEY
+
     def post(self, request, format=None):
         request.user.auth_token_set.all().delete()
         user_logged_out.send(sender=request.user.__class__,
                              request=request, user=request.user)
-        return Response(None, status=status.HTTP_204_NO_CONTENT)
+        response=Response(None, status=status.HTTP_204_NO_CONTENT)
+        if self.get_cookie_auth_status():
+            response.delete_cookie(self.get_cookie_key())
+        return response 
+        
