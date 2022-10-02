@@ -2,8 +2,6 @@
 Knox provides three views that handle token management for you.
 
 ## LoginView
-This view accepts only a post request with an empty body.
-
 The LoginView accepts the same sort of authentication as your Rest Framework
 `DEFAULT_AUTHENTICATION_CLASSES` setting. If this is not set, it defaults to
 `(SessionAuthentication, BasicAuthentication)`.
