@@ -91,7 +91,7 @@ class LogoutAllView(APIView):
     Log the user out of all sessions
     I.E. deletes all auth tokens for the user
     '''
-    authentication_classes = (TokenAuthentication,)
+    authentication_classes = api_settings.DEFAULT_AUTHENTICATION_CLASSES
     permission_classes = (IsAuthenticated,)
 
     def post(self, request, format=None):
