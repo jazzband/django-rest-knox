@@ -40,7 +40,7 @@ default implementation:
     the app settings (default is 10 hours.)
 
 More information can be found in the
-[Documentation](https://james1345.github.io/django-rest-knox/)
+[Documentation](https://jazzband.github.io/django-rest-knox/)
 
 # Run the tests locally
 
