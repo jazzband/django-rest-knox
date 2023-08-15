@@ -23,7 +23,7 @@ setup(
     long_description_content_type='text/markdown',
 
     # The project's main homepage.
-    url='https://github.com/James1345/django-rest-knox',
+    url='https://github.com/jazzband/django-rest-knox',
 
     # Author details
     author='James McMahon',
