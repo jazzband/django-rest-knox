@@ -53,6 +53,7 @@ token_prefix_too_long = "a" * CONSTANTS.MAXIMUM_TOKEN_PREFIX_LENGTH + "a"
 token_prefix_too_long_knox = knox_settings.defaults.copy()
 token_prefix_too_long_knox["TOKEN_PREFIX"] = token_prefix_too_long
 
+
 class AuthTestCase(TestCase):
 
     def setUp(self):
@@ -325,7 +326,10 @@ class AuthTestCase(TestCase):
 
         token_expired.connect(handler)
 
-        instance, token = AuthToken.objects.create(user=self.user, expiry=timedelta(seconds=-1))
+        instance, token = AuthToken.objects.create(
+            user=self.user,
+            expiry=timedelta(seconds=-1),
+        )
         self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % token))
         self.client.post(root_url, {}, format='json')
 
@@ -461,13 +465,15 @@ class AuthTestCase(TestCase):
             )
             self.assertEqual(response.status_code, 200)
             self.assertTrue(response.data['token'].startswith(token_prefix))
-            self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % response.data['token']))
+            self.client.credentials(
+                HTTP_AUTHORIZATION=('Token %s' % response.data['token'])
+            )
             response = self.client.get(root_url, {}, format='json')
             self.assertEqual(response.status_code, 200)
         reload(views)
 
     def test_prefix_set_longer_than_max_length_raises_valueerror(self):
-        with self.assertRaises(ValueError):    
+        with self.assertRaises(ValueError):
             with override_settings(REST_KNOX=token_prefix_too_long_knox):
                 pass
 
@@ -484,7 +490,9 @@ class AuthTestCase(TestCase):
         self.assertFalse(response.data['token'].startswith(token_prefix))
         with override_settings(REST_KNOX=token_prefix_knox):
             reload(views)
-            self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % response.data['token']))
+            self.client.credentials(
+                HTTP_AUTHORIZATION=('Token %s' % response.data['token'])
+            )
             response = self.client.get(root_url, {}, format='json')
             self.assertEqual(response.status_code, 200)
         reload(views)
