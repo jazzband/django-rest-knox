@@ -23,7 +23,7 @@ setup(
     long_description_content_type='text/markdown',
 
     # The project's main homepage.
-    url='https://github.com/James1345/django-rest-knox',
+    url='https://github.com/jazzband/django-rest-knox',
 
     # Author details
     author='James McMahon',
@@ -51,6 +51,7 @@ setup(
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
     ],
 
     # What does your project relate to?

@@ -1,7 +1,8 @@
 django-rest-knox
 ================
 
-[![image](https://github.com/James1345/django-rest-knox/workflows/Test/badge.svg?branch=develop)](https://github.com/James1345/django-rest-knox/actions)
+[![Jazzband](https://jazzband.co/static/img/badge.svg)](https://jazzband.co/)
+[![image](https://github.com/jazzband/django-rest-knox/workflows/Test/badge.svg?branch=develop)](https://github.com/jazzband/django-rest-knox/actions)
 
 Authentication Module for django rest auth
 
@@ -39,7 +40,7 @@ default implementation:
     the app settings (default is 10 hours.)
 
 More information can be found in the
-[Documentation](https://james1345.github.io/django-rest-knox/)
+[Documentation](https://jazzband.github.io/django-rest-knox/)
 
 # Run the tests locally
 
