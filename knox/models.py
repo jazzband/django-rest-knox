@@ -1,3 +1,4 @@
+from typing import Tuple
 from django.apps import apps
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
@@ -18,7 +19,7 @@ class AuthTokenManager(models.Manager):
         user,
         expiry=knox_settings.TOKEN_TTL,
         prefix=knox_settings.TOKEN_PREFIX
-    ):
+    ) -> Tuple['AbstractAuthToken', str]:
         token = prefix + crypto.create_token_string()
         digest = crypto.hash_token(token)
         if expiry is not None:
