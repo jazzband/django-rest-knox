@@ -7,7 +7,7 @@ from django.db import migrations, models
 
 def cleanup_tokens(apps, schema_editor):
     AuthToken = apps.get_model('knox', 'AuthToken')
-    AuthToken.objects.filter(token_key__isnull=True).delete()
+    AuthToken.objects.using(schema_editor.connection.alias).filter(token_key__isnull=True).delete()
 
 
 class Migration(migrations.Migration):
