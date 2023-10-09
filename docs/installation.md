@@ -10,8 +10,8 @@ Cryptography is a statically linked build, no extra steps are needed.
 
 ### Linux
 `cryptography` should build very easily on Linux provided you have a C compiler,
-headers for Python (if you’re not using `pypy`), and headers for the OpenSSL and
-`libffi` libraries available on your system.
+a Rust compiler, headers for Python (if you’re not using `pypy`), and headers for
+the OpenSSL and `libffi` libraries available on your system.
 
 Debian and Ubuntu:
 ```bash
