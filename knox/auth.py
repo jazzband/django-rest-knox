@@ -1,10 +1,5 @@
-try:
-    from hmac import compare_digest
-except ImportError:
-    def compare_digest(a, b):
-        return a == b
-
 import binascii
+from hmac import compare_digest
 
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
