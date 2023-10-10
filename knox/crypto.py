@@ -15,7 +15,7 @@ def create_token_string():
 def make_hex_compatible(token: str) -> str:
     """
     We need to make sure that the token, that is send is hex-compatible.
-    When a token prefix is used, we cannot garantee that.
+    When a token prefix is used, we cannot guarantee that.
     """
     return binascii.unhexlify(binascii.hexlify(bytes(token, 'utf-8')))
 
