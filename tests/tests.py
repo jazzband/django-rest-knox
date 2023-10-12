@@ -339,8 +339,10 @@ class AuthTestCase(TestCase):
 
         with override_settings(REST_KNOX=token_user_limit_knox):
             reload(views)
-            for _ in range(10):
+            for _ in range(5):
                 AuthToken.objects.create(user=self.user)
+            for _ in range(5):
+                AuthToken.objects.create(user=self.user, expiry=None)
             url = reverse('knox_login')
             self.client.credentials(
                 HTTP_AUTHORIZATION=get_basic_auth_header(self.username, self.password)
