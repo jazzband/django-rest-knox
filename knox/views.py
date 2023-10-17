@@ -58,6 +58,10 @@ class LoginView(APIView):
             ).data
         return data
 
+    def get_post_response(self, request, token, instance):
+        data = self.get_post_response_data(request, token, instance)
+        return Response(data)
+
     def post(self, request, format=None):
         token_limit_per_user = self.get_token_limit_per_user()
         if token_limit_per_user is not None:
@@ -71,19 +75,21 @@ class LoginView(APIView):
         instance, token = self.create_token()
         user_logged_in.send(sender=request.user.__class__,
                             request=request, user=request.user)
-        data = self.get_post_response_data(request, token, instance)
-        return Response(data)
+        return self.get_post_response(request, token, instance)
 
 
 class LogoutView(APIView):
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
 
+    def get_post_response(self, request):
+        return Response(None, status=status.HTTP_204_NO_CONTENT)
+
     def post(self, request, format=None):
         request._auth.delete()
         user_logged_out.send(sender=request.user.__class__,
                              request=request, user=request.user)
-        return Response(None, status=status.HTTP_204_NO_CONTENT)
+        return self.get_post_response(request)
 
 
 class LogoutAllView(APIView):
@@ -94,8 +100,11 @@ class LogoutAllView(APIView):
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
 
+    def get_post_response(self, request):
+        return Response(None, status=status.HTTP_204_NO_CONTENT)
+
     def post(self, request, format=None):
         request.user.auth_token_set.all().delete()
         user_logged_out.send(sender=request.user.__class__,
                              request=request, user=request.user)
-        return Response(None, status=status.HTTP_204_NO_CONTENT)
+        return self.get_post_response(request)
