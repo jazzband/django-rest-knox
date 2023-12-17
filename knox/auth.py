@@ -71,7 +71,7 @@ class TokenAuthentication(BaseAuthentication):
                 return self.validate_user(auth_token)
         raise exceptions.AuthenticationFailed(msg)
 
-    def renew_token(self, auth_token):
+    def renew_token(self, auth_token) -> None:
         current_expiry = auth_token.expiry
         new_expiry = timezone.now() + knox_settings.TOKEN_TTL
         auth_token.expiry = new_expiry
@@ -89,7 +89,7 @@ class TokenAuthentication(BaseAuthentication):
     def authenticate_header(self, request):
         return knox_settings.AUTH_HEADER_PREFIX
 
-    def _cleanup_token(self, auth_token):
+    def _cleanup_token(self, auth_token) -> bool:
         for other_token in auth_token.user.auth_token_set.all():
             if other_token.digest != auth_token.digest and other_token.expiry:
                 if other_token.expiry < timezone.now():

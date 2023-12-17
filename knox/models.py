@@ -48,7 +48,7 @@ class AbstractAuthToken(models.Model):
     class Meta:
         abstract = True
 
-    def __str__(self):
+    def __str__(self) -> str:
         return '%s : %s' % (self.digest, self.user)
 
 

@@ -6,13 +6,13 @@ from knox.settings import knox_settings
 hash_func = knox_settings.SECURE_HASH_ALGORITHM
 
 
-def create_token_string():
+def create_token_string() -> str:
     return binascii.hexlify(
         generate_bytes(int(knox_settings.AUTH_TOKEN_CHARACTER_LENGTH / 2))
     ).decode()
 
 
-def make_hex_compatible(token: str) -> str:
+def make_hex_compatible(token: str) -> bytes:
     """
     We need to make sure that the token, that is send is hex-compatible.
     When a token prefix is used, we cannot guarantee that.
