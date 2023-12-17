@@ -23,7 +23,7 @@ root_url = reverse('api-root')
 
 def get_basic_auth_header(username, password):
     return 'Basic %s' % base64.b64encode(
-        ('%s:%s' % (username, password)).encode('ascii')).decode()
+        (f'{username}:{password}').encode('ascii')).decode()
 
 
 auto_refresh_knox = knox_settings.defaults.copy()
@@ -198,7 +198,7 @@ class AuthTestCase(TestCase):
         instance, token = AuthToken.objects.create(self.user)
         rf = APIRequestFactory()
         request = rf.get('/')
-        request.META = {'HTTP_AUTHORIZATION': 'Token {}'.format(token)}
+        request.META = {'HTTP_AUTHORIZATION': f'Token {token}'}
         (self.user, auth_token) = TokenAuthentication().authenticate(request)
         self.assertEqual(
             token[:CONSTANTS.TOKEN_KEY_LENGTH],
