@@ -2,7 +2,7 @@
 
 ## Requirements
 
-Knox depends on `cryptography` to provide bindings to `OpenSSL` for token generation
+Knox depends on `cryptography` to provide bindings to `OpenSSL` for token generation.
 This requires the OpenSSL build libraries to be available.
 
 ### Windows
