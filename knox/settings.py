@@ -55,4 +55,4 @@ class CONSTANTS:
             ''')
 
 
-CONSTANTS = CONSTANTS()
+CONSTANTS = CONSTANTS()  # type: ignore
