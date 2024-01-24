@@ -1,5 +1,10 @@
 from django.contrib.auth import get_user_model
+from django.db.models.expressions import fields
 from rest_framework import serializers
+
+from knox.models import get_refresh_token_model
+from knox.settings import CONSTANTS
+
 
 User = get_user_model()
 
