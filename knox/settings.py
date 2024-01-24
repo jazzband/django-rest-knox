@@ -18,6 +18,15 @@ DEFAULTS = {
     'EXPIRY_DATETIME_FORMAT': api_settings.DATETIME_FORMAT,
     'TOKEN_MODEL': getattr(settings, 'KNOX_TOKEN_MODEL', 'knox.AuthToken'),
     'TOKEN_PREFIX': '',
+    
+    'ENABLE_REFRESH_TOKEN': False,
+    'REFRESH_TOKEN_MODEL': getattr(settings, 'KNOX_REFRESH_TOKEN_MODEL', 'knox.AuthRefreshToken'),
+    'REFRESH_FAMILY_MODEL': getattr(settings, 'KNOX_REFRESH_FAMILY_MODEL', 'knox.RefreshFamily'),
+    'AUTO_REFRESH_REFRESH_TOKEN':False,
+    'REFRESH_TOKEN_LIMIT_PER_USER': None,
+    'REFRESH_TOKEN_TTL': timedelta(days=30),
+    'MIN_REFRESH_TOKEN_INTERVAL': 86400, # only renew once a day
+    'REFRESH_TOKEN_RENEW_TTL':timedelta(days=2),
 }
 
 IMPORT_STRINGS = {
