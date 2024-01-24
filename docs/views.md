@@ -22,6 +22,13 @@ helper methods:
 - `get_expiry_datetime_format(self)`, to change the datetime format used for expiry
 - `format_expiry_datetime(self, expiry)`, to format the expiry `datetime` object at your convenience
 - `create_token(self)`, to create the `AuthToken` instance at your convenience
+!!! note 
+    These methods are only relevant if you have [refresh tokens](refresh.md) enabled.
+- `get_refresh_token_ttl(self)`, to change the refresh token ttl
+- `create_refresh_token(self)`, to create the `AuthRefreshToken` instance at your convenience
+- `create_refresh_family(self, parent, refresh_token, token)`, to create the `RefreshFamily` instance at your convenience
+- `add_refresh_token(self, data, token)`, to add `refresh_token` and `refresh_token_expiry` to the `LoginView` response data
+
 
 Finally, if none of these helper methods are sufficient, you can also override `get_post_response_data`
 to return a fully customized payload.
@@ -40,6 +47,8 @@ to return a fully customized payload.
                 request.user,
                 context=self.get_context()
             ).data
+        if knox_settings.ENABLE_REFRESH_TOKEN:
+            return self.add_refresh_token(self,data,token)
         return data
 ...snip...
 ```
@@ -60,6 +69,26 @@ class can be used inside `REST_KNOX` settings by adding `knox.serializers.UserSe
 
 Obviously, if your app uses a custom user model that does not have these fields,
 a custom serializer must be used.
+
+!!! note 
+    This view is only relevant if you have [refresh tokens](refresh.md) enabled.
+
+
+## RefreshTokenView
+This view accepts a post request with `refresh_token` value passed in its body.
+
+The RefreshTokenView accepts `TokenAuthentication` as the only authentication class as
+this view is only relevant if you are using token authentication.
+
+The RefreshTokenView accepts any post request and the passed `refresh_token` token value
+is used as the authentication credential that is validated the same way as an authentication token.
+
+
+RefreshTokenView has all the same behaviour in terms of being able to override it,
+as it inherits from login view. To change any behavior of this view, it is recommended 
+you make the modifications in the `LoginView`. 
+
+
 
 ## LogoutView
 This view accepts only a post request with an empty body.

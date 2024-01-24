@@ -10,3 +10,8 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = (username_field,)
+
+
+class RefreshTokenSerializer(serializers.Serializer):
+    refresh_token = serializers.CharField(max_length=64)   
+   
