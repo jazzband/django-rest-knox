@@ -9,9 +9,11 @@ from rest_framework.authentication import (
 )
 
 from knox.crypto import hash_token
-from knox.models import  get_token_model,get_refresh_token_model,get_refresh_family_model
+from knox.models import (
+    get_refresh_family_model, get_refresh_token_model, get_token_model,
+)
 from knox.settings import CONSTANTS, knox_settings
-from knox.signals import token_expired,refresh_token_expired
+from knox.signals import refresh_token_expired, token_expired
 
 
 class TokenAuthentication(BaseAuthentication):

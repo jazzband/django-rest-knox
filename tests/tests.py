@@ -1,6 +1,5 @@
 import base64
 from datetime import datetime, timedelta
-
 from importlib import reload
 
 from django.contrib.auth import get_user_model
@@ -14,10 +13,11 @@ from rest_framework.test import APIRequestFactory, APITestCase as TestCase
 
 from knox import auth, crypto, views
 from knox.auth import TokenAuthentication
-from knox.models import AuthToken,AuthRefreshToken,RefreshFamily
+from knox.models import AuthRefreshToken, AuthToken, RefreshFamily
 from knox.serializers import UserSerializer
 from knox.settings import CONSTANTS, knox_settings
 from knox.signals import token_expired
+
 User = get_user_model()
 root_url = reverse('api-root')
 

@@ -5,26 +5,26 @@ except ImportError:
         return a == b
 
 import binascii
-from knox.crypto import hash_token
 
 from django.contrib.auth.signals import user_logged_in, user_logged_out
 from django.utils import timezone
 from django.utils.translation import gettext as _
-from rest_framework import status
-from rest_framework.permissions import IsAuthenticated,AllowAny
+from rest_framework import exceptions, status
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.serializers import DateTimeField
 from rest_framework.settings import api_settings
 from rest_framework.views import APIView
-from rest_framework import exceptions
+
+from knox.auth import TokenAuthentication
+from knox.crypto import hash_token
+from knox.models import (
+    get_refresh_family_model, get_refresh_token_model, get_token_model,
+)
 from knox.serializers import RefreshTokenSerializer
 from knox.settings import CONSTANTS, knox_settings
+from knox.signals import refresh_token_expired, token_expired
 
-from knox.models import get_refresh_family_model,get_refresh_token_model
-from knox.auth import TokenAuthentication
-from knox.models import get_token_model 
-from knox.settings import knox_settings
-from knox.signals import token_expired,refresh_token_expired
 
 class LoginView(APIView):
     authentication_classes = api_settings.DEFAULT_AUTHENTICATION_CLASSES
