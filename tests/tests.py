@@ -1,8 +1,10 @@
 import base64
 from datetime import datetime, timedelta
+
 from importlib import reload
 
 from django.contrib.auth import get_user_model
+from django.db.models.expressions import Ref
 from django.test import override_settings
 from django.urls import reverse
 from freezegun import freeze_time
@@ -12,11 +14,10 @@ from rest_framework.test import APIRequestFactory, APITestCase as TestCase
 
 from knox import auth, crypto, views
 from knox.auth import TokenAuthentication
-from knox.models import AuthToken
+from knox.models import AuthToken,AuthRefreshToken,RefreshFamily
 from knox.serializers import UserSerializer
 from knox.settings import CONSTANTS, knox_settings
 from knox.signals import token_expired
-
 User = get_user_model()
 root_url = reverse('api-root')
 
@@ -26,11 +27,22 @@ def get_basic_auth_header(username, password):
         ('%s:%s' % (username, password)).encode('ascii')).decode()
 
 
+""" 
+instead of setting it to true on every test that concerns 
+refresh tokens we can just use the global toggle 
+and set it to True by default
+"""
+knox_settings.defaults["ENABLE_REFRESH_TOKEN"] = True
+
 auto_refresh_knox = knox_settings.defaults.copy()
 auto_refresh_knox["AUTO_REFRESH"] = True
 
 token_user_limit_knox = knox_settings.defaults.copy()
 token_user_limit_knox["TOKEN_LIMIT_PER_USER"] = 10
+
+token_user_limit_one=knox_settings.defaults.copy()
+token_user_limit_one["TOKEN_LIMIT_PER_USER"] = 1
+
 
 user_serializer_knox = knox_settings.defaults.copy()
 user_serializer_knox["USER_SERIALIZER"] = UserSerializer
@@ -39,6 +51,7 @@ auth_header_prefix_knox = knox_settings.defaults.copy()
 auth_header_prefix_knox["AUTH_HEADER_PREFIX"] = 'Baerer'
 
 token_no_expiration_knox = knox_settings.defaults.copy()
+token_no_expiration_knox["REFRESH_TOKEN_TTL"] = None
 token_no_expiration_knox["TOKEN_TTL"] = None
 
 EXPIRY_DATETIME_FORMAT = '%H:%M %d/%m/%y'
@@ -75,8 +88,16 @@ class AuthTestCase(TestCase):
 
         for _ in range(5):
             self.client.post(url, {}, format='json')
+            
         self.assertEqual(AuthToken.objects.count(), 5)
         self.assertTrue(all(e.token_key for e in AuthToken.objects.all()))
+        
+
+        if knox_settings.ENABLE_REFRESH_TOKEN:
+            self.assertEqual(AuthRefreshToken.objects.count(), 5)
+            self.assertTrue(all(e.token_key for e in AuthRefreshToken.objects.all()))
+            
+            self.assertEqual(RefreshFamily.objects.count(), 5)
 
     def test_login_returns_serialized_token(self):
         self.assertEqual(AuthToken.objects.count(), 0)
@@ -88,6 +109,9 @@ class AuthTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(knox_settings.USER_SERIALIZER, None)
         self.assertIn('token', response.data)
+
+        if knox_settings.ENABLE_REFRESH_TOKEN:
+            self.assertIn('refresh_token', response.data)
         username_field = self.user.USERNAME_FIELD
         self.assertNotIn(username_field, response.data)
 
@@ -102,9 +126,12 @@ class AuthTestCase(TestCase):
             )
             response = self.client.post(url, {}, format='json')
             self.assertEqual(user_serializer_knox["USER_SERIALIZER"], UserSerializer)
-        (views)
+        reload(views)
         self.assertEqual(response.status_code, 200)
         self.assertIn('token', response.data)
+        
+        if knox_settings.ENABLE_REFRESH_TOKEN:
+            self.assertIn('refresh_token', response.data)
         username_field = self.user.USERNAME_FIELD
         self.assertIn('user', response.data)
         self.assertIn(username_field, response.data['user'])
@@ -126,6 +153,7 @@ class AuthTestCase(TestCase):
         reload(views)
         self.assertEqual(response.status_code, 200)
         self.assertIn('token', response.data)
+
         self.assertNotIn('user', response.data)
         self.assertEqual(
             response.data['expiry'],
@@ -134,46 +162,113 @@ class AuthTestCase(TestCase):
             )
         )
 
+        if knox_settings.ENABLE_REFRESH_TOKEN:
+            self.assertEqual(
+            response.data['refresh_token_expiry'],
+            DateTimeField(format=EXPIRY_DATETIME_FORMAT).to_representation(
+                AuthRefreshToken.objects.first().expiry
+            )
+        )
+
     def test_logout_deletes_keys(self):
         self.assertEqual(AuthToken.objects.count(), 0)
         for _ in range(2):
             instance, token = AuthToken.objects.create(user=self.user)
+            
+            if knox_settings.ENABLE_REFRESH_TOKEN:
+                refresh_instance, refresh_token=AuthRefreshToken.objects.create(user=self.user)
+                RefreshFamily.objects.create(user=self.user,parent=refresh_token,refresh_token=refresh_token,token=token)
+        
         self.assertEqual(AuthToken.objects.count(), 2)
 
+
+        if knox_settings.ENABLE_REFRESH_TOKEN:
+            self.assertEqual(AuthRefreshToken.objects.count(), 2)
+            self.assertEqual(RefreshFamily.objects.count(), 2)
+        
         url = reverse('knox_logout')
         self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % token))
         self.client.post(url, {}, format='json')
         self.assertEqual(AuthToken.objects.count(), 1,
                          'other tokens should remain after logout')
 
+        
+        if knox_settings.ENABLE_REFRESH_TOKEN:
+            self.assertEqual(RefreshFamily.objects.count(), 1,
+                     
+                             'other tokens should remain after logout')
+
+
+            self.assertEqual(AuthRefreshToken.objects.count(), 1,
+                         'other tokens should remain after logout')
+        
     def test_logout_all_deletes_keys(self):
         self.assertEqual(AuthToken.objects.count(), 0)
         for _ in range(10):
             instance, token = AuthToken.objects.create(user=self.user)
+
+            if knox_settings.ENABLE_REFRESH_TOKEN:
+                refresh_instance, refresh_token=AuthRefreshToken.objects.create(user=self.user)
+                RefreshFamily.objects.create(user=self.user,parent=refresh_token,refresh_token=refresh_token,token=token)
+
         self.assertEqual(AuthToken.objects.count(), 10)
+
+        if knox_settings.ENABLE_REFRESH_TOKEN:
+            self.assertEqual(AuthRefreshToken.objects.count(), 10)
+            self.assertEqual(RefreshFamily.objects.count(), 10)
 
         url = reverse('knox_logoutall')
         self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % token))
         self.client.post(url, {}, format='json')
         self.assertEqual(AuthToken.objects.count(), 0)
 
+        if knox_settings.ENABLE_REFRESH_TOKEN:
+            self.assertEqual(AuthRefreshToken.objects.count(), 0)
+            self.assertEqual(RefreshFamily.objects.count(), 0)
+
     def test_logout_all_deletes_only_targets_keys(self):
         self.assertEqual(AuthToken.objects.count(), 0)
         for _ in range(10):
             instance, token = AuthToken.objects.create(user=self.user)
-            AuthToken.objects.create(user=self.user2)
+
+            if knox_settings.ENABLE_REFRESH_TOKEN:
+                refresh_instance, refresh_token=AuthRefreshToken.objects.create(user=self.user)
+                RefreshFamily.objects.create(user=self.user,parent=refresh_token,refresh_token=refresh_token,token=token)
+
+
+            instance, token = AuthToken.objects.create(user=self.user2)
+            
+            if knox_settings.ENABLE_REFRESH_TOKEN:
+                refresh_instance, refresh_token=AuthRefreshToken.objects.create(user=self.user2)
+                RefreshFamily.objects.create(user=self.user2,parent=refresh_token,refresh_token=refresh_token,token=token)
+
+
         self.assertEqual(AuthToken.objects.count(), 20)
+
+        if knox_settings.ENABLE_REFRESH_TOKEN:
+            self.assertEqual(AuthRefreshToken.objects.count(), 20)
+            self.assertEqual(RefreshFamily.objects.count(), 20)
 
         url = reverse('knox_logoutall')
         self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % token))
         self.client.post(url, {}, format='json')
         self.assertEqual(AuthToken.objects.count(), 10,
                          'tokens from other users should not be affected by logout all')
+        
+
+        if knox_settings.ENABLE_REFRESH_TOKEN:
+            self.assertEqual(AuthRefreshToken.objects.count(), 10,
+                         'tokens from other users should not be affected by logout all')
+            self.assertEqual(RefreshFamily.objects.count(), 10,
+                         'tokens from other users should not be affected by logout all')
+
+
 
     def test_expired_tokens_login_fails(self):
         self.assertEqual(AuthToken.objects.count(), 0)
         instance, token = AuthToken.objects.create(
             user=self.user, expiry=timedelta(seconds=-1))
+
         self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % token))
         response = self.client.post(root_url, {}, format='json')
         self.assertEqual(response.status_code, 401)
@@ -185,13 +280,28 @@ class AuthTestCase(TestCase):
             # -1 TTL gives an expired token
             instance, token = AuthToken.objects.create(
                 user=self.user, expiry=timedelta(seconds=-1))
+
+            if knox_settings.ENABLE_REFRESH_TOKEN:
+                refresh_instance,refresh_token = AuthRefreshToken.objects.create(
+                    user=self.user,expiry=timedelta(seconds=-1))
+                RefreshFamily.objects.create(user=self.user,parent=refresh_token,refresh_token=refresh_token,token=token)
+            
         self.assertEqual(AuthToken.objects.count(), 10)
+
+        if knox_settings.ENABLE_REFRESH_TOKEN:
+            self.assertEqual(AuthRefreshToken.objects.count(), 10)
+            self.assertEqual(RefreshFamily.objects.count(), 10)
 
         # Attempting a single logout should delete all tokens
         url = reverse('knox_logout')
         self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % token))
         self.client.post(url, {}, format='json')
         self.assertEqual(AuthToken.objects.count(), 0)
+
+        if knox_settings.ENABLE_REFRESH_TOKEN:
+            self.assertEqual(AuthRefreshToken.objects.count(), 0)
+            self.assertEqual(RefreshFamily.objects.count(), 0)
+
 
     def test_update_token_key(self):
         self.assertEqual(AuthToken.objects.count(), 0)
@@ -336,7 +446,6 @@ class AuthTestCase(TestCase):
         self.assertTrue(self.signal_was_called)
 
     def test_exceed_token_amount_per_user(self):
-
         with override_settings(REST_KNOX=token_user_limit_knox):
             reload(views)
             for _ in range(10):
@@ -350,6 +459,44 @@ class AuthTestCase(TestCase):
         self.assertEqual(response.status_code, 403)
         self.assertEqual(response.data,
                          {"error": "Maximum amount of tokens allowed per user exceeded."})
+        
+    def test_exceed_refresh_token_amount_per_user(self):
+        if knox_settings.ENABLE_REFRESH_TOKEN:
+            with override_settings(REST_KNOX=token_user_limit_knox):
+                reload(views)
+                for _ in range(10):
+                        AuthRefreshToken.objects.create(user=self.user)
+                self.assertEqual(self.user.refresh_token_set.count(),10)
+                url = reverse('knox_login')
+                self.client.credentials(
+                    HTTP_AUTHORIZATION=get_basic_auth_header(self.username, self.password)
+                )
+                response = self.client.post(url, {}, format='json')
+            reload(views)
+            self.assertEqual(response.status_code, 403)
+            self.assertEqual(response.data,
+                         {"error": "Maximum amount of tokens allowed per user exceeded."})
+           
+    
+    
+
+    def test_exceed_token_amount_per_user_one(self):
+        # token_user_limit_knox["TOKEN_LIMIT_PER_USER"] = 1
+        with override_settings(REST_KNOX=token_user_limit_one):
+            reload(views)
+            # for _ in range(10):
+            AuthToken.objects.create(user=self.user)
+            url = reverse('knox_login')
+            self.client.credentials(
+                HTTP_AUTHORIZATION=get_basic_auth_header(self.username, self.password)
+            )
+            response = self.client.post(url, {}, format='json')
+        reload(views)
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.data,
+                         {"error": "Maximum amount of tokens allowed per user exceeded."})
+
+
 
     def test_does_not_exceed_on_expired_keys(self):
 
@@ -410,10 +557,22 @@ class AuthTestCase(TestCase):
                 response.data['expiry'],
                 None
             )
+            if knox_settings.ENABLE_REFRESH_TOKEN:
+                self.assertIn('refresh_token', response.data)
+                self.assertIn('refresh_token_expiry', response.data)
+                self.assertEqual(
+                response.data['refresh_token_expiry'],
+                None
+            )
+
+            
         reload(views)
 
     def test_expiry_is_present(self):
         self.assertEqual(AuthToken.objects.count(), 0)
+        self.assertEqual(AuthRefreshToken.objects.count(), 0)
+        self.assertEqual(RefreshFamily.objects.count(), 0)
+
         url = reverse('knox_login')
         self.client.credentials(
             HTTP_AUTHORIZATION=get_basic_auth_header(self.username, self.password)
@@ -426,10 +585,22 @@ class AuthTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn('token', response.data)
         self.assertIn('expiry', response.data)
+        
         self.assertEqual(
             response.data['expiry'],
             DateTimeField().to_representation(AuthToken.objects.first().expiry)
         )
+
+        if knox_settings.ENABLE_REFRESH_TOKEN:
+            self.assertIn('refresh_token', response.data)
+            self.assertIn('refresh_token_expiry', response.data)
+            self.assertEqual(
+            response.data['refresh_token_expiry'],
+            DateTimeField().to_representation(AuthRefreshToken.objects.first().expiry)
+        )
+
+
+        
 
     def test_login_returns_serialized_token_with_prefix_when_prefix_set(self):
         with override_settings(REST_KNOX=token_prefix_knox):
@@ -496,3 +667,227 @@ class AuthTestCase(TestCase):
             response = self.client.get(root_url, {}, format='json')
             self.assertEqual(response.status_code, 200)
         reload(views)
+
+    def test_login_returns_refresh_token(self):
+        
+        if knox_settings.ENABLE_REFRESH_TOKEN:
+            self.client.credentials(
+                HTTP_AUTHORIZATION=get_basic_auth_header(self.username, self.password)
+            )
+            url = reverse('knox_login')
+            response = self.client.post(
+                url,
+                {},
+                format='json'
+            )
+            self.assertTrue(response.data['refresh_token'])
+            self.assertTrue(response.data['token'])
+            self.assertTrue(response.data['refresh_token_expiry'])
+            
+
+            refresh_token = response.data['refresh_token']
+            token = response.data['token']
+
+       
+    def test_refresh_token_view_returns_new_tokens(self):
+
+        if knox_settings.ENABLE_REFRESH_TOKEN:
+            self.client.credentials(
+                HTTP_AUTHORIZATION=get_basic_auth_header(self.username, self.password)
+            )
+            url = reverse('knox_login')
+            response = self.client.post(
+                url,
+                {},
+                format='json'
+            )
+            self.assertTrue(response.data['refresh_token'])
+            self.assertTrue(response.data['token'])
+            self.assertTrue(response.data['refresh_token_expiry'])
+            
+
+            refresh_token = response.data['refresh_token']
+            token = response.data['token']
+
+ 
+            url = reverse('knox_refresh')
+
+            self.client.logout()
+
+            response = self.client.post(url,
+                {"refresh_token":refresh_token},
+                format='json'
+            )
+
+            self.assertTrue(response.data['refresh_token'])
+            self.assertTrue(response.data['token'])
+            self.assertTrue(response.data['refresh_token_expiry'])
+       
+
+
+
+
+    def test_refresh_token_invalidate_on_old_token(self):
+
+        if knox_settings.ENABLE_REFRESH_TOKEN:
+            self.client.credentials(
+                HTTP_AUTHORIZATION=get_basic_auth_header(self.username, self.password)
+            )
+            url = reverse('knox_login')
+            response = self.client.post(
+                url,
+                {},
+                format='json'
+            )
+            refresh_token = response.data['refresh_token']
+            token = response.data['token']
+ 
+            url = reverse('knox_refresh')
+
+            response = self.client.post(url,
+                {"refresh_token":refresh_token},
+                format='json'
+            )
+
+            response = self.client.post(url,
+                {"refresh_token":refresh_token},
+                format='json'
+            )
+            
+            self.assertTrue(response.status_code,401)
+    
+    def test_token_invalidate_on_old_token(self):
+
+        if knox_settings.ENABLE_REFRESH_TOKEN:
+            self.client.credentials(
+                HTTP_AUTHORIZATION=get_basic_auth_header(self.username, self.password)
+            )
+            url = reverse('knox_login')
+            response = self.client.post(
+                url,
+                {},
+                format='json'
+            )
+            
+            refresh_token = response.data['refresh_token']
+            token = response.data['token']
+ 
+            url = reverse('knox_refresh')
+            
+            # valid
+            response = self.client.post(url,
+                {"refresh_token":refresh_token},
+                format='json'
+            )
+            
+            #invalid / logout
+            response = self.client.post(url,
+                {"refresh_token":refresh_token},
+                format='json'
+            )
+            
+            #test invalid
+            self.client.credentials(
+                    HTTP_AUTHORIZATION=("Token "+token)
+                    )
+            url = reverse('knox_logout')
+            response = self.client.post(url,{},format='json')
+
+
+            self.assertTrue(response.status_code,401)
+
+
+    def test_expired_refresh_token_fails(self):
+
+        if knox_settings.ENABLE_REFRESH_TOKEN:
+            self.assertEqual(AuthRefreshToken.objects.count(), 0)
+            
+            refresh_instance, refresh_token = AuthToken.objects.create(
+                user=self.user, expiry=timedelta(seconds=-1))
+            url = reverse('knox_refresh')
+            response = self.client.post(url, {'refresh_token':refresh_token}, format='json')
+
+            self.assertEqual(response.status_code, 401)
+            self.assertEqual(response.data, {"detail": "Invalid token."})
+    
+    def test_using_old_token_only_affects_that_token_family(self):
+
+        if knox_settings.ENABLE_REFRESH_TOKEN:
+
+            self.assertEqual(AuthRefreshToken.objects.count(), 0)
+            url = reverse('knox_login')
+            self.client.credentials(
+                HTTP_AUTHORIZATION=get_basic_auth_header(self.username, self.password))
+            tokens=[]
+            for _ in range(2):
+                response = self.client.post(url, {}, format='json')
+                self.assertTrue(response.data['token'])
+                self.assertTrue(response.data['refresh_token'])
+                token = response.data['token']
+                refresh_token = response.data['refresh_token']
+
+            self.assertTrue(AuthRefreshToken.objects.count(),2)
+            
+
+            url = reverse('knox_refresh')
+            response = self.client.post(url, {'refresh_token':refresh_token}, format='json')
+
+            self.assertTrue(response.data['token'])
+            self.assertTrue(response.data['refresh_token'])
+
+            url = reverse('knox_refresh')
+            response = self.client.post(url, {'refresh_token':refresh_token}, format='json')
+
+            self.assertEqual(response.status_code, 401)
+
+            self.assertTrue(AuthRefreshToken.objects.count(),1)
+
+
+
+    def test_invalid_refresh_short_token_returns_400(self):
+        if knox_settings.ENABLE_REFRESH_TOKEN:
+            instance, refresh_token = AuthRefreshToken.objects.create(user=self.user)
+            url = reverse('knox_refresh')
+            
+            # valid
+            response = self.client.post(url,
+                {"refresh_token":refresh_token[8]},
+                format='json'
+            )
+            
+            
+            self.assertTrue(response.status_code,400)
+    
+    def test_invalid_refresh_longer_token_returns_400(self):
+        if knox_settings.ENABLE_REFRESH_TOKEN:
+            instance, refresh_token = AuthRefreshToken.objects.create(user=self.user)
+            url = reverse('knox_refresh')
+            
+            # valid
+            response = self.client.post(url,
+                {"refresh_token":refresh_token+"x"},
+                format='json'
+            )
+            
+            
+            self.assertTrue(response.status_code,400)
+
+
+
+    def test_refresh_token_without_family_returns_401(self):
+        if knox_settings.ENABLE_REFRESH_TOKEN:
+            instance, refresh_token = AuthRefreshToken.objects.create(user=self.user)
+            url = reverse('knox_refresh')
+            
+            # valid
+            response = self.client.post(url,
+                {"refresh_token":refresh_token},
+                format='json'
+            )
+            
+            self.assertTrue(response.status_code,401)
+
+
+
+
+            

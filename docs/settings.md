@@ -31,7 +31,6 @@ REST_KNOX = {
   'REFRESH_TOKEN_MODEL': 'knox.AuthRefreshToken',
   'REFRESH_FAMILY_MODEL': 'knox.RefreshFamily',
   'AUTO_REFRESH_REFRESH_TOKEN':False,
-  'REFRESH_TOKEN_LIMIT_PER_USER': None,
   'REFRESH_TOKEN_TTL': timedelta(days=30),
   'MIN_REFRESH_TOKEN_INTERVAL': 86400, 
   'REFRESH_TOKEN_RENEW_TTL':timedelta(days=2),
@@ -77,6 +76,10 @@ Setting the TOKEN_TTL to `None` will create tokens that never expire.
 Warning: setting a 0 or negative timedelta will create tokens that instantly expire,
 the system will not prevent you setting this.
 
+!!! note
+    RefreshToken also inherits this property as issuance of `token` and `refresh_token`
+    always happens together.
+
 ## TOKEN_LIMIT_PER_USER
 This allows you to control how many valid tokens can be issued per user.
 If the limit for valid tokens is reached, an error is returned at login.
@@ -115,8 +118,8 @@ The default is `knox.AuthToken`
 This is the prefix for the generated token that is used in the Authorization header. The default is just an empty string.
 It can be up to `CONSTANTS.MAXIMUM_TOKEN_PREFIX_LENGTH` long.
 
-
-# These settings are only relevent if you want to enable [refresh tokens](refresh.md).
+!!! note
+    These settings are only relevent if you have [refresh tokens](refresh.md) enabled.
 
 ## ENABLE_REFRESH_TOKEN 
 This enables refresh tokens if set to `True` which can be used to issue new auth tokens instead of having to log in manually
@@ -125,11 +128,6 @@ each time an auth `token` expires.
 ## REFRESH_TOKEN_TTL
 This is the same as TOKEN_TTL with the exception that refresh tokens are usually valid for a longer timespan.
 The default is set to `timedelta(days=30)`.
-
-## REFRESH_TOKEN_LIMIT_PER_USER
-Same as TOKEN_LIMIT_PER_USER except it sets the limit for how many valid
-refresh tokens can be issues per user.
-The default is set to `None` meaning there's no limit.
 
 ## REFRESH_TOKEN_RENEW_TTL
 This defines how much time refresh expiry is extended, if AUTO_REFRESH_REFRESH_TOKEN is set to `True`.
