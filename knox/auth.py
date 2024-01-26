@@ -29,7 +29,7 @@ class TokenAuthentication(BaseAuthentication):
 
     def authenticate(self, request):
         auth = get_authorization_header(request).split()
-        prefix = knox_settings.AUTH_HEADER_PREFIX.encode()
+        prefix = self.authenticate_header(request).encode()
 
         if not auth:
             return None
