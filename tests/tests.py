@@ -1,6 +1,6 @@
 import base64
-from datetime import datetime, timedelta
-
+from datetime import datetime, timedelta, tzinfo
+from django.utils import timezone
 from importlib import reload
 
 from django.contrib.auth import get_user_model
@@ -33,9 +33,32 @@ refresh tokens we can just use the global toggle
 and set it to True by default
 """
 knox_settings.defaults["ENABLE_REFRESH_TOKEN"] = True
+knox_settings.defaults["REFRESH_TOKEN_TTL"] = timedelta(days=7)
+
+auto_refresh_refresh_token = knox_settings.defaults.copy()
+auto_refresh_refresh_token["AUTO_REFRESH_REFRESH_TOKEN"] = True
+auto_refresh_refresh_token['TOKEN_TTL'] = timedelta(days=30)
+
+# auto_refresh_refresh_token[""]
+
+    
+
+refresh_token_limit_per_user = knox_settings.defaults.copy()
+refresh_token_limit_per_user["REFRESH_TOKEN_LIMIT_PER_USER"]=10
+
+refresh_token_ttl = knox_settings.defaults.copy()
+refresh_token_ttl["REFRESH_TOKEN_TTL"] = timedelta(days=7)
+
+
+min_refresh_token_interval = knox_settings.defaults.copy()
+min_refresh_token_interval["MIN_REFRESH_TOKEN_INTERVAL"]=60
+
+refresh_token_renew_ttl = knox_settings.defaults.copy()
+refresh_token_renew_ttl["REFRESH_TOKEN_RENEW_TTL"] = timedelta(days=1)
 
 auto_refresh_knox = knox_settings.defaults.copy()
 auto_refresh_knox["AUTO_REFRESH"] = True
+
 
 token_user_limit_knox = knox_settings.defaults.copy()
 token_user_limit_knox["TOKEN_LIMIT_PER_USER"] = 10
@@ -946,6 +969,98 @@ class AuthTestCase(TestCase):
             self.assertTrue(response.status_code,401)
 
 
+           
+    
+    def test_refresh_token_expiry_is_extended_with_auto_refresh_activated(self):
+        ttl = knox_settings.REFRESH_TOKEN_TTL
+        original_time = datetime(2018, 7, 25, 0, 0, 0, 0)
 
+        with freeze_time(original_time):
+            instance, token = AuthToken.objects.create(user=self.user)
+            instance.expiry = instance.expiry + timedelta(days=30)
+            instance.save()
+            refresh_instance,refresh_token = AuthRefreshToken.objects.create(user=self.user)
+            RefreshFamily.objects.create(user=self.user,parent=refresh_token,refresh_token=refresh_token,token=token)
+            
+
+        self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % token))
+        twenty_four_hours_later = original_time + timedelta(hours=24)
+        
+        with override_settings(REST_KNOX=auto_refresh_refresh_token):
+            reload(auth)  # necessary to reload settings in core code
+            with freeze_time(twenty_four_hours_later):
+                response = self.client.get(root_url,{}, format='json')
+                self.assertEquals(response.status_code,200)
+
+        reload(auth)
+        
+        # original expiry date was extended:
+        new_expiry = AuthRefreshToken.objects.get().expiry
+        expected_expiry = original_time + ttl + timedelta(days=2)
+        self.assertEqual(new_expiry.replace(tzinfo=None), expected_expiry,
+                         "Expiry time should have been extended to {} but is {}."
+                         .format(expected_expiry, new_expiry))
+
+         # token does not work after new expiry:
+        new_expiry = AuthRefreshToken.objects.get().expiry
+        with freeze_time(new_expiry + timedelta(seconds=1)):
+            url = reverse("knox_refresh")
+            response = self.client.get(url, {'refresh_token':refresh_token}, format='json')
+            self.assertEqual(response.status_code, 401)
+
+    def test_refresh_token_expiry_is_not_extended_with_auto_refresh_deactivated(self):
+        
+        now = datetime.now()
+        with freeze_time(now):
+            instance, token = AuthToken.objects.create(user=self.user)
+            instance.expiry = instance.expiry + timedelta(days=30)
+            instance.save()
+            refresh_instance,refresh_token = AuthRefreshToken.objects.create(user=self.user)
+            RefreshFamily.objects.create(user=self.user,parent=refresh_token,refresh_token=refresh_token,token=token)
 
             
+        original_expiry = AuthRefreshToken.objects.get().expiry
+
+        self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % token))
+        with freeze_time(now + timedelta(hours=24)):
+            response = self.client.get(root_url, {}, format='json')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(original_expiry, AuthRefreshToken.objects.get().expiry)
+    # def test_token_expiry_is_not_extended_within_MIN_REFRESH_INTERVAL(self):
+    #     now = datetime.now()
+    #     with freeze_time(now):
+    #         instance, token = AuthToken.objects.create(user=self.user)
+    #
+    #     original_expiry = AuthToken.objects.get().expiry
+    #
+    #     self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % token))
+    #     in_min_interval = now + timedelta(seconds=knox_settings.MIN_REFRESH_INTERVAL - 10)
+    #     with override_settings(REST_KNOX=auto_refresh_knox):
+    #         reload(auth)  # necessary to reload settings in core code
+    #         with freeze_time(in_min_interval):
+    #             response = self.client.get(root_url, {}, format='json')
+    #     reload(auth)  # necessary to reload settings in core code
+    #
+    #     self.assertEqual(response.status_code, 200)
+    #     self.assertEqual(original_expiry, AuthToken.objects.get().expiry)
+    #
+    # def test_expiry_signals(self):
+    #     self.signal_was_called = False
+    #
+    #     def handler(sender, username, **kwargs):
+    #         self.signal_was_called = True
+    #
+    #     token_expired.connect(handler)
+    #
+    #     instance, token = AuthToken.objects.create(
+    #         user=self.user,
+    #         expiry=timedelta(seconds=-1),
+    #     )
+    #     self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % token))
+    #     self.client.post(root_url, {}, format='json')
+    #
+    #     self.assertTrue(self.signal_was_called)
+    #
+    #
+    #         

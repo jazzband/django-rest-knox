@@ -27,6 +27,10 @@ class TokenAuthentication(BaseAuthentication):
     - `request.auth` will be an `AuthToken` instance
     '''
 
+    refresh_family_model = get_refresh_family_model()
+    refresh_token_model = get_refresh_token_model()
+    token_model = get_token_model()
+
     def authenticate(self, request):
         auth = get_authorization_header(request).split()
         prefix = knox_settings.AUTH_HEADER_PREFIX.encode()
@@ -69,36 +73,32 @@ class TokenAuthentication(BaseAuthentication):
             if compare_digest(digest, auth_token.digest):
                 if knox_settings.AUTO_REFRESH and auth_token.expiry:
                     self.renew_token(auth_token)
-
                 if knox_settings.ENABLE_REFRESH_TOKEN and  knox_settings.AUTO_REFRESH_REFRESH_TOKEN:
-                    refresh_family_model = get_refresh_family_model()
-                    refresh_token_model = get_refresh_token_model()
-                    member = refresh_family_model.objects.filter(token=auth_token.token_key).first()
+                    member = self.refresh_family_model.objects.filter(token=auth_token.token_key).first()
                     if member:
-                        refresh_token = refresh_token_model.objects.filter(token_key=member.refresh_token).first()
+                        refresh_token = self.refresh_token_model.objects.filter(token_key=member.refresh_token).first()
                         if refresh_token and refresh_token.expiry:
                             self.renew_refresh_token(refresh_token)
                 return self.validate_user(auth_token)
         raise exceptions.AuthenticationFailed(msg)
 
     def renew_token(self, auth_token) -> None:
-        current_expiry = auth_token.expiry
-        new_expiry = timezone.now() + knox_settings.TOKEN_TTL
-        auth_token.expiry = new_expiry
-        # Throttle refreshing of token to avoid db writes
-        delta = (new_expiry - current_expiry).total_seconds()
-        if delta > knox_settings.MIN_REFRESH_INTERVAL:
-            auth_token.save(update_fields=('expiry',))
+         current_expiry = auth_token.expiry
+         new_expiry = timezone.now() + knox_settings.TOKEN_TTL
+         auth_token.expiry = new_expiry
+         # Throttle refreshing of token to avoid db writes
+         delta = (new_expiry - current_expiry).total_seconds()
+         if delta > knox_settings.MIN_REFRESH_INTERVAL:
+             auth_token.save(update_fields=('expiry',))
 
-    def renew_refresh_token(self, auth_token):
-        current_expiry = auth_token.expiry
-        new_expiry = timezone.now() + knox_settings.REFRESH_TOKEN_RENEW_TTL
-        auth_token.expiry = new_expiry
-        # Throttle refreshing of token to avoid db writes
-        delta = (new_expiry - current_expiry).total_seconds()
-        if delta > knox_settings.MIN__REFRESH_TOKEN_INTERVAL:
-            auth_token.save(update_fields=('expiry',))
-
+    def renew_refresh_token(self, refresh_token) -> None:
+         current_expiry = refresh_token.expiry
+         new_expiry = refresh_token.expiry + knox_settings.REFRESH_TOKEN_RENEW_TTL
+         refresh_token.expiry = new_expiry
+         # Throttle refreshing of token to avoid db writes
+         delta = (new_expiry - current_expiry).total_seconds()
+         if delta > knox_settings.MIN_REFRESH_TOKEN_INTERVAL:
+             refresh_token.save(update_fields=('expiry',))
 
     def validate_user(self, auth_token):
         if not auth_token.user.is_active:
