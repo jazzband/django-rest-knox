@@ -27,6 +27,7 @@ DEFAULTS = {
     'REFRESH_TOKEN_TTL': timedelta(days=30),
     'MIN_REFRESH_TOKEN_INTERVAL': 86400, # only renew once a day
     'REFRESH_TOKEN_RENEW_TTL':timedelta(days=2),
+    'MAX_TOKEN_HISTORY': 10
 }
 
 IMPORT_STRINGS = {

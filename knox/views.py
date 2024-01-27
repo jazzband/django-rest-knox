@@ -5,6 +5,8 @@ except ImportError:
         return a == b
 
 import binascii
+
+from django.contrib.auth import settings
 from knox.crypto import hash_token
 
 from django.contrib.auth.signals import user_logged_in, user_logged_out
@@ -165,10 +167,17 @@ class RefreshTokenView(LoginView):
                     for token in family:
                         auth_token_model.objects.filter(token_key=token.token).delete()
                         refresh_token_model.objects.filter(token_key=token.refresh_token).delete()
+                    token_log_limit= settings.MAX_TOKEN_LOG
+                    if family.count() >= token_log_limit:
+                        ordered_queryset = family.order_by('-created')
+                        cutoff_entry = ordered_queryset[token_log_limit-1] 
+                        cutoff_entry_timestamp = cutoff_entry.created
+                        family.filter(created__lt = cutoff_entry_timestamp).delete() 
 
                     new_token_instance,new_token = self.create_token() 
                     new_refresh_instance,new_refresh_token= self.create_refresh_token()
                     self.create_refresh_family(parent=member.parent,refresh_token=new_refresh_token,token=new_token) 
+
                     data = self.get_post_response_data(token=new_token, instance=new_token_instance,refresh_token=new_refresh_token,refresh_token_instance=new_refresh_instance)
                     return Response(data)
                 # auth failed
