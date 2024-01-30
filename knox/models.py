@@ -49,7 +49,7 @@ class AbstractAuthToken(models.Model):
         abstract = True
 
     def __str__(self) -> str:
-        return '%s : %s' % (self.digest, self.user)
+        return f'{self.digest} : {self.user}'
 
 class AuthRefreshTokenManager(models.Manager):
         def create(self, user, expiry=knox_settings.REFRESH_TOKEN_TTL):
