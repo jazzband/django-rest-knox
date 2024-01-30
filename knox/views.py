@@ -1,4 +1,5 @@
 from django.contrib.auth.signals import user_logged_in, user_logged_out
+from django.db.models import Q
 from django.utils import timezone
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
@@ -66,7 +67,9 @@ class LoginView(APIView):
         token_limit_per_user = self.get_token_limit_per_user()
         if token_limit_per_user is not None:
             now = timezone.now()
-            token = request.user.auth_token_set.filter(expiry__gt=now)
+            token = request.user.auth_token_set.filter(
+                Q(expiry__gt=now) | Q(expiry__isnull=True)
+            )
             if token.count() >= token_limit_per_user:
                 return Response(
                     {"error": "Maximum amount of tokens allowed per user exceeded."},
