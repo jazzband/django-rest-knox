@@ -84,10 +84,7 @@ The RefreshTokenView accepts any post request and the passed `refresh_token` tok
 is used as the authentication credential that is validated the same way as an authentication token.
 
 
-RefreshTokenView has all the same behaviour in terms of being able to override it,
-as it inherits from login view. To change any behavior of this view, it is recommended 
-you make the modifications in the `LoginView`. 
-
+RefreshTokenView inherits from `LoginView` and shares all the basic behaviour with it.
 
 
 ## LogoutView

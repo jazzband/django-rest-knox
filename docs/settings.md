@@ -26,15 +26,11 @@ REST_KNOX = {
   'TOKEN_MODEL': 'knox.AuthToken',
     
   #if you want to use refresh tokens
-
-  'ENABLE_REFRESH_TOKEN': False, #disabled by default
-  'REFRESH_TOKEN_MODEL': 'knox.AuthRefreshToken',
-  'REFRESH_FAMILY_MODEL': 'knox.RefreshFamily',
-  'AUTO_REFRESH_REFRESH_TOKEN':False,
-  'REFRESH_TOKEN_TTL': timedelta(days=30),
-  'MIN_REFRESH_TOKEN_INTERVAL': 86400, 
-  'REFRESH_TOKEN_RENEW_TTL':timedelta(days=2),
-
+  'ENABLE_REFRESH_TOKEN': False,
+  'REFRESH_TOKEN_MODEL': getattr(settings, 'KNOX_REFRESH_TOKEN_MODEL', 'knox.AuthRefreshToken'),
+  'REFRESH_FAMILY_MODEL': getattr(settings, 'KNOX_REFRESH_FAMILY_MODEL', 'knox.RefreshFamily'),
+  "REFRESH_TOKEN_TTL" : timedelta(days=30),
+  'MAX_TOKEN_HISTORY': 10
 }
 #...snip...
 ```
@@ -84,6 +80,7 @@ the system will not prevent you setting this.
 This allows you to control how many valid tokens can be issued per user.
 If the limit for valid tokens is reached, an error is returned at login.
 By default this option is disabled and set to `None` -- thus no limit.
+This setting is shared by RefreshToken if enabled.
 
 ## USER_SERIALIZER
 This is the reference to the class used to serialize the `User` objects when
@@ -129,20 +126,6 @@ each time an auth `token` expires.
 This is the same as TOKEN_TTL with the exception that refresh tokens are usually valid for a longer timespan.
 The default is set to `timedelta(days=30)`.
 
-## REFRESH_TOKEN_RENEW_TTL
-This defines how much time refresh expiry is extended, if AUTO_REFRESH_REFRESH_TOKEN is set to `True`.
-The setting should be set to an instance of `datetime.timedelta`. The default is 
-2 days  ()`timedelta(days=2)`).
-
-## AUTO_REFRESH_REFRESH_TOKEN
-This defines if refresh token expiry time is extended by REFRESH_TOKEN_RENEW_TTL
-each time an auth `token` is used.
-
-## MIN_REFRESH_TOKEN_INTERVAL
-This is the minimum time in seconds that needs to pass for refresh token 
-expiry to be updated in the database. 
-The default is set to `86400`.
-
 ## REFRESH_TOKEN_MODEL
 This is the reference to the model used as `AuthRefreshToken`. We can define a custom `AuthRefreshToken`
 model in our project that extends `knox.AbstractAuthRefreshToken` and add our business logic to it.
@@ -152,6 +135,11 @@ The default is `knox.AuthRefreshToken`
 This is the reference to the model used as `RefreshFamily`. We can define a custom `RefreshFamily`
 model in our project that extends `knox.AbstractRefreshFamily` and add our business logic to it.
 The default is `knox.RefreshFamily`
+
+## MAX_TOKEN_HISTORY
+The maximum number of refresh tokens to keep track of with the parent token. 
+If a parent token has more than `MAX_TOKEN_HISTORY` associated refresh tokens, using any
+token other than the latest one invalidates the entire family of refresh tokens.
 
 
 # Constants `knox.settings`

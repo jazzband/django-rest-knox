@@ -65,7 +65,6 @@ from yourapp.api.views import LoginView
 
 urlpatterns = [
      path(r'login/', LoginView.as_view(), name='knox_login'),
-     # this view is only relevant if you want refresh tokens
      path(r'refresh/',knox_views.RefreshTokenView.as_view(),name='knox_refresh'), 
      path(r'logout/', knox_views.LogoutView.as_view(), name='knox_logout'),
      path(r'logoutall/', knox_views.LogoutAllView.as_view(), name='knox_logoutall'),
@@ -102,6 +101,7 @@ from yourapp.api.views import LoginView
 
 urlpatterns = [
      path(r'login/', LoginView.as_view(), name='knox_login'),
+     path(r'refresh/',knox_views.RefreshTokenView.as_view(),name='knox_refresh'), 
      path(r'logout/', knox_views.LogoutView.as_view(), name='knox_logout'),
      path(r'logoutall/', knox_views.LogoutAllView.as_view(), name='knox_logoutall'),
 ]

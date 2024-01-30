@@ -7,9 +7,8 @@ from rest_framework import exceptions
 from rest_framework.authentication import (
     BaseAuthentication, get_authorization_header,
 )
-
 from knox.crypto import hash_token
-from knox.models import  get_token_model,get_refresh_token_model,get_refresh_family_model
+from knox.models import get_refresh_family_model, get_refresh_token_model, get_token_model
 from knox.settings import CONSTANTS, knox_settings
 from knox.signals import token_expired,refresh_token_expired
 
@@ -27,14 +26,10 @@ class TokenAuthentication(BaseAuthentication):
     - `request.auth` will be an `AuthToken` instance
     '''
 
-    refresh_family_model = get_refresh_family_model()
-    refresh_token_model = get_refresh_token_model()
-    token_model = get_token_model()
-
+    
     def authenticate(self, request):
         auth = get_authorization_header(request).split()
         prefix = knox_settings.AUTH_HEADER_PREFIX.encode()
-
         if not auth:
             return None
         if auth[0].lower() != prefix.lower():
@@ -73,13 +68,29 @@ class TokenAuthentication(BaseAuthentication):
             if compare_digest(digest, auth_token.digest):
                 if knox_settings.AUTO_REFRESH and auth_token.expiry:
                     self.renew_token(auth_token)
-                if knox_settings.ENABLE_REFRESH_TOKEN and  knox_settings.AUTO_REFRESH_REFRESH_TOKEN:
-                    member = self.refresh_family_model.objects.filter(token=auth_token.token_key).first()
-                    if member:
-                        refresh_token = self.refresh_token_model.objects.filter(token_key=member.refresh_token).first()
-                        if refresh_token and refresh_token.expiry:
-                            self.renew_refresh_token(refresh_token)
                 return self.validate_user(auth_token)
+        raise exceptions.AuthenticationFailed(msg)
+    
+    def authenticate_refresh_token(self, token):
+        '''
+        Due to the random nature of hashing a value, this must inspect
+        each refresh_token individually to find the correct one.
+
+        Tokens that have expired will be deleted and skipped
+        '''
+        msg = _('Invalid token.')
+        if isinstance(token, bytes):
+            token = token.decode("utf-8")
+        for refresh_token in get_refresh_token_model().objects.filter(
+                token_key=token[:CONSTANTS.TOKEN_KEY_LENGTH]):
+            if self._cleanup_token(refresh_token):
+                continue
+            try:
+                digest = hash_token(token)
+            except (TypeError, binascii.Error):
+                raise exceptions.AuthenticationFailed(msg)
+            if compare_digest(digest, refresh_token.digest):
+                return self.validate_user(refresh_token)
         raise exceptions.AuthenticationFailed(msg)
 
     def renew_token(self, auth_token) -> None:
@@ -91,15 +102,6 @@ class TokenAuthentication(BaseAuthentication):
          if delta > knox_settings.MIN_REFRESH_INTERVAL:
              auth_token.save(update_fields=('expiry',))
 
-    def renew_refresh_token(self, refresh_token) -> None:
-         current_expiry = refresh_token.expiry
-         new_expiry = refresh_token.expiry + knox_settings.REFRESH_TOKEN_RENEW_TTL
-         refresh_token.expiry = new_expiry
-         # Throttle refreshing of token to avoid db writes
-         delta = (new_expiry - current_expiry).total_seconds()
-         if delta > knox_settings.MIN_REFRESH_TOKEN_INTERVAL:
-             refresh_token.save(update_fields=('expiry',))
-
     def validate_user(self, auth_token):
         if not auth_token.user.is_active:
             raise exceptions.AuthenticationFailed(
@@ -110,6 +112,10 @@ class TokenAuthentication(BaseAuthentication):
         return knox_settings.AUTH_HEADER_PREFIX
 
     def _cleanup_token(self, auth_token) -> bool:
+        """
+        This works for both classes as it would only skip either a token
+        or a refresh token instance depending on what the argument was
+        """
         for other_token in auth_token.user.auth_token_set.all():
             if other_token.digest != auth_token.digest and other_token.expiry:
                 if other_token.expiry < timezone.now():
@@ -124,13 +130,12 @@ class TokenAuthentication(BaseAuthentication):
                     if other_token.expiry < timezone.now():
                         refresh_family_model = get_refresh_family_model()
                         parent = refresh_family_model.objects.filter(refresh_token=other_token.token_key).first().parent
-                         
                         family = refresh_family_model.objects.filter(parent=parent).order_by("-created")
                         latest = family.first()
                         if latest.refresh_token == other_token.token_key:
                             family.delete()
                         else:
-                            latest = other_token._meta.model.objects.filter(token_key=latest.refresh_token)
+                            latest = get_refresh_token_model().objects.filter(token_key=latest.refresh_token)
                             if latest.expiry >  timezone.now():
                                 family.delete()
                         other_token.delete()
@@ -141,6 +146,12 @@ class TokenAuthentication(BaseAuthentication):
         if auth_token.expiry is not None:
             if auth_token.expiry < timezone.now():
                 username = auth_token.user.get_username()
+                
+                if knox_settings.ENABLE_REFRESH_TOKEN and isinstance(auth_token,get_refresh_token_model()):
+                        auth_token.delete()
+                        refresh_token_expired.send(sender=self.__class__,
+                                   username=username, source="refresh_token")
+                        return True
                 auth_token.delete()
                 token_expired.send(sender=self.__class__,
                                    username=username, source="auth_token")

@@ -16,6 +16,7 @@ as the reference to the `User` model will cause the app to fail at import time.
 The views would then accessible as:
 
 - `/api/auth/login` -> `LoginView`
+- `/api/auth/refresh` -> `RefreshTokenView`
 - `/api/auth/logout` -> `LogoutView`
 - `/api/auth/logoutall` -> `LogoutAllView`
 
@@ -23,6 +24,7 @@ they can also be looked up by name:
 
 ```python
 reverse('knox_login')
+reverse('knox_refresh')
 reverse('knox_logout')
 reverse('knox_logoutall')
 ```
