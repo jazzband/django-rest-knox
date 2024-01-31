@@ -30,6 +30,7 @@ REST_KNOX = {
   'REFRESH_TOKEN_MODEL': getattr(settings, 'KNOX_REFRESH_TOKEN_MODEL', 'knox.AuthRefreshToken'),
   'REFRESH_FAMILY_MODEL': getattr(settings, 'KNOX_REFRESH_FAMILY_MODEL', 'knox.RefreshFamily'),
   "REFRESH_TOKEN_TTL" : timedelta(days=30),
+  "MIN_REFRESH_TOKEN_ISSUE_INTERVAL": timedelta(hours=10),
   'MAX_TOKEN_HISTORY': 10
 }
 #...snip...
@@ -135,6 +136,9 @@ The default is `knox.AuthRefreshToken`
 This is the reference to the model used as `RefreshFamily`. We can define a custom `RefreshFamily`
 model in our project that extends `knox.AbstractRefreshFamily` and add our business logic to it.
 The default is `knox.RefreshFamily`
+
+## MIN_REFRESH_TOKEN_ISSUE_INTERVAL
+This defines the minimum time interval between issuing consecutive refresh tokens for users.
 
 ## MAX_TOKEN_HISTORY
 The maximum number of refresh tokens to keep track of with the parent token. 
