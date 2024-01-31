@@ -5,15 +5,12 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from rest_framework import exceptions
 from rest_framework.authentication import (
-    BaseAuthentication,
-    get_authorization_header,
+    BaseAuthentication, get_authorization_header,
 )
 
 from knox.crypto import hash_token
 from knox.models import (
-    get_refresh_family_model,
-    get_refresh_token_model,
-    get_token_model,
+    get_refresh_family_model, get_refresh_token_model, get_token_model,
 )
 from knox.settings import CONSTANTS, knox_settings
 from knox.signals import refresh_token_expired, token_expired

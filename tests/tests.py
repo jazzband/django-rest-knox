@@ -15,7 +15,7 @@ from knox.auth import TokenAuthentication
 from knox.models import AuthRefreshToken, AuthToken, RefreshFamily
 from knox.serializers import UserSerializer
 from knox.settings import CONSTANTS, knox_settings
-from knox.signals import token_expired, refresh_token_expired
+from knox.signals import refresh_token_expired, token_expired
 
 User = get_user_model()
 root_url = reverse("api-root")

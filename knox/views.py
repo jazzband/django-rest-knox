@@ -10,9 +10,7 @@ from rest_framework.views import APIView
 
 from knox.auth import TokenAuthentication
 from knox.models import (
-    get_refresh_family_model,
-    get_refresh_token_model,
-    get_token_model,
+    get_refresh_family_model, get_refresh_token_model, get_token_model,
 )
 from knox.serializers import RefreshTokenSerializer
 from knox.settings import CONSTANTS, knox_settings
