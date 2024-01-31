@@ -139,6 +139,7 @@ The default is `knox.RefreshFamily`
 
 ## MIN_REFRESH_TOKEN_ISSUE_INTERVAL
 This defines the minimum time interval between issuing consecutive refresh tokens for users.
+The default is `timedelta(hours=10)`.
 
 ## MAX_TOKEN_HISTORY
 The maximum number of refresh tokens to keep track of with the parent token. 

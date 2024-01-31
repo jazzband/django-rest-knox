@@ -8,6 +8,7 @@ from rest_framework.authentication import (
     BaseAuthentication,
     get_authorization_header,
 )
+
 from knox.crypto import hash_token
 from knox.models import (
     get_refresh_family_model,
