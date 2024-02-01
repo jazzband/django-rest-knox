@@ -4,13 +4,15 @@ from __future__ import unicode_literals
 from django.conf import settings
 from django.db import migrations, models
 
+knox_settings = getattr(settings, 'KNOX_SETTING', {})
+token_model = knox_settings.get('TOKEN_MODEL', 'knox.AuthToken')
+
 
 class Migration(migrations.Migration):
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        migrations.swappable_dependency(settings.KNOX_TOKEN_MODEL),
+        migrations.swappable_dependency(token_model),
     ]
-
     operations = [
         migrations.CreateModel(
             name="AuthToken",
