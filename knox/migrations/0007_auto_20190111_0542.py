@@ -4,15 +4,14 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('knox', '0006_auto_20160818_0932'),
+        ("knox", "0006_auto_20160818_0932"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='authtoken',
-            old_name='expires',
-            new_name='expiry',
+            model_name="authtoken",
+            old_name="expires",
+            new_name="expiry",
         ),
     ]

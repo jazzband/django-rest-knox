@@ -24,6 +24,14 @@ REST_KNOX = {
   'AUTH_HEADER_PREFIX': 'Token',
   'EXPIRY_DATETIME_FORMAT': api_settings.DATETIME_FORMAT,
   'TOKEN_MODEL': 'knox.AuthToken',
+    
+  #if you want to use refresh tokens
+  'ENABLE_REFRESH_TOKEN': False,
+  'REFRESH_TOKEN_MODEL': getattr(settings, 'KNOX_REFRESH_TOKEN_MODEL', 'knox.AuthRefreshToken'),
+  'REFRESH_FAMILY_MODEL': getattr(settings, 'KNOX_REFRESH_FAMILY_MODEL', 'knox.RefreshFamily'),
+  "REFRESH_TOKEN_TTL" : timedelta(days=30),
+  "MIN_REFRESH_TOKEN_ISSUE_INTERVAL": timedelta(hours=10),
+  'MAX_TOKEN_HISTORY': 10
 }
 #...snip...
 ```
@@ -65,10 +73,15 @@ Setting the TOKEN_TTL to `None` will create tokens that never expire.
 Warning: setting a 0 or negative timedelta will create tokens that instantly expire,
 the system will not prevent you setting this.
 
+!!! note
+    RefreshToken also inherits this property as issuance of `token` and `refresh_token`
+    always happens together.
+
 ## TOKEN_LIMIT_PER_USER
 This allows you to control how many valid tokens can be issued per user.
 If the limit for valid tokens is reached, an error is returned at login.
 By default this option is disabled and set to `None` -- thus no limit.
+This setting is shared by RefreshToken if enabled.
 
 ## USER_SERIALIZER
 This is the reference to the class used to serialize the `User` objects when
@@ -95,12 +108,44 @@ This is the reference to the model used as `AuthToken`. We can define a custom `
 model in our project that extends `knox.AbstractAuthToken` and add our business logic to it.
 The default is `knox.AuthToken`
 
+
 [DATETIME_FORMAT]: https://www.django-rest-framework.org/api-guide/settings/#date-and-time-formatting
 [strftime format]: https://docs.python.org/3/library/time.html#time.strftime
 
 ## TOKEN_PREFIX
 This is the prefix for the generated token that is used in the Authorization header. The default is just an empty string.
 It can be up to `CONSTANTS.MAXIMUM_TOKEN_PREFIX_LENGTH` long.
+
+!!! note
+    These settings are only relevent if you have [refresh tokens](refresh.md) enabled.
+
+## ENABLE_REFRESH_TOKEN 
+This enables refresh tokens if set to `True` which can be used to issue new auth tokens instead of having to log in manually
+each time an auth `token` expires. 
+
+## REFRESH_TOKEN_TTL
+This is the same as TOKEN_TTL with the exception that refresh tokens are usually valid for a longer timespan.
+The default is set to `timedelta(days=30)`.
+
+## REFRESH_TOKEN_MODEL
+This is the reference to the model used as `AuthRefreshToken`. We can define a custom `AuthRefreshToken`
+model in our project that extends `knox.AbstractAuthRefreshToken` and add our business logic to it.
+The default is `knox.AuthRefreshToken`
+
+## REFRESH_FAMILY_MODEL
+This is the reference to the model used as `RefreshFamily`. We can define a custom `RefreshFamily`
+model in our project that extends `knox.AbstractRefreshFamily` and add our business logic to it.
+The default is `knox.RefreshFamily`
+
+## MIN_REFRESH_TOKEN_ISSUE_INTERVAL
+This defines the minimum time interval between issuing consecutive refresh tokens for users.
+The default is `timedelta(hours=10)`.
+
+## MAX_TOKEN_HISTORY
+The maximum number of refresh tokens to keep track of with the parent token. 
+If a parent token has more than `MAX_TOKEN_HISTORY` associated refresh tokens, using any
+token other than the latest one invalidates the entire family of refresh tokens.
+
 
 # Constants `knox.settings`
 Knox also provides some constants for information. These must not be changed in

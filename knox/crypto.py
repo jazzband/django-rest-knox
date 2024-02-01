@@ -17,7 +17,7 @@ def make_hex_compatible(token: str) -> bytes:
     We need to make sure that the token, that is send is hex-compatible.
     When a token prefix is used, we cannot guarantee that.
     """
-    return binascii.unhexlify(binascii.hexlify(bytes(token, 'utf-8')))
+    return binascii.unhexlify(binascii.hexlify(bytes(token, "utf-8")))
 
 
 def hash_token(token: str) -> str:

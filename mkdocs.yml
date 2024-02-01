@@ -1,6 +1,8 @@
 site_name: Django-Rest-Knox
 repo_url: https://github.com/jazzband/django-rest-knox
 theme: readthedocs
+markdown_extensions:
+  - admonition
 nav:
   - Home: 'index.md'
   - Installation: 'installation.md'
@@ -8,6 +10,7 @@ nav:
       - Views: 'views.md'
       - URLs: 'urls.md'
       - Authentication: 'auth.md'
+      - AuthRefreshToken: 'refresh.md'
       - Settings: 'settings.md'
   - Changelog: 'changelog.md'
 

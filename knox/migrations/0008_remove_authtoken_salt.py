@@ -4,14 +4,13 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('knox', '0007_auto_20190111_0542'),
+        ("knox", "0007_auto_20190111_0542"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='authtoken',
-            name='salt',
+            model_name="authtoken",
+            name="salt",
         ),
     ]

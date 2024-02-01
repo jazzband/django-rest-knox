@@ -6,22 +6,23 @@ from django.db import migrations, models
 
 
 def cleanup_tokens(apps, schema_editor):
-    AuthToken = apps.get_model('knox', 'AuthToken')
-    AuthToken.objects.using(schema_editor.connection.alias).filter(token_key__isnull=True).delete()
+    AuthToken = apps.get_model("knox", "AuthToken")
+    AuthToken.objects.using(schema_editor.connection.alias).filter(
+        token_key__isnull=True
+    ).delete()
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('knox', '0005_authtoken_token_key'),
+        ("knox", "0005_authtoken_token_key"),
     ]
 
     operations = [
         migrations.RunPython(cleanup_tokens, reverse_code=migrations.RunPython.noop),
         migrations.AlterField(
-            model_name='authtoken',
-            name='token_key',
-            field=models.CharField(db_index=True, default='', max_length=8),
+            model_name="authtoken",
+            name="token_key",
+            field=models.CharField(db_index=True, default="", max_length=8),
             preserve_default=False,
         ),
     ]
