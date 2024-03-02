@@ -12,6 +12,18 @@ sha = knox_settings.SECURE_HASH_ALGORITHM
 User = settings.AUTH_USER_MODEL
 
 
+def get_expiry(expiry):
+    if expiry is not None:
+        expiry = timezone.now() + expiry
+    return expiry
+
+
+def get_digest_token(prefix=knox_settings.TOKEN_PREFIX):
+    token = prefix + crypto.create_token_string()
+    digest = crypto.hash_token(token)
+    return digest, token
+
+
 class AuthTokenManager(models.Manager):
     def create(
         self,
@@ -19,8 +31,8 @@ class AuthTokenManager(models.Manager):
         expiry=knox_settings.TOKEN_TTL,
         prefix=knox_settings.TOKEN_PREFIX
     ):
-        token = prefix + crypto.create_token_string()
-        digest = crypto.hash_token(token)
+
+        digest, token = get_digest_token(prefix)
         if expiry is not None:
             expiry = timezone.now() + expiry
         instance = super(AuthTokenManager, self).create(
