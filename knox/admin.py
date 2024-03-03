@@ -43,5 +43,6 @@ class AuthTokenAdmin(admin.ModelAdmin):
         return super(AuthTokenAdmin, self).get_form(request, obj, **defaults)
 
     def save_model(self, request, obj, form, change):
-        self.message_user(request, "TOKEN " + form.token, messages.INFO)
+        if not change:
+            self.message_user(request, "TOKEN " + form.token, messages.INFO)
         super(AuthTokenAdmin, self).save_model(request, obj, form, change)
