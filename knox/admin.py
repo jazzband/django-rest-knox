@@ -1,8 +1,9 @@
 from django import forms
 from django.contrib import admin, messages
 from django.contrib.auth import get_user_model
-from knox.settings import CONSTANTS
+
 from knox import models
+from knox.settings import CONSTANTS
 
 
 class AuthTokenCreateForm(forms.ModelForm):
