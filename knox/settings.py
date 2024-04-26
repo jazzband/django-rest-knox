@@ -1,7 +1,7 @@
 from datetime import timedelta
 
 from django.conf import settings
-from django.test.signals import setting_changed
+from django.core.signals import setting_changed
 from rest_framework.settings import APISettings, api_settings
 
 USER_SETTINGS = getattr(settings, 'REST_KNOX', None)
