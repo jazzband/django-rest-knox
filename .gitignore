@@ -57,6 +57,3 @@ docs/_build/
 target/
 db.sqlite3
 site/
-
-# PyCharm Project
-.idea

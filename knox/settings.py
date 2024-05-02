@@ -7,7 +7,7 @@ from rest_framework.settings import APISettings, api_settings
 USER_SETTINGS = getattr(settings, 'REST_KNOX', None)
 
 DEFAULTS = {
-    'SECURE_HASH_ALGORITHM': 'hashlib.sha512',
+    'SECURE_HASH_ALGORITHM': 'cryptography.hazmat.primitives.hashes.SHA512',
     'AUTH_TOKEN_CHARACTER_LENGTH': 64,
     'TOKEN_TTL': timedelta(hours=10),
     'USER_SERIALIZER': None,
@@ -16,8 +16,6 @@ DEFAULTS = {
     'MIN_REFRESH_INTERVAL': 60,
     'AUTH_HEADER_PREFIX': 'Token',
     'EXPIRY_DATETIME_FORMAT': api_settings.DATETIME_FORMAT,
-    'TOKEN_MODEL': getattr(settings, 'KNOX_TOKEN_MODEL', 'knox.AuthToken'),
-    'TOKEN_PREFIX': '',
 }
 
 IMPORT_STRINGS = {
@@ -33,8 +31,6 @@ def reload_api_settings(*args, **kwargs):
     setting, value = kwargs['setting'], kwargs['value']
     if setting == 'REST_KNOX':
         knox_settings = APISettings(value, DEFAULTS, IMPORT_STRINGS)
-        if len(knox_settings.TOKEN_PREFIX) > CONSTANTS.MAXIMUM_TOKEN_PREFIX_LENGTH:
-            raise ValueError("Illegal TOKEN_PREFIX length")
 
 
 setting_changed.connect(reload_api_settings)
@@ -44,9 +40,8 @@ class CONSTANTS:
     '''
     Constants cannot be changed at runtime
     '''
-    TOKEN_KEY_LENGTH = 15
+    TOKEN_KEY_LENGTH = 8
     DIGEST_LENGTH = 128
-    MAXIMUM_TOKEN_PREFIX_LENGTH = 10
 
     def __setattr__(self, *args, **kwargs):
         raise Exception('''
@@ -55,4 +50,4 @@ class CONSTANTS:
             ''')
 
 
-CONSTANTS = CONSTANTS()  # type: ignore
+CONSTANTS = CONSTANTS()

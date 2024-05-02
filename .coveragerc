@@ -1,5 +1,0 @@
-[run]
-branch = True
-source = knox
-omit =
-    */migrations/*

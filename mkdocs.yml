@@ -1,5 +1,5 @@
 site_name: Django-Rest-Knox
-repo_url: https://github.com/jazzband/django-rest-knox
+repo_url: https://github.com/James1345/django-rest-knox
 theme: readthedocs
 nav:
   - Home: 'index.md'

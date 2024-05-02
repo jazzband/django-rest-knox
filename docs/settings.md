@@ -10,26 +10,17 @@ Example `settings.py`
 # These are the default values if none are set
 from datetime import timedelta
 from rest_framework.settings import api_settings
-
-KNOX_TOKEN_MODEL = 'knox.AuthToken'
-
 REST_KNOX = {
-  'SECURE_HASH_ALGORITHM': 'hashlib.sha512',
+  'SECURE_HASH_ALGORITHM': 'cryptography.hazmat.primitives.hashes.SHA512',
   'AUTH_TOKEN_CHARACTER_LENGTH': 64,
   'TOKEN_TTL': timedelta(hours=10),
   'USER_SERIALIZER': 'knox.serializers.UserSerializer',
   'TOKEN_LIMIT_PER_USER': None,
   'AUTO_REFRESH': False,
-  'MIN_REFRESH_INTERVAL': 60,
-  'AUTH_HEADER_PREFIX': 'Token',
   'EXPIRY_DATETIME_FORMAT': api_settings.DATETIME_FORMAT,
-  'TOKEN_MODEL': 'knox.AuthToken',
 }
 #...snip...
 ```
-
-## KNOX_TOKEN_MODEL
-This is the variable used in the swappable dependency of the `AuthToken` model
 
 ## SECURE_HASH_ALGORITHM
 This is a reference to the class used to provide the hashing algorithm for
@@ -39,13 +30,14 @@ token storage.
 
 By default, Knox uses SHA-512 to hash tokens in the database.
 
-`hashlib.sha3_512` is an acceptable alternative setting for production use.
+`cryptography.hazmat.primitives.hashes.Whirlpool` is an acceptable alternative setting
+for production use.
 
 ### Tests
-SHA-512 and SHA3-512 are secure, however, they are slow. This should not be a
+SHA-512 and Whirlpool are secure, however, they are slow. This should not be a
 problem for your users, but when testing it may be noticeable (as test cases tend
 to use many more requests much more quickly than real users). In testing scenarios
-it is acceptable to use `MD5` hashing (`hashlib.md5`).
+it is acceptable to use `MD5` hashing.(`cryptography.hazmat.primitives.hashes.MD5`)
 
 MD5 is **not secure** and must *never* be used in production sites.
 
@@ -66,8 +58,7 @@ Warning: setting a 0 or negative timedelta will create tokens that instantly exp
 the system will not prevent you setting this.
 
 ## TOKEN_LIMIT_PER_USER
-This allows you to control how many valid tokens can be issued per user.
-If the limit for valid tokens is reached, an error is returned at login.
+This allows you to control how many tokens can be issued per user.
 By default this option is disabled and set to `None` -- thus no limit.
 
 ## USER_SERIALIZER
@@ -90,17 +81,8 @@ This is the expiry datetime format returned in the login view. The default is th
 [DATETIME_FORMAT][DATETIME_FORMAT] of Django REST framework. May be any of `None`, `iso-8601`
 or a Python [strftime format][strftime format] string.
 
-## TOKEN_MODEL
-This is the reference to the model used as `AuthToken`. We can define a custom `AuthToken`
-model in our project that extends `knox.AbstractAuthToken` and add our business logic to it.
-The default is `knox.AuthToken`
-
 [DATETIME_FORMAT]: https://www.django-rest-framework.org/api-guide/settings/#date-and-time-formatting
 [strftime format]: https://docs.python.org/3/library/time.html#time.strftime
-
-## TOKEN_PREFIX
-This is the prefix for the generated token that is used in the Authorization header. The default is just an empty string.
-It can be up to `CONSTANTS.MAXIMUM_TOKEN_PREFIX_LENGTH` long.
 
 # Constants `knox.settings`
 Knox also provides some constants for information. These must not be changed in
@@ -115,6 +97,3 @@ print(CONSTANTS.DIGEST_LENGTH) #=> 128
 
 ## DIGEST_LENGTH
 This is the length of the digest that will be stored in the database for each token.
-
-## MAXIMUM_TOKEN_PREFIX_LENGTH
-This is the maximum length of the token prefix.

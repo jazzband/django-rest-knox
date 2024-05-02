@@ -9,7 +9,6 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        migrations.swappable_dependency(settings.KNOX_TOKEN_MODEL),
     ]
 
     operations = [

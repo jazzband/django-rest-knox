@@ -9,23 +9,23 @@ jobs:
       fail-fast: false
       max-parallel: 5
       matrix:
-        python-version: ['3.6', '3.7', '3.8', '3.9', '3.10', '3.11', '3.12']
+        python-version: ['3.6', '3.7', '3.8', '3.9', '3.10']
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v2
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
 
     - name: Get pip cache dir
       id: pip-cache
       run: |
-        echo "dir=$(pip cache dir)" >> $GITHUB_OUTPUT
+        echo "::set-output name=dir::$(pip cache dir)"
 
     - name: Cache
-      uses: actions/cache@v3
+      uses: actions/cache@v2
       with:
         path: ${{ steps.pip-cache.outputs.dir }}
         key:
@@ -36,14 +36,8 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        python -m pip install --upgrade tox tox-gh-actions coverage
+        python -m pip install --upgrade tox tox-gh-actions
 
     - name: Tox tests
       run: |
         tox -v
-
-    - name: Generate coverage XML report
-      run: coverage xml
-
-    - name: Codecov
-      uses: codecov/codecov-action@v3
