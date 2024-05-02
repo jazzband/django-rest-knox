@@ -21,6 +21,7 @@ helper methods:
 - `get_user_serializer_class(self)`, to change the class used for serializing the user
 - `get_expiry_datetime_format(self)`, to change the datetime format used for expiry
 - `format_expiry_datetime(self, expiry)`, to format the expiry `datetime` object at your convenience
+- `create_token(self)`, to create the `AuthToken` instance at your convenience
 
 Finally, if none of these helper methods are sufficient, you can also override `get_post_response_data`
 to return a fully customized payload.
@@ -66,12 +67,24 @@ It responds to Knox Token Authentication. On a successful request,
 the token used to authenticate is deleted from the
 system and can no longer be used to authenticate.
 
+By default, this endpoint returns a HTTP 204 response on a successful request. To
+customize this behavior, you can override the `get_post_response` method, for example
+to include a body in the logout response and/or to modify the status code:
+
+```python
+...snip...
+    def get_post_response(self, request):
+        return Response({"bye-bye": request.user.username}, status=200)
+...snip...
+```
+
 ## LogoutAllView
 This view accepts only a post request with an empty body. It responds to Knox Token
 Authentication.
-On a successful request, the token used to authenticate, and *all other tokens*
-registered to the same `User` account, are deleted from the
-system and can no longer be used to authenticate.
+On a successful request, a HTTP 204 is returned and the token used to authenticate,
+and *all other tokens* registered to the same `User` account, are deleted from the
+system and can no longer be used to authenticate. The success response can be modified
+like the `LogoutView` by overriding the `get_post_response` method.
 
 **Note** It is not recommended to alter the Logout views. They are designed
 specifically for token management, and to respond to Knox authentication.

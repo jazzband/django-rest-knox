@@ -1,9 +1,10 @@
 django-rest-knox
 ================
 
-[![image](https://github.com/James1345/django-rest-knox/workflows/Test/badge.svg?branch=develop)](https://github.com/James1345/django-rest-knox/actions)
+[![Jazzband](https://jazzband.co/static/img/badge.svg)](https://jazzband.co/)
+[![image](https://github.com/jazzband/django-rest-knox/workflows/Test/badge.svg?branch=develop)](https://github.com/jazzband/django-rest-knox/actions)
 
-Authentication Module for django rest auth
+Authentication module for Django rest auth.
 
 Knox provides easy-to-use authentication for [Django REST
 Framework](https://www.django-rest-framework.org/) The aim is to allow
@@ -40,12 +41,11 @@ default implementation:
     the app settings (default is 10 hours.)
 
 More information can be found in the
-[Documentation](https://james1345.github.io/django-rest-knox/)
+[Documentation](https://jazzband.github.io/django-rest-knox/)
 
 # Run the tests locally
 
-If you need to debug a test locally and if you have [docker](https://www.docker.com/) installed:
-
+If you need to debug a test locally and if you have [docker](https://www.docker.com/) installed,
 simply run the ``./docker-run-tests.sh`` script and it will run the test suite in every Python /
 Django versions.
 

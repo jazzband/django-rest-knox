@@ -2,27 +2,8 @@
 
 ## Requirements
 
-Knox depends on `cryptography` to provide bindings to `OpenSSL` for token generation
-This requires the OpenSSL build libraries to be available.
-
-### Windows
-Cryptography is a statically linked build, no extra steps are needed.
-
-### Linux
-`cryptography` should build very easily on Linux provided you have a C compiler,
-headers for Python (if you’re not using `pypy`), and headers for the OpenSSL and
-`libffi` libraries available on your system.
-
-Debian and Ubuntu:
-```bash
-sudo apt-get install build-essential libssl-dev libffi-dev python3-dev python-dev
-```
-
-Fedora and RHEL-derivatives:
-```bash
-sudo yum install gcc libffi-devel python-devel openssl-devel
-```
-For other systems or problems, see the [cryptography installation docs](https://cryptography.io/en/latest/installation/)
+Knox depends on pythons internal library `hashlib` to provide bindings to `OpenSSL` or uses
+an internal implementation of hashing algorithms for token generation.
 
 ## Installing Knox
 Knox should be installed with pip
@@ -59,7 +40,7 @@ REST_FRAMEWORK = {
 
 - If you set TokenAuthentication as the only default authentication class on the second step, [override knox's LoginView](auth.md#global-usage-on-all-views) to accept another authentication method and use it instead of knox's default login view.
 
-- Apply the migrations for the models
+- Apply the migrations for the models.
 
 ```bash
 python manage.py migrate
