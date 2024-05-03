@@ -1,185 +1,128 @@
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  
-  <link rel="shortcut icon" href="../img/favicon.ico">
-  <title>Installation - Django-Rest-Knox</title>
-  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
-
-  <link rel="stylesheet" href="../css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
-  <link rel="stylesheet" href="../css/highlight.css">
-  
-  <script>
-    // Current page data
-    var mkdocs_page_name = "Installation";
-    var mkdocs_page_input_path = "installation.md";
-    var mkdocs_page_url = "/installation/";
-  </script>
-  
-  <script src="../js/jquery-2.1.1.min.js"></script>
-  <script src="../js/modernizr-2.8.3.min.js"></script>
-  <script type="text/javascript" src="../js/highlight.pack.js"></script> 
-  
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Installation - Django-Rest-Knox</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Installation";
+        var mkdocs_page_input_path = "installation.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
 </head>
 
 <body class="wy-body-for-nav" role="document">
 
   <div class="wy-grid-for-nav">
-
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
-        <a href=".." class="icon icon-home"> Django-Rest-Knox</a>
-        <div role="search">
+          <a href=".." class="icon icon-home"> Django-Rest-Knox
+        </a><div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
   </form>
 </div>
       </div>
 
-      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-	<ul class="current">
-	  
-          
-            <li class="toctree-l1">
-		
-    <a class="" href="..">Django-Rest-Knox</a>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <a class="" href="../auth/">Authentication `knox.auth`</a>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <a class="" href="../changelog/">Changelog</a>
-	    </li>
-          
-            <li class="toctree-l1 current">
-		
-    <a class="current" href="./">Installation</a>
-    <ul class="subnav">
-            
-    <li class="toctree-l2"><a href="#installation">Installation</a></li>
-    
-        <ul>
-        
-            <li><a class="toctree-l3" href="#requirements">Requirements</a></li>
-        
-            <li><a class="toctree-l3" href="#installing-knox">Installing Knox</a></li>
-        
-            <li><a class="toctree-l3" href="#setup-knox">Setup knox</a></li>
-        
-        </ul>
-    
-
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Installation</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#requirements">Requirements</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#installing-knox">Installing Knox</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#setup-knox">Setup knox</a>
+    </li>
     </ul>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <a class="" href="../settings/">Settings</a>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <a class="" href="../urls/">Urls</a>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <a class="" href="../views/">Views</a>
-	    </li>
-          
-        </ul>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">API Guide</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../views/">Views</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../urls/">URLs</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../auth/">Authentication</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../settings/">Settings</a>
+                  </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../changelog/">Changelog</a>
+                </li>
+              </ul>
       </div>
-      &nbsp;
+    </div>
     </nav>
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="..">Django-Rest-Knox</a>
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">Django-Rest-Knox</a>
+        
       </nav>
-
-      
       <div class="wy-nav-content">
-        <div class="rst-content">
-          <div role="navigation" aria-label="breadcrumbs navigation">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
-    <li><a href="..">Docs</a> &raquo;</li>
-    
-      
-    
-    <li>Installation</li>
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Installation</li>
     <li class="wy-breadcrumbs-aside">
-      
-        <a href="https://github.com/James1345/django-rest-knox/edit/master/docs/installation.md"
-          class="icon icon-github"> Edit on GitHub</a>
-      
+          <a href="https://github.com/jazzband/django-rest-knox/edit/master/docs/installation.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
 </div>
-          <div role="main">
-            <div class="section">
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
               
                 <h1 id="installation">Installation</h1>
 <h2 id="requirements">Requirements</h2>
-<p>Knox depends on <code>cryptography</code> to provide bindings to <code>OpenSSL</code> for token generation
-This requires the OpenSSL build libraries to be available.</p>
-<h3 id="windows">Windows</h3>
-<p>Cryptography is a statically linked build, no extra steps are needed</p>
-<h3 id="linux">Linux</h3>
-<p><code>cryptography</code> should build very easily on Linux provided you have a C compiler,
-headers for Python (if you’re not using <code>pypy</code>), and headers for the OpenSSL and
-<code>libffi</code> libraries available on your system.</p>
-<p>Debian and Ubuntu:</p>
-<pre><code class="bash">sudo apt-get install build-essential libssl-dev libffi-dev python3-dev python-dev
-</code></pre>
-
-<p>Fedora and RHEL-derivatives:</p>
-<pre><code class="bash">sudo yum install gcc libffi-devel python-devel openssl-devel
-</code></pre>
-
-<p>For other systems or problems, see the <a href="https://cryptography.io/en/latest/installation/">cryptography installation docs</a></p>
+<p>Knox depends on pythons internal library <code>hashlib</code> to provide bindings to <code>OpenSSL</code> or uses
+an internal implementation of hashing algorithms for token generation.</p>
 <h2 id="installing-knox">Installing Knox</h2>
 <p>Knox should be installed with pip</p>
-<pre><code class="bash">pip install django-rest-knox
+<pre><code class="language-bash">pip install django-rest-knox
 </code></pre>
-
 <h2 id="setup-knox">Setup knox</h2>
 <ul>
 <li>Add <code>rest_framework</code> and <code>knox</code> to your <code>INSTALLED_APPS</code>, remove
 <code>rest_framework.authtoken</code> if you were using it.</li>
 </ul>
-<pre><code class="python">INSTALLED_APPS = (
+<pre><code class="language-python">INSTALLED_APPS = (
   ...
   'rest_framework',
   'knox',
   ...
 )
 </code></pre>
-
 <ul>
-<li>Make knox's TokenAuthentication your default authentification class
+<li>Make knox's TokenAuthentication your default authentication class
 for django-rest-framework:</li>
 </ul>
-<pre><code class="python">REST_FRAMEWORK = {
+<pre><code class="language-python">REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': ('knox.auth.TokenAuthentication',),
     ...
 }
 </code></pre>
-
 <ul>
 <li>
 <p>Add the <a href="../urls/#urls-knoxurls">knox url patterns</a> to your project.</p>
@@ -188,36 +131,28 @@ for django-rest-framework:</li>
 <p>If you set TokenAuthentication as the only default authentication class on the second step, <a href="../auth/#global-usage-on-all-views">override knox's LoginView</a> to accept another authentication method and use it instead of knox's default login view.</p>
 </li>
 <li>
-<p>Apply the migrations for the models</p>
+<p>Apply the migrations for the models.</p>
 </li>
 </ul>
-<pre><code class="bash">python manage.py migrate
+<pre><code class="language-bash">python manage.py migrate
 </code></pre>
               
             </div>
-          </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="../settings/" class="btn btn-neutral float-right" title="Settings">Next <span class="icon icon-circle-arrow-right"></span></a>
-      
-      
-        <a href="../changelog/" class="btn btn-neutral" title="Changelog"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-      
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href=".." class="btn btn-neutral float-left" title="Home"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../views/" class="btn btn-neutral float-right" title="Views">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <!-- Copyright etc -->
-    
   </div>
 
-  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
 </footer>
-      
+          
         </div>
       </div>
 
@@ -225,23 +160,31 @@ for django-rest-framework:</li>
 
   </div>
 
-  <div class="rst-versions" role="note" style="cursor: pointer">
-    <span class="rst-current-version" data-toggle="rst-current-version">
-      
-          <a href="https://github.com/James1345/django-rest-knox/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
-      
-      
-        <span><a href="../changelog/" style="color: #fcfcfc;">&laquo; Previous</a></span>
-      
-      
-        <span style="margin-left: 15px"><a href="../settings/" style="color: #fcfcfc">Next &raquo;</a></span>
-      
-    </span>
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/jazzband/django-rest-knox" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href=".." style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../views/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
 </div>
-    <script>var base_url = '..';</script>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
     <script src="../js/theme.js"></script>
-      <script src="../search/require.js"></script>
-      <script src="../search/search.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
 
 </body>
 </html>

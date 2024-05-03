@@ -1,201 +1,107 @@
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  
-  <link rel="shortcut icon" href="../img/favicon.ico">
-  <title>Changelog - Django-Rest-Knox</title>
-  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
-
-  <link rel="stylesheet" href="../css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
-  <link rel="stylesheet" href="../css/highlight.css">
-  
-  <script>
-    // Current page data
-    var mkdocs_page_name = "Changelog";
-    var mkdocs_page_input_path = "changelog.md";
-    var mkdocs_page_url = "/changelog/";
-  </script>
-  
-  <script src="../js/jquery-2.1.1.min.js"></script>
-  <script src="../js/modernizr-2.8.3.min.js"></script>
-  <script type="text/javascript" src="../js/highlight.pack.js"></script> 
-  
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Changelog - Django-Rest-Knox</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Changelog";
+        var mkdocs_page_input_path = "changelog.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
 </head>
 
 <body class="wy-body-for-nav" role="document">
 
   <div class="wy-grid-for-nav">
-
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
-        <a href=".." class="icon icon-home"> Django-Rest-Knox</a>
-        <div role="search">
+          <a href=".." class="icon icon-home"> Django-Rest-Knox
+        </a><div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
   </form>
 </div>
       </div>
 
-      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-	<ul class="current">
-	  
-          
-            <li class="toctree-l1">
-		
-    <a class="" href="..">Django-Rest-Knox</a>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <a class="" href="../auth/">Authentication `knox.auth`</a>
-	    </li>
-          
-            <li class="toctree-l1 current">
-		
-    <a class="current" href="./">Changelog</a>
-    <ul class="subnav">
-            
-    <li class="toctree-l2"><a href="#401">4.0.1</a></li>
-    
-
-    <li class="toctree-l2"><a href="#400">4.0.0</a></li>
-    
-
-    <li class="toctree-l2"><a href="#360">3.6.0</a></li>
-    
-
-    <li class="toctree-l2"><a href="#350">3.5.0</a></li>
-    
-
-    <li class="toctree-l2"><a href="#340">3.4.0</a></li>
-    
-
-    <li class="toctree-l2"><a href="#331">3.3.1</a></li>
-    
-
-    <li class="toctree-l2"><a href="#330">3.3.0</a></li>
-    
-
-    <li class="toctree-l2"><a href="#321">3.2.1</a></li>
-    
-
-    <li class="toctree-l2"><a href="#320">3.2.0</a></li>
-    
-
-    <li class="toctree-l2"><a href="#315">3.1.5</a></li>
-    
-
-    <li class="toctree-l2"><a href="#314">3.1.4</a></li>
-    
-
-    <li class="toctree-l2"><a href="#313">3.1.3</a></li>
-    
-
-    <li class="toctree-l2"><a href="#312">3.1.2</a></li>
-    
-
-    <li class="toctree-l2"><a href="#311">3.1.1</a></li>
-    
-
-    <li class="toctree-l2"><a href="#310">3.1.0</a></li>
-    
-
-    <li class="toctree-l2"><a href="#303">3.0.3</a></li>
-    
-
-    <li class="toctree-l2"><a href="#302">3.0.2</a></li>
-    
-
-    <li class="toctree-l2"><a href="#301">3.0.1</a></li>
-    
-
-    <li class="toctree-l2"><a href="#300">3.0.0</a></li>
-    
-
-    <li class="toctree-l2"><a href="#222">2.2.2</a></li>
-    
-
-    <li class="toctree-l2"><a href="#221">2.2.1</a></li>
-    
-
-    <li class="toctree-l2"><a href="#220">2.2.0</a></li>
-    
-
-    <li class="toctree-l2"><a href="#200">2.0.0</a></li>
-    
-
-    <li class="toctree-l2"><a href="#110">1.1.0</a></li>
-    
-
-    <li class="toctree-l2"><a href="#100">1.0.0</a></li>
-    
-
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../installation/">Installation</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">API Guide</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../views/">Views</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../urls/">URLs</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../auth/">Authentication</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../settings/">Settings</a>
+                  </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Changelog</a>
+    <ul class="current">
     </ul>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <a class="" href="../installation/">Installation</a>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <a class="" href="../settings/">Settings</a>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <a class="" href="../urls/">Urls</a>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <a class="" href="../views/">Views</a>
-	    </li>
-          
-        </ul>
+                </li>
+              </ul>
       </div>
-      &nbsp;
+    </div>
     </nav>
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="..">Django-Rest-Knox</a>
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">Django-Rest-Knox</a>
+        
       </nav>
-
-      
       <div class="wy-nav-content">
-        <div class="rst-content">
-          <div role="navigation" aria-label="breadcrumbs navigation">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
-    <li><a href="..">Docs</a> &raquo;</li>
-    
-      
-    
-    <li>Changelog</li>
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Changelog</li>
     <li class="wy-breadcrumbs-aside">
-      
-        <a href="https://github.com/James1345/django-rest-knox/edit/master/docs/changelog.md"
-          class="icon icon-github"> Edit on GitHub</a>
-      
+          <a href="https://github.com/jazzband/django-rest-knox/edit/master/docs/changelog.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
 </div>
-          <div role="main">
-            <div class="section">
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
               
-                <h2 id="401">4.0.1</h2>
+                <h2 id="420">4.2.0</h2>
+<ul>
+<li>compatibility with Python up to 3.10 and Django up to 4.0</li>
+<li>integration with github CI instead of travis</li>
+<li>Migration: "salt" field of model "AuthToken" is removed, WARNING: invalidates old tokens!</li>
+</ul>
+<h2 id="410">4.1.0</h2>
+<ul>
+<li>Expiry format now defaults to whatever is used Django REST framework</li>
+<li>The behavior can be overridden via EXPIRY_DATETIME_FORMAT setting</li>
+<li>Fully customizable expiry format via format_expiry_datetime</li>
+<li>Fully customizable response payload via get_post_response_data</li>
+</ul>
+<h2 id="401">4.0.1</h2>
 <ul>
 <li>Fix for tox config to build Django 2.2 on python 3.6</li>
 </ul>
@@ -265,7 +171,7 @@ to fit these new changes.</p>
 </ul>
 <h2 id="314">3.1.4</h2>
 <ul>
-<li>Fix compability with django-rest-swagger (bad inheritance)</li>
+<li>Fix compatibility with django-rest-swagger (bad inheritance)</li>
 </ul>
 <h2 id="313">3.1.3</h2>
 <ul>
@@ -273,7 +179,7 @@ to fit these new changes.</p>
 </ul>
 <h2 id="312">3.1.2</h2>
 <ul>
-<li>restore compability with Python &lt;2.7.7</li>
+<li>restore compatibility with Python &lt;2.7.7</li>
 </ul>
 <h2 id="311">3.1.1</h2>
 <ul>
@@ -343,29 +249,20 @@ to fit these new changes.</p>
 </ul>
               
             </div>
-          </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="../installation/" class="btn btn-neutral float-right" title="Installation">Next <span class="icon icon-circle-arrow-right"></span></a>
-      
-      
-        <a href="../auth/" class="btn btn-neutral" title="Authentication `knox.auth`"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-      
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../settings/" class="btn btn-neutral float-left" title="Settings"><span class="icon icon-circle-arrow-left"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <!-- Copyright etc -->
-    
   </div>
 
-  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
 </footer>
-      
+          
         </div>
       </div>
 
@@ -373,23 +270,29 @@ to fit these new changes.</p>
 
   </div>
 
-  <div class="rst-versions" role="note" style="cursor: pointer">
-    <span class="rst-current-version" data-toggle="rst-current-version">
-      
-          <a href="https://github.com/James1345/django-rest-knox/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
-      
-      
-        <span><a href="../auth/" style="color: #fcfcfc;">&laquo; Previous</a></span>
-      
-      
-        <span style="margin-left: 15px"><a href="../installation/" style="color: #fcfcfc">Next &raquo;</a></span>
-      
-    </span>
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/jazzband/django-rest-knox" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../settings/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+  </span>
 </div>
-    <script>var base_url = '..';</script>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
     <script src="../js/theme.js"></script>
-      <script src="../search/require.js"></script>
-      <script src="../search/search.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
 
 </body>
 </html>
