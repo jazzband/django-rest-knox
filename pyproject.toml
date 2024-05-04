@@ -1,0 +1,15 @@
+[tool.ruff]
+exclude = ["*migrations*"]
+line-length = 90
+
+[tool.ruff.lint]
+ignore = []
+select = [
+    "C90", # Mccabe
+    "E", # Pycodestyle Error
+    "F", # Pyflakes
+    "W", # Pycodestyle Warning
+]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10
