@@ -8,8 +8,13 @@ select = [
     "C90", # Mccabe
     "E", # Pycodestyle Error
     "F", # Pyflakes
+    "I", # Isort
     "W", # Pycodestyle Warning
 ]
 
 [tool.ruff.lint.mccabe]
 max-complexity = 10
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+known-first-party = ["knox"]
