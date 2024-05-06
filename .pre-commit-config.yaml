@@ -1,4 +1,10 @@
 repos:
+  - repo: https://github.com/adamchainz/django-upgrade
+    rev: 1.16.0
+    hooks:
+      - id: django-upgrade
+        args: [--target-version, "4.2"]
+
   - repo: https://github.com/PyCQA/isort
     rev: 5.13.2
     hooks:
