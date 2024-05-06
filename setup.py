@@ -69,7 +69,7 @@ setup(
     # https://packaging.python.org/en/latest/requirements.html
     python_requires='>=3.6',
     install_requires=[
-        'django>=3.2',
+        'django>=4.2',
         'djangorestframework',
     ],
 
