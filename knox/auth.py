@@ -5,7 +5,8 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from rest_framework import exceptions
 from rest_framework.authentication import (
-    BaseAuthentication, get_authorization_header,
+    BaseAuthentication,
+    get_authorization_header,
 )
 
 from knox.crypto import hash_token
