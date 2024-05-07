@@ -1,8 +1,8 @@
-from django.urls import include, re_path
+from django.urls import include, path
 
 from .views import RootView
 
 urlpatterns = [
-    re_path(r'^api/', include('knox.urls')),
-    re_path(r'^api/$', RootView.as_view(), name="api-root"),
+    path('api/', include('knox.urls')),
+    path('api/', RootView.as_view(), name="api-root"),
 ]
