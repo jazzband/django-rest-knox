@@ -28,6 +28,24 @@ class AuthTokenManager(models.Manager):
             user=user, expiry=expiry)
         return instance, token
 
+    def migrate(
+        self,
+        token
+    ):
+        instance = self.filter(token_key__startswith=token[:8])
+        if not instance.exists():
+            return None, None
+
+        existing_instance = instance.first()
+        digest = crypto.hash_token(token)
+
+        instance = super(AuthTokenManager, self).create(
+            token_key=token[:CONSTANTS.TOKEN_KEY_LENGTH], digest=digest,
+            user=existing_instance.user, expiry=existing_instance.expiry)
+        existing_instance.delete()
+
+        return instance, token
+
 
 class AbstractAuthToken(models.Model):
 
