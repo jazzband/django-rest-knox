@@ -158,6 +158,23 @@ class AuthTestCase(TestCase):
         self.client.post(url, {}, format='json')
         self.assertEqual(AuthToken.objects.count(), 0)
 
+    def test_logout_all_deletes_keys_prefixed(self):
+        self.assertEqual(AuthToken.objects.count(), 0)
+        for _ in range(10):
+            AuthToken.objects.create(user=self.user, prefix="OTHER_")
+            instance, token = AuthToken.objects.create(user=self.user, prefix=token_prefix)
+        self.assertEqual(AuthToken.objects.count(), 20)
+
+        url = reverse('knox_logoutall')
+        with override_settings(REST_KNOX=token_prefix_knox):
+            reload(views)
+            reload(crypto)
+            self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % token))
+            self.client.post(url, {}, format='json')
+        reload(views)
+        reload(crypto)
+        self.assertEqual(AuthToken.objects.count(), 10)
+
     def test_logout_all_deletes_only_targets_keys(self):
         self.assertEqual(AuthToken.objects.count(), 0)
         for _ in range(10):
