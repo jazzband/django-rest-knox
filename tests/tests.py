@@ -161,8 +161,8 @@ class AuthTestCase(TestCase):
     def test_logout_all_deletes_keys_prefixed(self):
         self.assertEqual(AuthToken.objects.count(), 0)
         for _ in range(10):
-            AuthToken.objects.create(user=self.user, prefix="OTHER_")
-            instance, token = AuthToken.objects.create(user=self.user, prefix=token_prefix)
+            AuthToken.objects.create(self.user, prefix="OTHER_")
+            instance, token = AuthToken.objects.create(self.user, prefix=token_prefix)
         self.assertEqual(AuthToken.objects.count(), 20)
 
         url = reverse('knox_logoutall')
