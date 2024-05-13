@@ -83,10 +83,12 @@ class TokenAuthentication(BaseAuthentication):
     def update_last_accessed(self, auth_token):
         current_access = auth_token.accessed
         # not too-fast update
-        if current_access is not None and (timezone.now() - current_access).total_seconds() < knox_settings.MIN_REFRESH_INTERVAL:
-            return
+        if current_access is not None:
+            if (timezone.now() - current_access).total_seconds() < knox_settings.MIN_REFRESH_INTERVAL:
+                return False
         auth_token.accessed = timezone.now()
         auth_token.save(update_fields=('accessed',))
+        return True
 
     def validate_user(self, auth_token):
         self.update_last_accessed(auth_token)
