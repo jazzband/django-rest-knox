@@ -80,11 +80,20 @@ class TokenAuthentication(BaseAuthentication):
         if delta > knox_settings.MIN_REFRESH_INTERVAL:
             auth_token.save(update_fields=('expiry',))
 
+    def update_last_accessed(self, auth_token):
+        current_access = auth_token.accessed
+        # not too-fast update
+        if current_access is not None and (timezone.now() - current_access).total_seconds() < knox_settings.MIN_REFRESH_INTERVAL:
+            return
+        auth_token.accessed = timezone.now()
+        auth_token.save(update_fields=('accessed',))
+
     def validate_user(self, auth_token):
+        self.update_last_accessed(auth_token)
         if not auth_token.user.is_active:
             raise exceptions.AuthenticationFailed(
                 _('User inactive or deleted.'))
-        return (auth_token.user, auth_token)
+        return auth_token.user, auth_token
 
     def authenticate_header(self, request):
         return knox_settings.AUTH_HEADER_PREFIX
