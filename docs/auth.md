@@ -49,18 +49,17 @@ If it is your only default authentication class, remember to overwrite knox's Lo
 
 For instance, you can authenticate users using Basic Authentication by simply overwriting knox's LoginView and setting BasicAuthentication as one of the acceptable authentication classes, as follows: 
 
+**views.py:**
 ```python
-
-views.py:
-
 from knox.views import LoginView as KnoxLoginView
 from rest_framework.authentication import BasicAuthentication
 
 class LoginView(KnoxLoginView):
     authentication_classes = [BasicAuthentication]
+```
 
-urls.py:
-
+**urls.py:**
+```python
 from knox import views as knox_views
 from yourapp.api.views import LoginView
 
@@ -75,10 +74,8 @@ You can use any number of authentication classes if you want to be able to authe
 
 If you decide to use Token Authentication as your only authentication class, you can overwrite knox's login view as such:
 
+**views.py:**
 ```python
-
-views.py:
-
 from django.contrib.auth import login
 
 from rest_framework import permissions
@@ -94,9 +91,10 @@ class LoginView(KnoxLoginView):
         user = serializer.validated_data['user']
         login(request, user)
         return super(LoginView, self).post(request, format=None)
+```
 
-urls.py:
-
+**urls.py:**
+```python
 from knox import views as knox_views
 from yourapp.api.views import LoginView
 

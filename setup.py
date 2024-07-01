@@ -23,7 +23,7 @@ setup(
     long_description_content_type='text/markdown',
 
     # The project's main homepage.
-    url='https://github.com/James1345/django-rest-knox',
+    url='https://github.com/jazzband/django-rest-knox',
 
     # Author details
     author='James McMahon',
@@ -51,6 +51,8 @@ setup(
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
+        'Programming Language :: Python :: 3.12',
     ],
 
     # What does your project relate to?
@@ -69,7 +71,6 @@ setup(
     install_requires=[
         'django>=3.2',
         'djangorestframework',
-        'cryptography',
     ],
 
     # List additional groups of dependencies here (e.g. development

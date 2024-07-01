@@ -9,4 +9,4 @@ docker run --rm -it \
     -w $MOUNT_FOLDER \
     -p $MKDOCS_DEV_PORT:$MKDOCS_DEV_PORT \
     -e MKDOCS_DEV_ADDR="$MKDOCS_DEV_ADDR:$MKDOCS_DEV_PORT" \
-    squidfunk/mkdocs-material:3.2.0 $*
+    squidfunk/mkdocs-material:latest $*

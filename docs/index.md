@@ -1,10 +1,10 @@
 # Django-Rest-Knox
-Knox provides easy to use authentication for [Django REST Framework](https://www.django-rest-framework.org/)
+Knox provides easy-to-use authentication for [Django REST Framework](https://www.django-rest-framework.org/)
 The aim is to allow for common patterns in applications that are REST based,
 with little extra effort; and to ensure that connections remain secure.
 
 Knox authentication is token based, similar to the `TokenAuthentication` built
-in to DRF. However, it overcomes some problems present in the default implementation:
+into DRF. However, it overcomes some problems present in the default implementation:
 
 -   DRF tokens are limited to one per user. This does not facilitate securely
     signing in from multiple devices, as the token is shared. It also requires

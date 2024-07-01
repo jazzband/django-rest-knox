@@ -1,10 +1,5 @@
-try:
-    from hmac import compare_digest
-except ImportError:
-    def compare_digest(a, b):
-        return a == b
-
 import binascii
+from hmac import compare_digest
 
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -14,7 +9,7 @@ from rest_framework.authentication import (
 )
 
 from knox.crypto import hash_token
-from knox.models import AuthToken
+from knox.models import get_token_model
 from knox.settings import CONSTANTS, knox_settings
 from knox.signals import token_expired
 
@@ -31,11 +26,10 @@ class TokenAuthentication(BaseAuthentication):
     - `request.user` will be a django `User` instance
     - `request.auth` will be an `AuthToken` instance
     '''
-    model = AuthToken
 
     def authenticate(self, request):
         auth = get_authorization_header(request).split()
-        prefix = knox_settings.AUTH_HEADER_PREFIX.encode()
+        prefix = self.authenticate_header(request).encode()
 
         if not auth:
             return None
@@ -62,7 +56,7 @@ class TokenAuthentication(BaseAuthentication):
         '''
         msg = _('Invalid token.')
         token = token.decode("utf-8")
-        for auth_token in AuthToken.objects.filter(
+        for auth_token in get_token_model().objects.filter(
                 token_key=token[:CONSTANTS.TOKEN_KEY_LENGTH]):
             if self._cleanup_token(auth_token):
                 continue
@@ -77,7 +71,7 @@ class TokenAuthentication(BaseAuthentication):
                 return self.validate_user(auth_token)
         raise exceptions.AuthenticationFailed(msg)
 
-    def renew_token(self, auth_token):
+    def renew_token(self, auth_token) -> None:
         current_expiry = auth_token.expiry
         new_expiry = timezone.now() + knox_settings.TOKEN_TTL
         auth_token.expiry = new_expiry
@@ -95,7 +89,7 @@ class TokenAuthentication(BaseAuthentication):
     def authenticate_header(self, request):
         return knox_settings.AUTH_HEADER_PREFIX
 
-    def _cleanup_token(self, auth_token):
+    def _cleanup_token(self, auth_token) -> bool:
         for other_token in auth_token.user.auth_token_set.all():
             if other_token.digest != auth_token.digest and other_token.expiry:
                 if other_token.expiry < timezone.now():
