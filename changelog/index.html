@@ -88,7 +88,29 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h2 id="420">4.2.0</h2>
+                <h2 id="430">4.3.0</h2>
+<ul>
+<li>Fix migration reverse flow, enable migrate 0</li>
+<li>Various documentation fixes and improvements</li>
+<li>Drop <code>cryptography</code> in favor of hashlib</li>
+<li>Make custom AuthModel work</li>
+<li>Token prefix can be set in the setttings</li>
+<li>Drop support for Django 4.0</li>
+<li>Add support for Dango 4.2, 5.0 and Python 3.11 and 3.12</li>
+<li>Cleanup legacy Python 2.0 code</li>
+<li>Fix isort, flake8 usage for Python 3.10 in the test suite</li>
+<li>Update Github actions version</li>
+<li>Upgrade markdown dependency</li>
+<li>Get rid of the <code>six</code> library</li>
+<li>Add custom login / logout response support</li>
+<li>Join the jazzband organization</li>
+<li>Add pre-commit hooks</li>
+<li>Add tracking of tests code coverage</li>
+<li>Fix migrations when used in condition with a custom DB</li>
+<li>Improve typing</li>
+<li>Use <code>self.authenticate_header()</code> in <code>authenticate()</code> method to get auth header prefix</li>
+</ul>
+<h2 id="420">4.2.0</h2>
 <ul>
 <li>compatibility with Python up to 3.10 and Django up to 4.0</li>
 <li>integration with github CI instead of travis</li>
