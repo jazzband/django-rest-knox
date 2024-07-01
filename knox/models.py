@@ -24,7 +24,7 @@ class AuthTokenManager(models.Manager):
         digest = crypto.hash_token(token)
         if expiry is not None:
             expiry = timezone.now() + expiry
-        instance = super(AuthTokenManager, self).create(
+        instance = super().create(
             token_key=token[:CONSTANTS.TOKEN_KEY_LENGTH], digest=digest,
             user=user, expiry=expiry, **kwargs)
         return instance, token
