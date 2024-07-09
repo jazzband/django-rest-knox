@@ -1,4 +1,5 @@
-## 4.3.0
+## 5.0.0
+- Tokens created prior to this release will no longer work
 - Fix migration reverse flow, enable migrate 0
 - Various documentation fixes and improvements
 - Drop `cryptography` in favor of hashlib
