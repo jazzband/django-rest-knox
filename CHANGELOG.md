@@ -1,3 +1,6 @@
+## 5.0.1
+- Fix migration: retrieve `TOKEN_MODEL` from `knox_settings` instead of Django settings.
+
 ## 5.0.0
 - Tokens created prior to this release will no longer work
 - Fix migration reverse flow, enable migrate 0
