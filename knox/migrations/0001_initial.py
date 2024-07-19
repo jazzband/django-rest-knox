@@ -4,12 +4,14 @@ from __future__ import unicode_literals
 from django.conf import settings
 from django.db import migrations, models
 
+from knox.settings import knox_settings
+
 
 class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        migrations.swappable_dependency(settings.KNOX_TOKEN_MODEL),
+        migrations.swappable_dependency(knox_settings.TOKEN_MODEL),
     ]
 
     operations = [
