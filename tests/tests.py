@@ -496,3 +496,30 @@ class AuthTestCase(TestCase):
             response = self.client.get(root_url, {}, format='json')
             self.assertEqual(response.status_code, 200)
         reload(views)
+
+    def test_old_tokens_still_work(self):
+        self.assertEqual(AuthToken.objects.count(), 0)
+
+        old_token = "02d233c901e7bd38df1dbc486b7e22c5c81b089c40cbb31d35d7b032615f5778"
+        # Hash generated using crypto.hash_token on 4.2.0 with
+        # SECURE_HASH_ALGORITHM = 'cryptography.hazmat.primitives.hashes.SHA512'
+        old_hash = (
+            "c7f9f2904decf77e0fa0341bc3eb96daa1437649825f4bfdd38cdad64d69c4be55938d71f17"
+            "34131c656f9bbbfc5d991bef295accd268921b23d9cdd0d9d60d0"
+        )
+
+        AuthToken(
+            token_key=old_token[: 8],  # 8 was the key length prior to 3a1bc58
+            digest=old_hash,
+            user=self.user,
+        ).save()
+
+        rf = APIRequestFactory()
+        request = rf.get('/')
+        request.META = {'HTTP_AUTHORIZATION': f'Token {old_token}'}
+        user, auth_token = TokenAuthentication().authenticate(request)
+        self.assertEqual(self.user, user)
+        self.assertEqual(
+            old_token[:CONSTANTS.TOKEN_KEY_LENGTH],
+            auth_token.token_key,
+        )

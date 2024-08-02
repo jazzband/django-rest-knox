@@ -56,15 +56,24 @@ class TokenAuthentication(BaseAuthentication):
         '''
         msg = _('Invalid token.')
         token = token.decode("utf-8")
+
+        try:
+            digest = hash_token(token)
+        except (TypeError, binascii.Error):
+            raise exceptions.AuthenticationFailed(msg)
+
+        for auth_token in get_token_model().objects.filter(token_key=token[:8]):
+            # Migrate tokens that were created prior to 3a1bc58
+            # TODO: This will have terrible performance if TOKEN_PREFIX is used
+            if compare_digest(digest, auth_token.digest):
+                auth_token.token_key = token[:CONSTANTS.TOKEN_KEY_LENGTH]
+                auth_token.save()
+
         for auth_token in get_token_model().objects.filter(
                 token_key=token[:CONSTANTS.TOKEN_KEY_LENGTH]):
             if self._cleanup_token(auth_token):
                 continue
 
-            try:
-                digest = hash_token(token)
-            except (TypeError, binascii.Error):
-                raise exceptions.AuthenticationFailed(msg)
             if compare_digest(digest, auth_token.digest):
                 if knox_settings.AUTO_REFRESH and auth_token.expiry:
                     self.renew_token(auth_token)

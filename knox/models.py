@@ -7,8 +7,6 @@ from django.utils import timezone
 from knox import crypto
 from knox.settings import CONSTANTS, knox_settings
 
-sha = knox_settings.SECURE_HASH_ALGORITHM
-
 User = settings.AUTH_USER_MODEL
 
 
@@ -37,8 +35,7 @@ class AbstractAuthToken(models.Model):
     digest = models.CharField(
         max_length=CONSTANTS.DIGEST_LENGTH, primary_key=True)
     token_key = models.CharField(
-        max_length=CONSTANTS.MAXIMUM_TOKEN_PREFIX_LENGTH +
-        CONSTANTS.TOKEN_KEY_LENGTH,
+        max_length=CONSTANTS.TOKEN_KEY_LENGTH,
         db_index=True
     )
     user = models.ForeignKey(User, null=False, blank=False,
