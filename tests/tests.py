@@ -76,7 +76,7 @@ class AuthTestCase(TestCase):
         for _ in range(5):
             self.client.post(url, {}, format='json')
         self.assertEqual(AuthToken.objects.count(), 5)
-        self.assertTrue(all(e.token_key for e in AuthToken.objects.all()))
+        self.assertTrue(all(e.digest for e in AuthToken.objects.all()))
 
     def test_login_returns_serialized_token(self):
         self.assertEqual(AuthToken.objects.count(), 0)
@@ -193,7 +193,7 @@ class AuthTestCase(TestCase):
         self.client.post(url, {}, format='json')
         self.assertEqual(AuthToken.objects.count(), 0)
 
-    def test_update_token_key(self):
+    def test_update_digest(self):
         self.assertEqual(AuthToken.objects.count(), 0)
         instance, token = AuthToken.objects.create(self.user)
         rf = APIRequestFactory()
@@ -201,8 +201,8 @@ class AuthTestCase(TestCase):
         request.META = {'HTTP_AUTHORIZATION': f'Token {token}'}
         (self.user, auth_token) = TokenAuthentication().authenticate(request)
         self.assertEqual(
-            token[:CONSTANTS.TOKEN_KEY_LENGTH],
-            auth_token.token_key,
+            crypto.hash_token(token),
+            auth_token.digest,
         )
 
     def test_authorization_header_empty(self):
@@ -234,7 +234,7 @@ class AuthTestCase(TestCase):
         )
 
     def test_invalid_token_length_returns_401_code(self):
-        invalid_token = "1" * (CONSTANTS.TOKEN_KEY_LENGTH - 1)
+        invalid_token = "1" * (knox_settings.AUTH_TOKEN_CHARACTER_LENGTH - 1)
         self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % invalid_token))
         response = self.client.post(root_url, {}, format='json')
         self.assertEqual(response.status_code, 401)
@@ -509,7 +509,6 @@ class AuthTestCase(TestCase):
         )
 
         AuthToken(
-            token_key=old_token[: 8],  # 8 was the key length prior to 3a1bc58
             digest=old_hash,
             user=self.user,
         ).save()
@@ -520,6 +519,6 @@ class AuthTestCase(TestCase):
         user, auth_token = TokenAuthentication().authenticate(request)
         self.assertEqual(self.user, user)
         self.assertEqual(
-            old_token[:CONSTANTS.TOKEN_KEY_LENGTH],
-            auth_token.token_key,
+            old_hash,
+            auth_token.digest,
         )

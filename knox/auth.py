@@ -1,5 +1,4 @@
 import binascii
-from hmac import compare_digest
 
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -10,7 +9,7 @@ from rest_framework.authentication import (
 
 from knox.crypto import hash_token
 from knox.models import get_token_model
-from knox.settings import CONSTANTS, knox_settings
+from knox.settings import knox_settings
 from knox.signals import token_expired
 
 
@@ -49,9 +48,6 @@ class TokenAuthentication(BaseAuthentication):
 
     def authenticate_credentials(self, token):
         '''
-        Due to the random nature of hashing a value, this must inspect
-        each auth_token individually to find the correct one.
-
         Tokens that have expired will be deleted and skipped
         '''
         msg = _('Invalid token.')
@@ -62,22 +58,15 @@ class TokenAuthentication(BaseAuthentication):
         except (TypeError, binascii.Error):
             raise exceptions.AuthenticationFailed(msg)
 
-        # Migrate tokens with this digest that were created prior to 3a1bc58
         for auth_token in get_token_model().objects.filter(
-            digest=digest, token_key=token[:8]
+            digest=digest,
         ):
-            auth_token.token_key = token[:CONSTANTS.TOKEN_KEY_LENGTH]
-            auth_token.save(update_fields=("token_key",))
-
-        for auth_token in get_token_model().objects.filter(
-                token_key=token[:CONSTANTS.TOKEN_KEY_LENGTH]):
             if self._cleanup_token(auth_token):
                 continue
 
-            if compare_digest(digest, auth_token.digest):
-                if knox_settings.AUTO_REFRESH and auth_token.expiry:
-                    self.renew_token(auth_token)
-                return self.validate_user(auth_token)
+            if knox_settings.AUTO_REFRESH and auth_token.expiry:
+                self.renew_token(auth_token)
+            return self.validate_user(auth_token)
         raise exceptions.AuthenticationFailed(msg)
 
     def renew_token(self, auth_token) -> None:
