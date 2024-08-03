@@ -62,12 +62,12 @@ class TokenAuthentication(BaseAuthentication):
         except (TypeError, binascii.Error):
             raise exceptions.AuthenticationFailed(msg)
 
-        for auth_token in get_token_model().objects.filter(token_key=token[:8]):
-            # Migrate tokens that were created prior to 3a1bc58
-            # TODO: This will have terrible performance if TOKEN_PREFIX is used
-            if compare_digest(digest, auth_token.digest):
-                auth_token.token_key = token[:CONSTANTS.TOKEN_KEY_LENGTH]
-                auth_token.save()
+        # Migrate tokens with this digest that were created prior to 3a1bc58
+        for auth_token in get_token_model().objects.filter(
+            digest=digest, token_key=token[:8]
+        ):
+            auth_token.token_key = token[:CONSTANTS.TOKEN_KEY_LENGTH]
+            auth_token.save(update_fields=("token_key",))
 
         for auth_token in get_token_model().objects.filter(
                 token_key=token[:CONSTANTS.TOKEN_KEY_LENGTH]):
