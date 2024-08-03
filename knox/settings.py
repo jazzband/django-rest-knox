@@ -44,7 +44,6 @@ class CONSTANTS:
     '''
     Constants cannot be changed at runtime
     '''
-    TOKEN_KEY_LENGTH = 15
     DIGEST_LENGTH = 128
     MAXIMUM_TOKEN_PREFIX_LENGTH = 10
 

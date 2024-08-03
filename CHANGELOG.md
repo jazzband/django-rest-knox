@@ -1,3 +1,7 @@
+## 5.0.2
+- Removed `token_key` which was no longer necessary after removal of salt in 4.2.0
+- Fix old tokens not being accepted in 5.0.0 and 5.0.1
+
 ## 5.0.1
 - Fix migration: retrieve `TOKEN_MODEL` from `knox_settings` instead of Django settings.
 
