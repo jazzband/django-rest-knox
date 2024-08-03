@@ -58,16 +58,18 @@ class TokenAuthentication(BaseAuthentication):
         except (TypeError, binascii.Error):
             raise exceptions.AuthenticationFailed(msg)
 
-        for auth_token in get_token_model().objects.filter(
-            digest=digest,
-        ):
-            if self._cleanup_token(auth_token):
-                continue
+        try:
+            auth_token = get_token_model().objects.get(digest=digest)
+        except get_token_model().DoesNotExist:
+            raise exceptions.AuthenticationFailed(msg)
 
-            if knox_settings.AUTO_REFRESH and auth_token.expiry:
-                self.renew_token(auth_token)
-            return self.validate_user(auth_token)
-        raise exceptions.AuthenticationFailed(msg)
+        if self._cleanup_token(auth_token):
+            raise exceptions.AuthenticationFailed(msg)
+
+        if knox_settings.AUTO_REFRESH and auth_token.expiry:
+            self.renew_token(auth_token)
+
+        return self.validate_user(auth_token)
 
     def renew_token(self, auth_token) -> None:
         current_expiry = auth_token.expiry
