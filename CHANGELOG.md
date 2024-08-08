@@ -1,3 +1,28 @@
+## 5.0.1
+- Fix migration: retrieve `TOKEN_MODEL` from `knox_settings` instead of Django settings.
+
+## 5.0.0
+- Tokens created prior to this release will no longer work
+- Fix migration reverse flow, enable migrate 0
+- Various documentation fixes and improvements
+- Drop `cryptography` in favor of hashlib
+- Make custom AuthModel work
+- Token prefix can be set in the setttings
+- Drop support for Django 4.0
+- Add support for Dango 4.2, 5.0 and Python 3.11 and 3.12
+- Cleanup legacy Python 2.0 code
+- Fix isort, flake8 usage for Python 3.10 in the test suite
+- Update Github actions version
+- Upgrade markdown dependency
+- Get rid of the `six` library
+- Add custom login / logout response support
+- Join the jazzband organization
+- Add pre-commit hooks
+- Add tracking of tests code coverage
+- Fix migrations when used in condition with a custom DB
+- Improve typing
+- Use `self.authenticate_header()` in `authenticate()` method to get auth header prefix
+
 ## 4.2.0
 - compatibility with Python up to 3.10 and Django up to 4.0
 - integration with github CI instead of travis

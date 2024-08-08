@@ -17,15 +17,16 @@ class AuthTokenManager(models.Manager):
         self,
         user,
         expiry=knox_settings.TOKEN_TTL,
-        prefix=knox_settings.TOKEN_PREFIX
+        prefix=knox_settings.TOKEN_PREFIX,
+        **kwargs
     ):
         token = prefix + crypto.create_token_string()
         digest = crypto.hash_token(token)
         if expiry is not None:
             expiry = timezone.now() + expiry
-        instance = super(AuthTokenManager, self).create(
+        instance = super().create(
             token_key=token[:CONSTANTS.TOKEN_KEY_LENGTH], digest=digest,
-            user=user, expiry=expiry)
+            user=user, expiry=expiry, **kwargs)
         return instance, token
 
     def migrate(
