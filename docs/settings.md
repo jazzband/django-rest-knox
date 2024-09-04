@@ -76,7 +76,7 @@ This is the reference to the class used to serialize the `User` objects when
 successfully returning from `LoginView`. The default is `knox.serializers.UserSerializer`
 
 ## AUTO_REFRESH
-This defines if the token expiry time is extended by AUTO_REFRESH_TOKEN_TTL each time the token
+This defines if the token expiry time is extended by TOKEN_TTL each time the token
 is used.
 
 ## AUTO_REFRESH_MAX_TTL

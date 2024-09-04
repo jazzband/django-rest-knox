@@ -77,7 +77,8 @@ class TokenAuthentication(BaseAuthentication):
 
         # Do not auto-renew tokens past AUTO_REFRESH_MAX_TTL.
         if knox_settings.AUTO_REFRESH_MAX_TTL is not None:
-            new_expiry = min(new_expiry, auth_token.created + knox_settings.AUTO_REFRESH_MAX_TTL)
+            max_expiry = auth_token.created + knox_settings.AUTO_REFRESH_MAX_TTL
+            new_expiry = min(new_expiry, max_expiry)
 
         auth_token.expiry = new_expiry
 

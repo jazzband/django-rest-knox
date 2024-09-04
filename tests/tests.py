@@ -316,7 +316,7 @@ class AuthTestCase(TestCase):
             reload(auth)  # necessary to reload settings in core code
             with freeze_time(in_min_interval):
                 response = self.client.get(root_url, {}, format='json')
-        reload(auth)
+        reload(auth)  # necessary to reload settings in core code
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(original_expiry, AuthToken.objects.get().expiry)
@@ -337,7 +337,7 @@ class AuthTestCase(TestCase):
             self.assertEqual(auth.knox_settings.AUTO_REFRESH_MAX_TTL, timedelta(hours=12))
             with freeze_time(five_hours_later):
                 response = self.client.get(root_url, {}, format='json')
-        reload(auth)
+        reload(auth)  # necessary to reload settings in core code
         self.assertEqual(response.status_code, 200)
 
         # original expiry date was extended, but not past max_ttl:
