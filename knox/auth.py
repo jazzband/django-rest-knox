@@ -1,6 +1,6 @@
 import binascii
-from hmac import compare_digest
 import logging
+from hmac import compare_digest
 
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -13,7 +13,6 @@ from knox.crypto import hash_token
 from knox.models import get_token_model
 from knox.settings import CONSTANTS, knox_settings
 from knox.signals import token_expired
-
 
 logger = logging.getLogger(__name__)
 
