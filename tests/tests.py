@@ -347,6 +347,10 @@ class AuthTestCase(TestCase):
                          "Expiry time should have been extended to {} but is {}."
                          .format(expected_expiry, new_expiry))
 
+        with freeze_time(expected_expiry + timedelta(seconds=1)):
+            response = self.client.get(root_url, {}, format='json')
+            self.assertEqual(response.status_code, 401)
+
     def test_expiry_signals(self):
         self.signal_was_called = False
 

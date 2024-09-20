@@ -1,5 +1,6 @@
 import binascii
 from hmac import compare_digest
+import logging
 
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -12,6 +13,9 @@ from knox.crypto import hash_token
 from knox.models import get_token_model
 from knox.settings import CONSTANTS, knox_settings
 from knox.signals import token_expired
+
+
+logger = logging.getLogger(__name__)
 
 
 class TokenAuthentication(BaseAuthentication):
@@ -78,7 +82,9 @@ class TokenAuthentication(BaseAuthentication):
         # Do not auto-renew tokens past AUTO_REFRESH_MAX_TTL.
         if knox_settings.AUTO_REFRESH_MAX_TTL is not None:
             max_expiry = auth_token.created + knox_settings.AUTO_REFRESH_MAX_TTL
-            new_expiry = min(new_expiry, max_expiry)
+            if new_expiry > max_expiry:
+                new_expiry = max_expiry
+                logger.info('Token renewal truncated due to AUTO_REFRESH_MAX_TTL.')
 
         auth_token.expiry = new_expiry
 
