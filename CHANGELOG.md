@@ -1,3 +1,6 @@
+## 5.0.2
+- Implement AUTO_REFRESH_MAX_TTL to limit total token lifetime when AUTO_REFRESH = True
+
 ## 5.0.1
 - Fix migration: retrieve `TOKEN_MODEL` from `knox_settings` instead of Django settings.
 
