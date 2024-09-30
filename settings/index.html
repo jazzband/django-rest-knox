@@ -75,6 +75,8 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#auto_refresh">AUTO_REFRESH</a>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#auto_refresh_max_ttl">AUTO_REFRESH_MAX_TTL</a>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#min_refresh_interval">MIN_REFRESH_INTERVAL</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#auth_header_prefix">AUTH_HEADER_PREFIX</a>
@@ -135,6 +137,7 @@ REST_KNOX = {
   'USER_SERIALIZER': 'knox.serializers.UserSerializer',
   'TOKEN_LIMIT_PER_USER': None,
   'AUTO_REFRESH': False,
+  'AUTO_REFRESH_MAX_TTL': None,
   'MIN_REFRESH_INTERVAL': 60,
   'AUTH_HEADER_PREFIX': 'Token',
   'EXPIRY_DATETIME_FORMAT': api_settings.DATETIME_FORMAT,
@@ -177,6 +180,10 @@ successfully returning from <code>LoginView</code>. The default is <code>knox.se
 <h2 id="auto_refresh">AUTO_REFRESH</h2>
 <p>This defines if the token expiry time is extended by TOKEN_TTL each time the token
 is used.</p>
+<h2 id="auto_refresh_max_ttl">AUTO_REFRESH_MAX_TTL</h2>
+<p>When automatically extending token expiry time, limit the total token lifetime. If
+AUTO_REFRESH_MAX_TTL is set, then the token lifetime since the original creation date cannot
+exceed AUTO_REFRESH_MAX_TTL.</p>
 <h2 id="min_refresh_interval">MIN_REFRESH_INTERVAL</h2>
 <p>This is the minimum time in seconds that needs to pass for the token expiry to be updated
 in the database.</p>
