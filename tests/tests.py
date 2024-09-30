@@ -29,6 +29,9 @@ def get_basic_auth_header(username, password):
 auto_refresh_knox = knox_settings.defaults.copy()
 auto_refresh_knox["AUTO_REFRESH"] = True
 
+auto_refresh_max_ttl_knox = auto_refresh_knox.copy()
+auto_refresh_max_ttl_knox["AUTO_REFRESH_MAX_TTL"] = timedelta(hours=12)
+
 token_user_limit_knox = knox_settings.defaults.copy()
 token_user_limit_knox["TOKEN_LIMIT_PER_USER"] = 10
 
@@ -317,6 +320,36 @@ class AuthTestCase(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(original_expiry, AuthToken.objects.get().expiry)
+
+    def test_token_expiry_is_not_extended_past_max_ttl(self):
+        ttl = knox_settings.TOKEN_TTL
+        self.assertEqual(ttl, timedelta(hours=10))
+        original_time = datetime(2018, 7, 25, 0, 0, 0, 0)
+
+        with freeze_time(original_time):
+            instance, token = AuthToken.objects.create(user=self.user)
+
+        self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % token))
+        five_hours_later = original_time + timedelta(hours=5)
+        with override_settings(REST_KNOX=auto_refresh_max_ttl_knox):
+            reload(auth)  # necessary to reload settings in core code
+            self.assertEqual(auth.knox_settings.AUTO_REFRESH, True)
+            self.assertEqual(auth.knox_settings.AUTO_REFRESH_MAX_TTL, timedelta(hours=12))
+            with freeze_time(five_hours_later):
+                response = self.client.get(root_url, {}, format='json')
+        reload(auth)  # necessary to reload settings in core code
+        self.assertEqual(response.status_code, 200)
+
+        # original expiry date was extended, but not past max_ttl:
+        new_expiry = AuthToken.objects.get().expiry
+        expected_expiry = original_time + timedelta(hours=12)
+        self.assertEqual(new_expiry.replace(tzinfo=None), expected_expiry,
+                         "Expiry time should have been extended to {} but is {}."
+                         .format(expected_expiry, new_expiry))
+
+        with freeze_time(expected_expiry + timedelta(seconds=1)):
+            response = self.client.get(root_url, {}, format='json')
+            self.assertEqual(response.status_code, 401)
 
     def test_expiry_signals(self):
         self.signal_was_called = False
