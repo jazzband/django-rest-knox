@@ -1,6 +1,9 @@
-## 5.0.2
+## 5.1.0
 - Removed `token_key` which was no longer necessary after removal of salt in 4.2.0
-- Fix old tokens not being accepted in 5.0.0 and 5.0.1
+- Fix old tokens not being accepted in 5.0.0, 5.0.1 and 5.0.2
+
+## 5.0.2
+- Implement AUTO_REFRESH_MAX_TTL to limit total token lifetime when AUTO_REFRESH = True
 
 ## 5.0.1
 - Fix migration: retrieve `TOKEN_MODEL` from `knox_settings` instead of Django settings.

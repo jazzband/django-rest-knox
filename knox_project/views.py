@@ -6,8 +6,11 @@ from knox.auth import TokenAuthentication
 
 
 class RootView(APIView):
+    """
+    API Root View to test authentication.
+    """
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
-        return Response("api root")
+        return Response("User is authenticated.")
