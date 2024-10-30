@@ -1,4 +1,5 @@
 import base64
+import time
 from datetime import datetime, timedelta
 from importlib import reload
 
@@ -160,6 +161,23 @@ class AuthTestCase(TestCase):
         self.client.post(url, {}, format='json')
         self.assertEqual(AuthToken.objects.count(), 0)
 
+    def test_logout_all_deletes_keys_prefixed(self):
+        self.assertEqual(AuthToken.objects.count(), 0)
+        for _ in range(10):
+            AuthToken.objects.create(self.user, prefix="OTHER_")
+            instance, token = AuthToken.objects.create(self.user, prefix=token_prefix)
+        self.assertEqual(AuthToken.objects.count(), 20)
+
+        url = reverse('knox_logoutall')
+        with override_settings(REST_KNOX=token_prefix_knox):
+            reload(views)
+            reload(crypto)
+            self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % token))
+            self.client.post(url, {}, format='json')
+        reload(views)
+        reload(crypto)
+        self.assertEqual(AuthToken.objects.count(), 10)
+
     def test_logout_all_deletes_only_targets_keys(self):
         self.assertEqual(AuthToken.objects.count(), 0)
         for _ in range(10):
@@ -181,6 +199,27 @@ class AuthTestCase(TestCase):
         response = self.client.post(root_url, {}, format='json')
         self.assertEqual(response.status_code, 401)
         self.assertEqual(response.data, {"detail": "Invalid token."})
+
+    def test_accessed_gets_updated(self):
+        self.assertEqual(AuthToken.objects.count(), 0)
+        instance, token = AuthToken.objects.create(user=self.user)
+
+        self.assertEqual(AuthToken.objects.first().accessed, None)
+        rf = APIRequestFactory()
+        request = rf.get('/')
+        request.META = {'HTTP_AUTHORIZATION': f'Token {token}'}
+        (self.user, auth_token) = TokenAuthentication().authenticate(request)
+
+        self.assertNotEqual(AuthToken.objects.first().accessed, None)
+        last_time = AuthToken.objects.first().accessed
+
+        (self.user, auth_token) = TokenAuthentication().authenticate(request)
+        self.assertEqual(AuthToken.objects.first().accessed, last_time)
+
+        time.sleep(knox_settings.MIN_REFRESH_INTERVAL)
+        (self.user, auth_token) = TokenAuthentication().authenticate(request)
+        self.assertNotEqual(AuthToken.objects.first().accessed, last_time)
+        self.assertNotEqual(AuthToken.objects.first().accessed, None)
 
     def test_expired_tokens_deleted(self):
         self.assertEqual(AuthToken.objects.count(), 0)

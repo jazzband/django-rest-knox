@@ -106,8 +106,17 @@ class LogoutAllView(APIView):
     def get_post_response(self, request):
         return Response(None, status=status.HTTP_204_NO_CONTENT)
 
+    def get_token_prefix(self):
+        return knox_settings.TOKEN_PREFIX
+
     def post(self, request, format=None):
-        request.user.auth_token_set.all().delete()
+        # Only logout API-created sessions!
+        query = request.user.auth_token_set.all()
+        if self.get_token_prefix():
+            query = query.filter(token_key__startswith=self.get_token_prefix())
+        query.delete()
+        # If a flagged to remove all, do it. Use a query_param?
+        # request.user.auth_token_set.all().delete()
         user_logged_out.send(sender=request.user.__class__,
                              request=request, user=request.user)
         return self.get_post_response(request)
