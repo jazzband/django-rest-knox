@@ -1,11 +1,12 @@
-from django.test import TestCase
-from django.contrib.auth import get_user_model
-from django.utils import timezone
 from datetime import timedelta
+
+from django.contrib.auth import get_user_model
+from django.test import TestCase
+from django.utils import timezone
 from freezegun import freeze_time
 
-from knox.settings import CONSTANTS, knox_settings
 from knox.models import AuthToken
+from knox.settings import CONSTANTS, knox_settings
 
 
 class AuthTokenTests(TestCase):

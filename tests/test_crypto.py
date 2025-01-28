@@ -1,7 +1,9 @@
-from django.test import TestCase
 from unittest.mock import patch
+
+from django.test import TestCase
+
+from knox.crypto import create_token_string, hash_token, make_hex_compatible
 from knox.settings import knox_settings
-from knox.crypto import create_token_string, make_hex_compatible, hash_token
 
 
 class CryptoUtilsTestCase(TestCase):

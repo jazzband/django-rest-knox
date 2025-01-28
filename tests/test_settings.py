@@ -1,14 +1,12 @@
+import hashlib
 from datetime import timedelta
 from unittest import mock
-import hashlib
-from django.test import override_settings
+
 from django.core.signals import setting_changed
+from django.test import override_settings
 
 from knox.settings import (
-    CONSTANTS,
-    knox_settings,
-    reload_api_settings,
-    IMPORT_STRINGS,
+    CONSTANTS, IMPORT_STRINGS, knox_settings, reload_api_settings,
 )
 
 
