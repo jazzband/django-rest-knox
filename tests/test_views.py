@@ -22,6 +22,9 @@ root_url = reverse('api-root')
 
 
 def get_basic_auth_header(username, password):
+    """
+    Create a basic auth header (test helper).
+    """
     return 'Basic %s' % base64.b64encode(
         (f'{username}:{password}').encode('ascii')).decode()
 
@@ -57,9 +60,11 @@ token_prefix_too_long_knox = knox_settings.defaults.copy()
 token_prefix_too_long_knox["TOKEN_PREFIX"] = token_prefix_too_long
 
 
-class AuthTestCase(TestCase):
-
+class BaseTestCase(TestCase):
     def setUp(self):
+        """
+        Creates test users.
+        """
         self.username = 'john.doe'
         self.email = 'john.doe@example.com'
         self.password = 'hunter2'
@@ -69,6 +74,12 @@ class AuthTestCase(TestCase):
         self.email2 = 'jane.doe@example.com'
         self.password2 = 'hunter2'
         self.user2 = User.objects.create_user(self.username2, self.email2, self.password2)
+
+
+class LoginViewTestCase(BaseTestCase):
+    """
+    Tests the functionality of the login view.
+    """
 
     def test_login_creates_keys(self):
         self.assertEqual(AuthToken.objects.count(), 0)
@@ -95,7 +106,6 @@ class AuthTestCase(TestCase):
         self.assertNotIn(username_field, response.data)
 
     def test_login_returns_serialized_token_and_username_field(self):
-
         with override_settings(REST_KNOX=user_serializer_knox):
             reload(views)
             self.assertEqual(AuthToken.objects.count(), 0)
@@ -113,7 +123,6 @@ class AuthTestCase(TestCase):
         self.assertIn(username_field, response.data['user'])
 
     def test_login_returns_configured_expiry_datetime_format(self):
-
         with override_settings(REST_KNOX=expiry_datetime_format_knox):
             reload(views)
             self.assertEqual(AuthToken.objects.count(), 0)
@@ -136,6 +145,12 @@ class AuthTestCase(TestCase):
                 AuthToken.objects.first().expiry
             )
         )
+
+
+class LogoutViewsTestCase(BaseTestCase):
+    """
+    Tests the functionality of the logout views.
+    """
 
     def test_logout_deletes_keys(self):
         self.assertEqual(AuthToken.objects.count(), 0)
@@ -163,7 +178,7 @@ class AuthTestCase(TestCase):
     def test_logout_all_deletes_only_targets_keys(self):
         self.assertEqual(AuthToken.objects.count(), 0)
         for _ in range(10):
-            instance, token = AuthToken.objects.create(user=self.user)
+            _, token = AuthToken.objects.create(user=self.user)
             AuthToken.objects.create(user=self.user2)
         self.assertEqual(AuthToken.objects.count(), 20)
 
@@ -172,6 +187,12 @@ class AuthTestCase(TestCase):
         self.client.post(url, {}, format='json')
         self.assertEqual(AuthToken.objects.count(), 10,
                          'tokens from other users should not be affected by logout all')
+
+
+class TokenAuthenticationTestCase(BaseTestCase):
+    """
+    Tests the functionality of the `TokenAuthentication` class.
+    """
 
     def test_expired_tokens_login_fails(self):
         self.assertEqual(AuthToken.objects.count(), 0)
@@ -186,7 +207,7 @@ class AuthTestCase(TestCase):
         self.assertEqual(AuthToken.objects.count(), 0)
         for _ in range(10):
             # -1 TTL gives an expired token
-            instance, token = AuthToken.objects.create(
+            _, token = AuthToken.objects.create(
                 user=self.user, expiry=timedelta(seconds=-1))
         self.assertEqual(AuthToken.objects.count(), 10)
 
@@ -198,7 +219,7 @@ class AuthTestCase(TestCase):
 
     def test_update_token_key(self):
         self.assertEqual(AuthToken.objects.count(), 0)
-        instance, token = AuthToken.objects.create(self.user)
+        _, token = AuthToken.objects.create(self.user)
         rf = APIRequestFactory()
         request = rf.get('/')
         request.META = {'HTTP_AUTHORIZATION': f'Token {token}'}
@@ -244,7 +265,7 @@ class AuthTestCase(TestCase):
         self.assertEqual(response.data, {"detail": "Invalid token."})
 
     def test_invalid_odd_length_token_returns_401_code(self):
-        instance, token = AuthToken.objects.create(self.user)
+        _, token = AuthToken.objects.create(self.user)
         odd_length_token = token + '1'
         self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % odd_length_token))
         response = self.client.post(root_url, {}, format='json')
@@ -252,11 +273,13 @@ class AuthTestCase(TestCase):
         self.assertEqual(response.data, {"detail": "Invalid token."})
 
     def test_token_expiry_is_extended_with_auto_refresh_activated(self):
+        """
+        """
         ttl = knox_settings.TOKEN_TTL
         original_time = datetime(2018, 7, 25, 0, 0, 0, 0)
 
         with freeze_time(original_time):
-            instance, token = AuthToken.objects.create(user=self.user)
+            _, token = AuthToken.objects.create(user=self.user)
 
         self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % token))
         five_hours_later = original_time + timedelta(hours=5)
@@ -359,7 +382,7 @@ class AuthTestCase(TestCase):
 
         token_expired.connect(handler)
 
-        instance, token = AuthToken.objects.create(
+        _, token = AuthToken.objects.create(
             user=self.user,
             expiry=timedelta(seconds=-1),
         )
@@ -369,7 +392,6 @@ class AuthTestCase(TestCase):
         self.assertTrue(self.signal_was_called)
 
     def test_exceed_token_amount_per_user(self):
-
         with override_settings(REST_KNOX=token_user_limit_knox):
             reload(views)
             for _ in range(5):
@@ -387,7 +409,6 @@ class AuthTestCase(TestCase):
                          {"error": "Maximum amount of tokens allowed per user exceeded."})
 
     def test_does_not_exceed_on_expired_keys(self):
-
         with override_settings(REST_KNOX=token_user_limit_knox):
             reload(views)
             for _ in range(9):
@@ -408,7 +429,6 @@ class AuthTestCase(TestCase):
                          {"error": "Maximum amount of tokens allowed per user exceeded."})
 
     def test_invalid_prefix_return_401(self):
-
         with override_settings(REST_KNOX=auth_header_prefix_knox):
             reload(auth)
             instance, token = AuthToken.objects.create(user=self.user)
