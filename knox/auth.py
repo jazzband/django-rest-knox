@@ -60,7 +60,7 @@ class TokenAuthentication(BaseAuthentication):
         msg = _('Invalid token.')
         token = token.decode("utf-8")
         for auth_token in get_token_model().objects.filter(
-                token_key=token[:CONSTANTS.TOKEN_KEY_LENGTH]):
+                token_key=token[:CONSTANTS.TOKEN_KEY_LENGTH]).select_related('user'):
             if self._cleanup_token(auth_token):
                 continue
 
