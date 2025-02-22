@@ -28,13 +28,17 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AlterField(
-            model_name='authtoken',
-            name='digest',
+            model_name="authtoken",
+            name="digest",
             field=models.CharField(primary_key=True, serialize=False, max_length=128),
         ),
+        migrations.RunPython(migrations.RunPython.noop, delete_all_rows),
         migrations.AlterField(
-            model_name='authtoken',
-            name='salt',
+            model_name="authtoken",
+            name="salt",
             field=models.CharField(max_length=16, null=True),
+        ),
+        migrations.RunPython(
+            migrations.RunPython.noop, populate_salt_field_with_dummy_data
         ),
     ]
