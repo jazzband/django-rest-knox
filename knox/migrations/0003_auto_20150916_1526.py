@@ -4,6 +4,22 @@ from __future__ import unicode_literals
 from django.db import migrations, models
 
 
+def populate_salt_field_with_dummy_data(apps, schema_editor):
+    """we just populate salt field with index to make it unique"""
+
+    AuthToken = apps.get_model("knox", "AuthToken")
+    for index, token in enumerate(AuthToken.objects.all()):
+        token.salt = index
+        token.save(update_fields=["salt"])
+
+
+def delete_all_rows(apps, schema_editor):
+    """Since digest field is the pk best way to revert migrations is just to delete all Auth token rows"""
+
+    AuthToken = apps.get_model("knox", "AuthToken")
+    AuthToken.objects.using(schema_editor.connection.alias).all().delete()
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -19,6 +35,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='authtoken',
             name='salt',
-            field=models.CharField(unique=True, max_length=16),
+            field=models.CharField(max_length=16, null=True),
         ),
     ]

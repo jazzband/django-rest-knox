@@ -3,6 +3,18 @@
 from django.db import migrations, models
 
 
+def clear_token_keys(apps, schema_editor):
+    """
+    Clears all token values so that when reverting migration
+    and the field token_key max_length gets changed from 25 to 8 it doesn't trigger DataError
+    """
+
+    AuthToken = apps.get_model("knox", "AuthToken")
+    AuthToken.objects.using(schema_editor.connection.alias).update(
+        token_key=""
+    )  # Clears all token values
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -15,4 +27,5 @@ class Migration(migrations.Migration):
             name="token_key",
             field=models.CharField(db_index=True, max_length=25),
         ),
+        migrations.RunPython(migrations.RunPython.noop, clear_token_keys),
     ]
