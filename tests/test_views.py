@@ -229,6 +229,19 @@ class TokenAuthenticationTestCase(BaseTestCase):
             auth_token.token_key,
         )
 
+    def test_token_auth_n_plus_one(self):
+        self.assertEqual(AuthToken.objects.count(), 0)
+        _, token = AuthToken.objects.create(self.user)
+        rf = APIRequestFactory()
+        request = rf.get('/')
+        request.META = {'HTTP_AUTHORIZATION': f'Token {token}'}
+        with self.assertNumQueries(2):
+            (self.user, auth_token) = TokenAuthentication().authenticate(request)
+            self.assertEqual(
+                token[:CONSTANTS.TOKEN_KEY_LENGTH],
+                auth_token.token_key,
+            )
+
     def test_authorization_header_empty(self):
         rf = APIRequestFactory()
         request = rf.get('/')

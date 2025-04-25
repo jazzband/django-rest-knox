@@ -1,3 +1,6 @@
+## 5.0.3
+- Fix for Potential n+1 query detected on AuthToken.user
+
 ## 5.0.2
 - Implement AUTO_REFRESH_MAX_TTL to limit total token lifetime when AUTO_REFRESH = True
 
