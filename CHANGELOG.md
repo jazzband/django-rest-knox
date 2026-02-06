@@ -1,3 +1,6 @@
+## 5.0.4
+- Add support for Django 6.0 and Python 3.13, 3.14
+
 ## 5.0.3
 - Fix for Potential n+1 query detected on AuthToken.user
 
