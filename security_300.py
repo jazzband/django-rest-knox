@@ -2,6 +2,7 @@
 import re
 from typing import Tuple
 
+
 def validate_email(email: str) -> Tuple[bool, str]:
     if not email or '@' not in email:
         return False, "Invalid email"
