@@ -1,6 +1,5 @@
 import base64
 from datetime import datetime, timedelta
-from importlib import reload
 
 from django.contrib.auth import get_user_model
 from django.test import override_settings
@@ -10,7 +9,6 @@ from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.serializers import DateTimeField
 from rest_framework.test import APIRequestFactory, APITestCase as TestCase
 
-from knox import auth, crypto, views
 from knox.auth import TokenAuthentication
 from knox.models import AuthToken
 from knox.serializers import UserSerializer
@@ -107,7 +105,6 @@ class LoginViewTestCase(BaseTestCase):
 
     def test_login_returns_serialized_token_and_username_field(self):
         with override_settings(REST_KNOX=user_serializer_knox):
-            reload(views)
             self.assertEqual(AuthToken.objects.count(), 0)
             url = reverse('knox_login')
             self.client.credentials(
@@ -115,16 +112,14 @@ class LoginViewTestCase(BaseTestCase):
             )
             response = self.client.post(url, {}, format='json')
             self.assertEqual(user_serializer_knox["USER_SERIALIZER"], UserSerializer)
-        (views)
-        self.assertEqual(response.status_code, 200)
-        self.assertIn('token', response.data)
-        username_field = self.user.USERNAME_FIELD
-        self.assertIn('user', response.data)
-        self.assertIn(username_field, response.data['user'])
+            self.assertEqual(response.status_code, 200)
+            self.assertIn('token', response.data)
+            username_field = self.user.USERNAME_FIELD
+            self.assertIn('user', response.data)
+            self.assertIn(username_field, response.data['user'])
 
     def test_login_returns_configured_expiry_datetime_format(self):
         with override_settings(REST_KNOX=expiry_datetime_format_knox):
-            reload(views)
             self.assertEqual(AuthToken.objects.count(), 0)
             url = reverse('knox_login')
             self.client.credentials(
@@ -135,16 +130,15 @@ class LoginViewTestCase(BaseTestCase):
                 expiry_datetime_format_knox["EXPIRY_DATETIME_FORMAT"],
                 EXPIRY_DATETIME_FORMAT
             )
-        reload(views)
-        self.assertEqual(response.status_code, 200)
-        self.assertIn('token', response.data)
-        self.assertNotIn('user', response.data)
-        self.assertEqual(
-            response.data['expiry'],
-            DateTimeField(format=EXPIRY_DATETIME_FORMAT).to_representation(
-                AuthToken.objects.first().expiry
+            self.assertEqual(response.status_code, 200)
+            self.assertIn('token', response.data)
+            self.assertNotIn('user', response.data)
+            self.assertEqual(
+                response.data['expiry'],
+                DateTimeField(format=EXPIRY_DATETIME_FORMAT).to_representation(
+                    AuthToken.objects.first().expiry
+                )
             )
-        )
 
 
 class LogoutViewsTestCase(BaseTestCase):
@@ -321,10 +315,8 @@ class TokenAuthenticationTestCase(BaseTestCase):
         self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % token))
         five_hours_later = original_time + timedelta(hours=5)
         with override_settings(REST_KNOX=auto_refresh_knox):
-            reload(auth)  # necessary to reload settings in core code
             with freeze_time(five_hours_later):
                 response = self.client.get(root_url, {}, format='json')
-        reload(auth)
         self.assertEqual(response.status_code, 200)
 
         # original expiry date was extended:
@@ -373,10 +365,8 @@ class TokenAuthenticationTestCase(BaseTestCase):
         self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % token))
         in_min_interval = now + timedelta(seconds=knox_settings.MIN_REFRESH_INTERVAL - 10)
         with override_settings(REST_KNOX=auto_refresh_knox):
-            reload(auth)  # necessary to reload settings in core code
             with freeze_time(in_min_interval):
                 response = self.client.get(root_url, {}, format='json')
-        reload(auth)  # necessary to reload settings in core code
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(original_expiry, AuthToken.objects.get().expiry)
@@ -392,12 +382,8 @@ class TokenAuthenticationTestCase(BaseTestCase):
         self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % token))
         five_hours_later = original_time + timedelta(hours=5)
         with override_settings(REST_KNOX=auto_refresh_max_ttl_knox):
-            reload(auth)  # necessary to reload settings in core code
-            self.assertEqual(auth.knox_settings.AUTO_REFRESH, True)
-            self.assertEqual(auth.knox_settings.AUTO_REFRESH_MAX_TTL, timedelta(hours=12))
             with freeze_time(five_hours_later):
                 response = self.client.get(root_url, {}, format='json')
-        reload(auth)  # necessary to reload settings in core code
         self.assertEqual(response.status_code, 200)
 
         # original expiry date was extended, but not past max_ttl:
@@ -430,7 +416,6 @@ class TokenAuthenticationTestCase(BaseTestCase):
 
     def test_exceed_token_amount_per_user(self):
         with override_settings(REST_KNOX=token_user_limit_knox):
-            reload(views)
             for _ in range(5):
                 AuthToken.objects.create(user=self.user)
             for _ in range(5):
@@ -440,14 +425,12 @@ class TokenAuthenticationTestCase(BaseTestCase):
                 HTTP_AUTHORIZATION=get_basic_auth_header(self.username, self.password)
             )
             response = self.client.post(url, {}, format='json')
-        reload(views)
         self.assertEqual(response.status_code, 403)
         self.assertEqual(response.data,
                          {"error": "Maximum amount of tokens allowed per user exceeded."})
 
     def test_does_not_exceed_on_expired_keys(self):
         with override_settings(REST_KNOX=token_user_limit_knox):
-            reload(views)
             for _ in range(9):
                 AuthToken.objects.create(user=self.user)
             AuthToken.objects.create(user=self.user, expiry=timedelta(seconds=-1))
@@ -458,7 +441,6 @@ class TokenAuthenticationTestCase(BaseTestCase):
             )
             response = self.client.post(url, {}, format='json')
             failed_response = self.client.post(url, {}, format='json')
-        reload(views)
         self.assertEqual(response.status_code, 200)
         self.assertIn('token', response.data)
         self.assertEqual(failed_response.status_code, 403)
@@ -471,7 +453,6 @@ class TokenAuthenticationTestCase(BaseTestCase):
         a new login should be rejected with 403.
         """
         with override_settings(REST_KNOX=token_user_limit_knox):
-            reload(views)
             for _ in range(token_user_limit_knox["TOKEN_LIMIT_PER_USER"]):
                 AuthToken.objects.create(user=self.user)
             url = reverse('knox_login')
@@ -479,7 +460,6 @@ class TokenAuthenticationTestCase(BaseTestCase):
                 HTTP_AUTHORIZATION=get_basic_auth_header(self.username, self.password)
             )
             response = self.client.post(url, {}, format='json')
-        reload(views)
         self.assertEqual(response.status_code, 403)
         self.assertEqual(response.data,
                          {"error": "Maximum amount of tokens allowed per user exceeded."})
@@ -490,7 +470,6 @@ class TokenAuthenticationTestCase(BaseTestCase):
         a new login should succeed.
         """
         with override_settings(REST_KNOX=token_user_limit_knox):
-            reload(views)
             limit = token_user_limit_knox["TOKEN_LIMIT_PER_USER"]
             for _ in range(limit - 1):
                 AuthToken.objects.create(user=self.user)
@@ -499,7 +478,6 @@ class TokenAuthenticationTestCase(BaseTestCase):
                 HTTP_AUTHORIZATION=get_basic_auth_header(self.username, self.password)
             )
             response = self.client.post(url, {}, format='json')
-        reload(views)
         self.assertEqual(response.status_code, 200)
         self.assertIn('token', response.data)
 
@@ -522,7 +500,6 @@ class TokenAuthenticationTestCase(BaseTestCase):
 
     def test_invalid_prefix_return_401(self):
         with override_settings(REST_KNOX=auth_header_prefix_knox):
-            reload(auth)
             instance, token = AuthToken.objects.create(user=self.user)
             self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % token))
             failed_response = self.client.get(root_url)
@@ -532,13 +509,11 @@ class TokenAuthenticationTestCase(BaseTestCase):
                 )
             )
             response = self.client.get(root_url)
-        reload(auth)
         self.assertEqual(failed_response.status_code, 401)
         self.assertEqual(response.status_code, 200)
 
     def test_expiry_present_also_when_none(self):
         with override_settings(REST_KNOX=token_no_expiration_knox):
-            reload(views)
             self.assertEqual(AuthToken.objects.count(), 0)
             url = reverse('knox_login')
             self.client.credentials(
@@ -557,7 +532,6 @@ class TokenAuthenticationTestCase(BaseTestCase):
                 response.data['expiry'],
                 None
             )
-        reload(views)
 
     def test_expiry_is_present(self):
         self.assertEqual(AuthToken.objects.count(), 0)
@@ -580,8 +554,6 @@ class TokenAuthenticationTestCase(BaseTestCase):
 
     def test_login_returns_serialized_token_with_prefix_when_prefix_set(self):
         with override_settings(REST_KNOX=token_prefix_knox):
-            reload(views)
-            reload(crypto)
             self.assertEqual(AuthToken.objects.count(), 0)
             url = reverse('knox_login')
             self.client.credentials(
@@ -594,12 +566,9 @@ class TokenAuthenticationTestCase(BaseTestCase):
             )
             self.assertEqual(response.status_code, 200)
             self.assertTrue(response.data['token'].startswith(token_prefix))
-        reload(views)
-        reload(crypto)
 
     def test_token_with_prefix_returns_200(self):
         with override_settings(REST_KNOX=token_prefix_knox):
-            reload(views)
             self.assertEqual(AuthToken.objects.count(), 0)
             url = reverse('knox_login')
             self.client.credentials(
@@ -617,7 +586,6 @@ class TokenAuthenticationTestCase(BaseTestCase):
             )
             response = self.client.get(root_url, {}, format='json')
             self.assertEqual(response.status_code, 200)
-        reload(views)
 
     def test_prefix_set_longer_than_max_length_raises_valueerror(self):
         with self.assertRaises(ValueError):
@@ -636,10 +604,8 @@ class TokenAuthenticationTestCase(BaseTestCase):
         )
         self.assertFalse(response.data['token'].startswith(token_prefix))
         with override_settings(REST_KNOX=token_prefix_knox):
-            reload(views)
             self.client.credentials(
                 HTTP_AUTHORIZATION=('Token %s' % response.data['token'])
             )
             response = self.client.get(root_url, {}, format='json')
             self.assertEqual(response.status_code, 200)
-        reload(views)

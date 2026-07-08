@@ -4,8 +4,6 @@ from django.conf import settings
 from django.core.signals import setting_changed
 from rest_framework.settings import APISettings, api_settings
 
-USER_SETTINGS = getattr(settings, 'REST_KNOX', None)
-
 DEFAULTS = {
     'SECURE_HASH_ALGORITHM': 'hashlib.sha512',
     'AUTH_TOKEN_CHARACTER_LENGTH': 64,
@@ -26,14 +24,22 @@ IMPORT_STRINGS = {
     'USER_SERIALIZER',
 }
 
-knox_settings = APISettings(USER_SETTINGS, DEFAULTS, IMPORT_STRINGS)
+
+class KnoxSettings(APISettings):
+    @property
+    def user_settings(self):
+        if not hasattr(self, '_user_settings'):
+            self._user_settings = getattr(settings, 'REST_KNOX', {})
+        return self._user_settings
+
+
+knox_settings = KnoxSettings(None, DEFAULTS, IMPORT_STRINGS)
 
 
 def reload_api_settings(*args, **kwargs):
-    global knox_settings
-    setting, value = kwargs['setting'], kwargs['value']
+    setting = kwargs['setting']
     if setting == 'REST_KNOX':
-        knox_settings = APISettings(value, DEFAULTS, IMPORT_STRINGS)
+        knox_settings.reload()
         if len(knox_settings.TOKEN_PREFIX) > CONSTANTS.MAXIMUM_TOKEN_PREFIX_LENGTH:
             raise ValueError("Illegal TOKEN_PREFIX length")
 

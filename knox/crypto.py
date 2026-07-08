@@ -3,8 +3,6 @@ from os import urandom as generate_bytes
 
 from knox.settings import knox_settings
 
-hash_func = knox_settings.SECURE_HASH_ALGORITHM
-
 
 def create_token_string() -> str:
     """
@@ -56,6 +54,6 @@ def hash_token(token: str) -> str:
         >>> hash_token("abc123")
         'a123f...'  # The actual hash will be longer
     """
-    digest = hash_func()
+    digest = knox_settings.SECURE_HASH_ALGORITHM()
     digest.update(make_hex_compatible(token))
     return digest.hexdigest()

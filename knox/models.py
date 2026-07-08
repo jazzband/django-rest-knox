@@ -7,8 +7,6 @@ from django.utils import timezone
 from knox import crypto
 from knox.settings import CONSTANTS, knox_settings
 
-sha = knox_settings.SECURE_HASH_ALGORITHM
-
 User = settings.AUTH_USER_MODEL
 
 
@@ -18,21 +16,27 @@ def get_expiry(expiry):
     return expiry
 
 
-def get_digest_token(prefix=knox_settings.TOKEN_PREFIX):
+def get_digest_token(prefix=None):
+    if prefix is None:
+        prefix = knox_settings.TOKEN_PREFIX
     token = prefix + crypto.create_token_string()
     digest = crypto.hash_token(token)
     return digest, token
+
+
+_UNSET = object()
 
 
 class AuthTokenManager(models.Manager):
     def create(
         self,
         user,
-        expiry=knox_settings.TOKEN_TTL,
-        prefix=knox_settings.TOKEN_PREFIX,
+        expiry=_UNSET,
+        prefix=None,
         **kwargs
     ):
-
+        if expiry is _UNSET:
+            expiry = knox_settings.TOKEN_TTL
         digest, token = get_digest_token(prefix)
         if expiry is not None:
             expiry = timezone.now() + expiry
