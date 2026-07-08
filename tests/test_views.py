@@ -164,6 +164,30 @@ class LogoutViewsTestCase(BaseTestCase):
         self.assertEqual(AuthToken.objects.count(), 1,
                          'other tokens should remain after logout')
 
+    def test_logout_deletes_only_target_token(self):
+        """
+        Logout should delete only the token used for authentication,
+        leaving other tokens for the same user intact and usable.
+        """
+        self.assertEqual(AuthToken.objects.count(), 0)
+        _, token_a = AuthToken.objects.create(user=self.user)
+        instance_b, token_b = AuthToken.objects.create(user=self.user)
+        self.assertEqual(AuthToken.objects.count(), 2)
+
+        url = reverse('knox_logout')
+        self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % token_a))
+        response = self.client.post(url, {}, format='json')
+        self.assertEqual(response.status_code, 204)
+
+        # token_a is gone, token_b still exists
+        self.assertEqual(AuthToken.objects.count(), 1)
+        self.assertTrue(AuthToken.objects.filter(digest=instance_b.digest).exists())
+
+        # token_b still authenticates successfully
+        self.client.credentials(HTTP_AUTHORIZATION=('Token %s' % token_b))
+        response = self.client.get(root_url, {}, format='json')
+        self.assertEqual(response.status_code, 200)
+
     def test_logout_all_deletes_keys(self):
         self.assertEqual(AuthToken.objects.count(), 0)
         for _ in range(10):
@@ -440,6 +464,61 @@ class TokenAuthenticationTestCase(BaseTestCase):
         self.assertEqual(failed_response.status_code, 403)
         self.assertEqual(failed_response.data,
                          {"error": "Maximum amount of tokens allowed per user exceeded."})
+
+    def test_token_limit_at_boundary_returns_403(self):
+        """
+        When the user has exactly TOKEN_LIMIT_PER_USER valid tokens,
+        a new login should be rejected with 403.
+        """
+        with override_settings(REST_KNOX=token_user_limit_knox):
+            reload(views)
+            for _ in range(token_user_limit_knox["TOKEN_LIMIT_PER_USER"]):
+                AuthToken.objects.create(user=self.user)
+            url = reverse('knox_login')
+            self.client.credentials(
+                HTTP_AUTHORIZATION=get_basic_auth_header(self.username, self.password)
+            )
+            response = self.client.post(url, {}, format='json')
+        reload(views)
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.data,
+                         {"error": "Maximum amount of tokens allowed per user exceeded."})
+
+    def test_token_limit_below_boundary_returns_200(self):
+        """
+        When the user has one fewer than TOKEN_LIMIT_PER_USER valid tokens,
+        a new login should succeed.
+        """
+        with override_settings(REST_KNOX=token_user_limit_knox):
+            reload(views)
+            limit = token_user_limit_knox["TOKEN_LIMIT_PER_USER"]
+            for _ in range(limit - 1):
+                AuthToken.objects.create(user=self.user)
+            url = reverse('knox_login')
+            self.client.credentials(
+                HTTP_AUTHORIZATION=get_basic_auth_header(self.username, self.password)
+            )
+            response = self.client.post(url, {}, format='json')
+        reload(views)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('token', response.data)
+
+    def test_token_limit_none_allows_unlimited_tokens(self):
+        """
+        When TOKEN_LIMIT_PER_USER is None (the default), there is no limit
+        on the number of tokens a user can hold.
+        """
+        self.assertIsNone(knox_settings.TOKEN_LIMIT_PER_USER)
+        for _ in range(50):
+            AuthToken.objects.create(user=self.user)
+        url = reverse('knox_login')
+        self.client.credentials(
+            HTTP_AUTHORIZATION=get_basic_auth_header(self.username, self.password)
+        )
+        response = self.client.post(url, {}, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('token', response.data)
+        self.assertEqual(AuthToken.objects.count(), 51)
 
     def test_invalid_prefix_return_401(self):
         with override_settings(REST_KNOX=auth_header_prefix_knox):

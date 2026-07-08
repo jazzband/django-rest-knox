@@ -1,3 +1,4 @@
+import hashlib
 from unittest.mock import patch
 
 from django.test import TestCase
@@ -57,3 +58,40 @@ class CryptoUtilsTestCase(TestCase):
         self.assertEqual(len(result), 128)
         hex_chars = set('0123456789abcdef')
         self.assertTrue(all(c in hex_chars for c in result.lower()))
+
+    def test_make_hex_compatible_equals_utf8_encode_plain(self):
+        """
+        make_hex_compatible is a no-op round-trip: it returns the UTF-8
+        encoded bytes of the input string.
+        """
+        token = "abcdef1234567890"
+        self.assertEqual(make_hex_compatible(token), token.encode('utf-8'))
+
+    def test_make_hex_compatible_equals_utf8_encode_with_prefix(self):
+        """
+        The no-op property holds even when a non-hex prefix is present.
+        """
+        token = "TEST_abcdef1234567890"
+        self.assertEqual(make_hex_compatible(token), token.encode('utf-8'))
+
+    def test_make_hex_compatible_equals_utf8_encode_with_unicode(self):
+        """
+        The no-op property holds for multi-byte UTF-8 characters.
+        """
+        token = "tokën123"
+        self.assertEqual(make_hex_compatible(token), token.encode('utf-8'))
+
+    def test_hash_token_is_deterministic(self):
+        """
+        The same input always produces the same digest.
+        """
+        token = "abcdef1234567890"
+        self.assertEqual(hash_token(token), hash_token(token))
+
+    def test_hash_token_matches_direct_hash(self):
+        """
+        hash_token(t) equals the direct SHA-512 hexdigest of t.encode().
+        """
+        token = "abcdef1234567890"
+        expected = hashlib.sha512(token.encode('utf-8')).hexdigest()
+        self.assertEqual(hash_token(token), expected)
