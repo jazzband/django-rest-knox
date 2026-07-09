@@ -1,0 +1,65 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "django-rest-knox"
+description = "Authentication for django rest framework"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [
+    { name = "James McMahon", email = "james1345@googlemail.com" },
+]
+keywords = ["django", "rest", "authentication", "login"]
+dynamic = ["version"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Topic :: Internet :: WWW/HTTP :: Session",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Framework :: Django",
+    "Framework :: Django :: 4.2",
+    "Framework :: Django :: 5.0",
+    "Framework :: Django :: 5.2",
+    "Framework :: Django :: 6.0",
+]
+dependencies = [
+    "django>=4.2",
+    "djangorestframework>=3.14",
+]
+
+[project.urls]
+Homepage = "https://github.com/jazzband/django-rest-knox"
+Documentation = "https://jazzband.co/projects/django-rest-knox"
+Changelog = "https://github.com/jazzband/django-rest-knox/blob/master/CHANGELOG.md"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.dynamic]
+version = { attr = "knox.__init__.__version__" }
+
+[tool.setuptools.packages.find]
+include = ["knox*"]
+exclude = ["contrib*", "docs*", "tests*", "knox_project*"]
+
+[tool.coverage.run]
+branch = true
+source = ["knox"]
+omit = ["*/migrations/*"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+]
+
+

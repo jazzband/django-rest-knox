@@ -1,3 +1,10 @@
+## 5.1.0
+- Drop support for Python 3.8 and 3.9
+- Migrate packaging to `pyproject.toml` (PEP 621); drop `setup.py`
+- Require `djangorestframework>=3.14`
+- Fold coverage config into `pyproject.toml`
+- Update test matrix: Django 4.2/5.2/6.0 on Python 3.10–3.14
+
 ## 5.0.4
 - Add support for Django 6.0 and Python 3.13, 3.14
 
