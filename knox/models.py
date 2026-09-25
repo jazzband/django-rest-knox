@@ -1,5 +1,9 @@
+from datetime import datetime, timedelta
+from typing import Any
+
 from django.apps import apps
 from django.conf import settings
+from django.contrib.auth.base_user import AbstractBaseUser
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 from django.utils import timezone
@@ -10,13 +14,13 @@ from knox.settings import CONSTANTS, knox_settings
 User = settings.AUTH_USER_MODEL
 
 
-def get_expiry(expiry):
+def get_expiry(expiry: timedelta | None) -> datetime | None:
     if expiry is not None:
-        expiry = timezone.now() + expiry
-    return expiry
+        return timezone.now() + expiry
+    return None
 
 
-def get_digest_token(prefix=None):
+def get_digest_token(prefix: str | None = None) -> tuple[str, str]:
     if prefix is None:
         prefix = knox_settings.TOKEN_PREFIX
     token = prefix + crypto.create_token_string()
@@ -30,11 +34,11 @@ _UNSET = object()
 class AuthTokenManager(models.Manager):
     def create(
         self,
-        user,
-        expiry=_UNSET,
-        prefix=None,
-        **kwargs
-    ):
+        user: AbstractBaseUser,
+        expiry: Any = _UNSET,
+        prefix: str | None = None,
+        **kwargs: Any,
+    ) -> tuple["AbstractAuthToken", str]:
         if expiry is _UNSET:
             expiry = knox_settings.TOKEN_TTL
         digest, token = get_digest_token(prefix)
@@ -74,7 +78,7 @@ class AuthToken(AbstractAuthToken):
         swappable = 'KNOX_TOKEN_MODEL'
 
 
-def get_token_model():
+def get_token_model() -> type[AbstractAuthToken]:
     """
     Return the AuthToken model that is active in this project.
     """

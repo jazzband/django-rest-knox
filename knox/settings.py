@@ -1,4 +1,5 @@
 from datetime import timedelta
+from typing import Any
 
 from django.conf import settings
 from django.core.signals import setting_changed
@@ -27,7 +28,7 @@ IMPORT_STRINGS = {
 
 class KnoxSettings(APISettings):
     @property
-    def user_settings(self):
+    def user_settings(self) -> dict[str, Any]:
         if not hasattr(self, '_user_settings'):
             self._user_settings = getattr(settings, 'REST_KNOX', {})
         return self._user_settings
@@ -36,7 +37,7 @@ class KnoxSettings(APISettings):
 knox_settings = KnoxSettings(None, DEFAULTS, IMPORT_STRINGS)
 
 
-def reload_api_settings(*args, **kwargs):
+def reload_api_settings(*args: Any, **kwargs: Any) -> None:
     setting = kwargs['setting']
     if setting == 'REST_KNOX':
         knox_settings.reload()

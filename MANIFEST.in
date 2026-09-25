@@ -2,3 +2,4 @@ include README.md
 include CHANGELOG.md
 include LICENSE
 include CONTRIBUTORS
+include knox/py.typed
